@@ -41,7 +41,7 @@ The required status check name for branch protection (if available, `ACCOUNT-SET
 
 ## 3. Minute budget
 
-Private repositories on GitHub Free get 2,000 Linux minutes a month (ADR-0009). Public repositories don't use the allowance.
+The repository is public (D-043), so standard GitHub-hosted runner minutes are free and unlimited. Keep the affected-only runs anyway, for speed.
 
 | Workflow | Est. minutes per run | Runs / month | Minutes / month |
 |---|---|---|---|
@@ -55,14 +55,14 @@ Private repositories on GitHub Free get 2,000 Linux minutes a month (ADR-0009). 
 
 If usage passes 1,600 minutes in a month (Settings → Billing → Usage), first cut `nightly.yml` to Sunday and Wednesday only. Check usage monthly (`FREE-TIER-MONITORING.md`).
 
-## 4. Production deploy guard (private repository without environments)
+## 4. Production deploy guard
 
-On GitHub Free a private repository can't require a reviewer before a job runs. `deploy-production.yml` uses these checks instead:
+The repository is **public** (D-043), so branch protection on `main` and the `production` environment with the owner as required reviewer are available for free and are **mandatory**. `deploy-production.yml` also keeps these checks as defence in depth:
 
 1. Triggered only by `workflow_dispatch` with inputs `tag` and `confirm`; the job fails unless `confirm == "deploy " + tag`.
 2. The job fails unless `tag` exists, matches `v<major>.<minor>.<patch>`, points to a commit on `main`, and that commit has a successful `deploy-staging` run.
 3. The job fails unless `github.actor` is in a committed allow-list file `.github/deployers.txt`.
-4. With deployment environments available (public repository), the job also declares `environment: production` with the owner as required reviewer.
+4. The job declares `environment: production`, which waits for the owner's approval in GitHub.
 
 ## 5. Allowed actions
 

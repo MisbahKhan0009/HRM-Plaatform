@@ -215,9 +215,9 @@ amount = round_half_up(gross × days_employed / days_in_period, 2)
 
 One `earning` line, code `base_salary`, label "Base salary", `calculation = { grossAmount, days, daysInPeriod, salaryStructureId }`. Rounding is per line; totals are sums of rounded lines (ADR-0006). Arithmetic uses `decimal.js` with precision 30 and rounding `ROUND_HALF_UP`; JavaScript `number` is never used for money.
 
-**More than one approved salary structure overlaps the employed part of the period** (a mid-period change): the owner has not decided how to pay this (open question 7 below). Until setting `payroll.midperiod_salary_change_policy` is set, `calculate` fails with `422 PAYROLL_MIDPERIOD_SALARY_CHANGE_UNCONFIRMED` and lists the affected employees. The workaround in the meantime is to make salary changes effective on the 1st of a month.
+**More than one approved salary structure overlaps the employed part of the period** (a mid-period change): the owner decided **split-period proration** (D-041). Setting `payroll.midperiod_salary_change_policy` defaults to `segment_proration`. If an operator clears the setting, `calculate` fails with `422 PAYROLL_MIDPERIOD_SALARY_CHANGE_UNCONFIRMED` rather than guessing.
 
-The proposed policy for the owner to confirm is `segment_proration`: split the employed days by structure and pay each segment `round_half_up(gross_s × days_s / days_in_period, 2)` as its own `base_salary` line labelled with its date range. The domain function is written for it but disabled until the setting is set.
+Policy `segment_proration`: split the employed days by structure and pay each segment `round_half_up(gross_s × days_s / days_in_period, 2)` as its own `base_salary` line labelled with its date range. 
 
 ### 6.4 Other lines
 
@@ -283,7 +283,7 @@ These are calculated by hand from the rules above. Payroll acceptance requires t
 | Full month | Gross 45,000; November (30 days) | 45000 × 30/30 | 45,000.00 |
 | Joiner | Gross 45,000; joins 12 Nov | 19 days: 45000 × 19/30 | 28,500.00 |
 | Leaver, 31-day month | Gross 50,000; last day 10 Dec | 50000 × 10/31 = 16129.032... | 16,129.03 |
-| Increment mid-month (proposed policy, not active) | 40,000 to 14 Nov, 46,000 from 15 Nov | today: `PAYROLL_MIDPERIOD_SALARY_CHANGE_UNCONFIRMED`; under `segment_proration`: 40000 × 14/30 = 18,666.67 and 46000 × 16/30 = 24,533.33 | 43,200.00 if confirmed |
+| Increment mid-month (D-041) | 40,000 to 14 Nov, 46,000 from 15 Nov | `segment_proration`: 40000 × 14/30 = 18,666.67 and 46000 × 16/30 = 24,533.33 | 43,200.00 |
 | Reimbursement + deduction | Full month 30,000; approved transport claims 650.00 and 1,200.00; approved deduction adjustment 500.00 | 30000 + 650 + 1200 - 500 | 31,350.00 |
 
 ## 7. Reporting lines
@@ -341,7 +341,7 @@ Stored in `settings` (DATA-MODEL section 1). Changing a key needs `settings.<sco
 | `approvals.hide_reviewer` | hr | bool | false | FR-ESS-007 |
 | `payroll.anomaly_threshold_percent` | payroll | int | 20 | 6.5 |
 | `payroll.allow_self_approval` | payroll | bool | true | D-007 |
-| `payroll.midperiod_salary_change_policy` | payroll | `null` or `segment_proration` | null (unset, blocks) | 6.3 |
+| `payroll.midperiod_salary_change_policy` | payroll | `null` or `segment_proration` | `segment_proration` (D-041); null blocks | 6.3 |
 | `reimbursements.review_threshold` | payroll | money string | `"5000.00"` | 6.5 |
 | `reimbursements.max_claim_age_days` | payroll | int | 60 | claims older than this are rejected at submit |
 | `documents.max_upload_mb` | technical | int | 10 | uploads (ADR-0009) |
@@ -357,4 +357,4 @@ Stored in `settings` (DATA-MODEL section 1). Changing a key needs `settings.<sco
 4. Should weekend or holiday work earn compensatory leave automatically? v1 assumes no: HR grants it manually.
 5. Does a transport claim need a receipt above some amount? v1 makes the receipt optional at every amount.
 6. Should approved but unpaid reimbursement claims of a separated employee be paid in an off-cycle run? v1 includes them in the final regular run only if approved before it is calculated.
-7. How is a salary change that takes effect in the middle of a month paid? Proposed: `segment_proration` (6.3). Until decided, such runs cannot be calculated.
+7. ~~Mid-month salary change~~: decided, split-period proration (D-041).

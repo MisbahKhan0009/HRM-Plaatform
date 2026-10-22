@@ -14,7 +14,7 @@ The system must run at **$0/month**. Every developer must design within these li
 | R2 | 10 GB, 1M Class A / 10M Class B ops per month | 10 MB upload limit; images compressed client-side; backups rotated (keep 30 daily + 12 monthly) |
 | Gmail API | ~500 emails/day | Batch digests for reminders |
 | Sentry | 5k errors/month, 1 seat | Sample non-critical errors; alerts to owner |
-| GitHub Actions | 2,000 min/month (private) | Turborepo caching; run only affected tasks; Postgres service container instead of Neon branches |
+| GitHub Actions | Unlimited standard minutes for a public repo (D-043) | Turborepo caching; affected-only runs; Postgres service container instead of Neon branches |
 
 Performance-heavy features must state their CPU strategy in their design doc. A CI check fails the build if the Worker bundle exceeds the budget.
 

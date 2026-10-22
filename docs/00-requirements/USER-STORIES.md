@@ -301,7 +301,7 @@ As a `payroll_officer`, I record cash and cheque payments. FR-PAY-014, D-021.
 - Given a locked run, when I record a cheque payment with number, date and amount for an item, then the payment is `paid`.
 - Given I record a cash payment, then a cash acknowledgment reference is required.
 - Given every item is paid, then the run becomes `paid` and included claims become `paid`.
-- Given a payment amount differs from the item's net, then I get `PAYMENT_AMOUNT_MISMATCH` unless I mark it as a partial payment with a reason.
+- Given a payment amount differs from the item's net, then I get `PAYMENT_AMOUNT_MISMATCH`. Partial or split payments are not allowed in v1 (D-042); a failed payment is cancelled and recorded again.
 
 ### US-PAY-008 Reconciliation
 As a `payroll_officer`, I reconcile the run. FR-PAY-015.
@@ -427,4 +427,4 @@ As a `system_admin`, I see system health. FR-SET-004, NFR-OPS-006.
 - Reminder window for document and contract expiry (US-DOC-004, US-EMP-006).
 - Validation threshold for net pay change warnings (US-PAY-004).
 - Whether managers may see leave of employees outside their team on the calendar (US-LEAVE-008), currently no.
-- Whether partial payments are allowed at all (US-PAY-007), currently allowed with a reason.
+- ~~Partial payments~~: decided, not allowed in v1 (D-042).

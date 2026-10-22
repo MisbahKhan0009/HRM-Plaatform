@@ -1,5 +1,7 @@
 # Open questions for the owner
 
+**Status 2026-10-22: all proposed defaults ACCEPTED by the owner (D-041…D-043); D3 answered "public" instead of the default.** Still needed from the owner before go-live: C5 retention periods, A7 the named payroll sign-off person, B8 the holiday list, C9 the import data.
+
 Collected from all Stage 5 documents on 2026-10-22. Each has a **proposed default**. Accepted answers move to `DECISION-LOG.md` and this list is updated. Items marked **(before build)** block implementation of that feature; the rest can be answered any time before go-live.
 
 ## A. Payroll

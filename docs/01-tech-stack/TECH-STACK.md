@@ -25,7 +25,7 @@ Hard constraints: D-024 (everything on Cloudflare Workers), **D-032 (free tiers 
 | Backups | Nightly `pg_dump` (GitHub Actions) → encrypted (`age`) → R2 | Actions free minutes | 0003 |
 | Monorepo | pnpm workspaces + Turborepo | OSS | Stage 4 |
 | Testing | Vitest (+ `@cloudflare/vitest-pool-workers`), Testing Library, Playwright, axe-core | OSS | 0008 |
-| CI/CD | GitHub Actions → `wrangler deploy` | 2,000 min/month (private repo) | 0008 |
+| CI/CD | GitHub Actions → `wrangler deploy` | unlimited (public repo, D-043) | 0008 |
 
 ## Environments
 

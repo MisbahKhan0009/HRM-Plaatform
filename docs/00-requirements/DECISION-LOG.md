@@ -42,7 +42,7 @@ in ADRs, docs and code comments (e.g. `see D-001`).
 
 ## Still open
 
-- Document retention periods (before go-live).
+- Document retention periods (before go-live): owner to supply (C5).
 
 ## Stage 2 — stack decisions
 
@@ -68,3 +68,6 @@ in ADRs, docs and code comments (e.g. `see D-001`).
 | D-038 | Company & brand: **Big-Matrix Solutions** design system (owner's design-system artifact), snapshot in `docs/02-brand/source/` | docs/02-brand |
 | D-039 | AI skills: only free third-party skills from GitHub / skills.sh, reviewed before commit; no self-made skills | docs/SKILLS.md |
 | D-040 | App UI: brand adapted for product use; **Ink (dark) default with a toggle to Paper (light)**; dot grid + glow only on brand moments; adds `warn` status tokens | docs/02-brand/APP-UI-ADAPTATION.md |
+| D-041 | Mid-month salary change: **split-period proration** (old gross for days before the effective date, new gross from it, each prorated by calendar days) | BUSINESS-RULES §6.3 |
+| D-042 | **All proposed defaults in `OPEN-QUESTIONS.md` accepted** (2026-10-22), including leave seed values (Casual 10, Sick 14, Earned 1 per 18 days worked), core hours 10:00–16:00 with 8 h minimum, inclusive join/separation days, one payment per payroll item, 20% net-change warning, 7-day correction window, 12-hour time, no company directory, team leave calendar off, weekly R2 document backup to the dedicated Google Drive, Worker name `hrm`. Values remain editable in settings; leave values to be checked by an adviser | OPEN-QUESTIONS.md |
+| D-043 | GitHub repository is **public**: free branch protection, environments with required reviewers, unlimited Actions minutes; strict no-secrets / no-real-data rule | CI-CD.md, ACCOUNT-SETUP.md |

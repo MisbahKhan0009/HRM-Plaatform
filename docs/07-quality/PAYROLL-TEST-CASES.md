@@ -10,7 +10,7 @@ These cases implement SRS §11.3, adapted to the v1 rules. They do not define pa
 |---|---|
 | One gross monthly amount per employee, effective-dated | D-018 |
 | Proration by calendar days: `gross × days_employed_in_period ÷ days_in_month` | D-022, `DOMAIN-MODEL.md` §6 |
-| `days_employed_in_period` counts both the joining date and the last working date (inclusive) | Proposed, **confirm with owner** (sign-off item S-01) |
+| `days_employed_in_period` counts both the joining date and the last working date (inclusive) | Decided (D-042: both days inclusive); finance signs off the cases (S-01) |
 | Leave and attendance never change pay | D-017 |
 | No income tax, PF, loans, advances or bonuses | D-019, D-023 |
 | Approved reimbursement claims are paid in the next run whose period end ≥ approval date | D-020, FR-REIM-001…004 (`docs/00-requirements/SRS-v1.1-CHANGES.md` §7), `DOMAIN-MODEL.md` §5.5 |
@@ -75,7 +75,7 @@ Final settlement items beyond prorated salary (leave encashment, notice pay) are
 
 ## 5. PAY-04: salary change effective mid-period
 
-> **Open owner decision (sign-off item S-02).** The v1 decisions do not say how to pay a salary change that takes effect inside a period. Proposed default: **split-period proration**, where each salary segment is prorated by its own calendar days and each segment is one `base_salary` line. Until the owner confirms, the system must block calculation with a validation error when an effective date falls inside the period (`PAYROLL_MIDPERIOD_SALARY_CHANGE_UNCONFIRMED`), rather than guess.
+> **Decided (D-041): split-period proration.** Each salary segment is prorated by its own calendar days and each segment is one `base_salary` line. Expected values below still need finance sign-off (S-02).
 
 **Inputs:** E-D. Gross 40,000.00 effective until 2027-01-15; gross 46,000.00 effective from 2027-01-16. Period Jan 2027 (31 days).
 

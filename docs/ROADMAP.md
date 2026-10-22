@@ -29,4 +29,5 @@ This is the master sequence for building the HRM platform. Each stage has an
 - [x] Brand app adaptation approved (Ink default + light toggle) — `docs/02-brand/APP-UI-ADAPTATION.md`
 - [x] Stage 4 — Monorepo structure approved: `docs/03-architecture/MONOREPO.md`
 - [x] Stage 5 — Documentation: ~70 docs across `docs/00`–`10`, root `README`/`AGENTS`/`CONTRIBUTING`/`SECURITY`; index `docs/README.md`
-- [ ] Owner decisions open: `docs/00-requirements/OPEN-QUESTIONS.md` → then Stage 6 — UX/UI design
+- [x] Owner decisions: defaults accepted (D-041…D-043); remaining go-live inputs listed in `docs/00-requirements/OPEN-QUESTIONS.md`
+- [ ] Stage 6 — UX/UI design (next) → then Stage 6 — UX/UI design

@@ -167,7 +167,7 @@ GitHub Free offers branch protection rules and deployment environments on **publ
 | Public | Protect `main`: require a PR, require status check `ci`, block force-push and deletion. Create environments `staging`, `production` (required reviewer: owner) and `restore-drill` (required reviewer: owner), and put deploy and backup secrets in them |
 | Private (GitHub Free) | No protection rules are available. Compensating controls: production deploys run only on a signed release tag plus a manual `workflow_dispatch` confirmation input (`CI-CD.md` §4); only the owner and one backup person have write access; review the Actions log after every production deploy |
 
-Choosing public or private is an owner decision; the code holds no secrets either way.
+**Decided: public** (D-043). Apply the *Public* row. Because the code is public, never commit secrets, real employee data, `.dev.vars` or database dumps; secret scanning and push protection must be enabled (free for public repositories).
 
 ### 7.3 Actions secrets 🖐
 **Settings → Secrets and variables → Actions** (or per environment if environments exist). The full list with rotation rules is in `SECRETS.md` §3.
