@@ -16,5 +16,9 @@ if (!company) {
   process.exit(1);
 }
 const result = await seedDemo(db, company.id, process.env.SEED_DEMO_EMAIL_DOMAIN ?? 'demo.example');
-console.log(result.skipped ? 'Employees already exist; demo seed skipped.' : `Seeded ${result.employees} demo employees.`);
+console.log(
+  result.skipped
+    ? 'Employees already exist; demo seed skipped.'
+    : `Seeded ${result.employees} demo employees.`,
+);
 await sql.end();
