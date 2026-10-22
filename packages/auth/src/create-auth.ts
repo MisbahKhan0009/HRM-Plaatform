@@ -32,6 +32,16 @@ export function createAuth(config: AuthConfig) {
     trustedOrigins: [config.baseURL],
     database: drizzleAdapter(config.db, { provider: 'pg', usePlural: true, schema: config.schema }),
     emailAndPassword: { enabled: false },
+    // Users are created only by the invitation service (invite-only), never through Better Auth sign-up.
+    // Declaring our columns keeps them out of client input and lets Better Auth validate the schema.
+    user: {
+      additionalFields: {
+        companyId: { type: 'string', required: true, input: false },
+        status: { type: 'string', required: false, input: false },
+        theme: { type: 'string', required: false, input: false },
+        locale: { type: 'string', required: false, input: false },
+      },
+    },
     session: {
       expiresIn: 60 * 60 * 24 * 7, // absolute 7 days (SECURITY-MODEL §7)
       updateAge: 60 * 60, // sliding refresh

@@ -88,11 +88,20 @@ describe.skipIf(!url)('Better Auth passwordless spike', () => {
     await sql`DELETE FROM rate_limits`; // spike database only: rate-limit counters persist between runs
     // Warm-up so module initialisation is not counted.
     await call('warmup', '/ok');
+    const companyId = uuidv7();
+    await db.insert(schema.companies).values({ id: companyId, name: 'Spike Co' });
 
     for (let i = 0; i < 30; i++) {
       ip = `10.0.${Math.floor(i / 200)}.${(i % 200) + 2}`;
       const email = `spike-${uuidv7()}@example.test`;
-      await db.insert(schema.users).values({ id: uuidv7(), name: 'Spike User', email, emailVerified: true });
+      await db.insert(schema.users).values({
+        id: uuidv7(),
+        companyId,
+        name: 'Spike User',
+        email,
+        emailVerified: true,
+        status: 'active',
+      });
 
       const sent = await call('email-otp send', '/email-otp/send-verification-otp', {
         body: { email, type: 'sign-in' },

@@ -5,22 +5,22 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1792704253889,
+      "when": 1792705792216,
       "tag": "0000_extensions",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1792704254733,
-      "tag": "0001_platform",
+      "when": 1792705965755,
+      "tag": "0001_schema",
       "breakpoints": true
     },
     {
       "idx": 2,
       "version": "7",
-      "when": 1792704765159,
-      "tag": "0002_identity",
+      "when": 1792705966735,
+      "tag": "0002_constraints",
       "breakpoints": true
     }
   ]
