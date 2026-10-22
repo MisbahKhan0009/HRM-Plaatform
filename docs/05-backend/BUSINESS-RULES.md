@@ -358,3 +358,5 @@ Stored in `settings` (DATA-MODEL section 1). Changing a key needs `settings.<sco
 5. Does a transport claim need a receipt above some amount? v1 makes the receipt optional at every amount.
 6. Should approved but unpaid reimbursement claims of a separated employee be paid in an off-cycle run? v1 includes them in the final regular run only if approved before it is calculated.
 7. ~~Mid-month salary change~~: decided, split-period proration (D-041).
+8. Document retention (X-003): may `POST /documents/{id}/delete` remove a document before its category's `documents.retention_days.<category>` period ends, and should a job delete documents automatically once that period ends? v1 lets `document.manage` delete at any time with a reason and runs no automatic deletion.
+9. Should the subject employee see their own documents in the restricted categories (`identity`, `contract`, `payslip`)? v1 shows them unless the document is flagged `isRestricted`, and audits every download in those categories.

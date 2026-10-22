@@ -198,11 +198,14 @@ The SRS endpoint `GET /payroll/payslips/{id}/download` is replaced by `GET /payr
 |---|---|---|---|
 | GET | `/employees/{id}/documents` | `document.read.all`, own (non-restricted), `document.payroll.read` (payroll category) | |
 | POST | `/employees/{id}/documents` | `document.manage`; employees may upload `receipt` documents for themselves with `reimbursement.request.own` | multipart; `{ category, title, issueDate?, expiryDate?, isRestricted? }` |
-| POST | `/documents/{id}/versions` | `document.manage` | New version; previous kept |
+| POST | `/documents/{id}/versions` | `document.manage` | multipart; new version, previous kept; optional `{ issueDate?, expiryDate? }` replace the document's dates |
 | GET | `/documents/{id}` | read rules | Metadata + versions |
 | GET | `/documents/{id}/download` | read rules | Streams current version (`?version=`); restricted categories audited (FR-DOC-007) |
-| POST | `/documents/{id}/delete` | `document.manage`, Fresh | Retention deletion; reason required |
-| GET | `/company/documents` | any session (policy category) | Company-wide documents |
+| POST | `/documents/{id}/delete` | `document.manage`, Fresh | Retention deletion; `{ reason, version }` |
+| GET | `/company/documents` | any session (policy category); `document.read.all` sees every category | Company-wide documents |
+| POST | `/company/documents` | `document.manage` | multipart, same fields as an employee upload; `employee_id` is NULL |
+
+Read rules: `document.read.all` reads every document; `document.payroll.read` reads the `payslip` category; `document.read.own` reads the caller's own documents that are not flagged `isRestricted`; any session reads non-restricted company documents of the `policy` category. Anything else returns 404. Uploads are limited to `documents.max_upload_mb` (`413 FILE_TOO_LARGE`) and to PDF, PNG, JPEG and WebP content checked by magic bytes, declared type and extension (`415 UNSUPPORTED_FILE_TYPE`).
 
 ## 10. Approvals
 

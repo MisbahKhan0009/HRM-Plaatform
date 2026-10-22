@@ -2,6 +2,7 @@ export * from './approvals';
 export * from './audit';
 export * from './auth';
 export * from './common';
+export * from './documents';
 export * from './errors';
 export * from './health';
 export * from './organization';
