@@ -17,7 +17,7 @@ import {
 import { companyColumn, standardColumns, userRef } from './columns';
 import { employees } from './employees';
 import { settingScope } from './enums';
-import { citext, inet } from './types';
+import { citext, inet, jsonScalar } from './types';
 import { users } from './users';
 
 export const settings = pgTable(
@@ -26,7 +26,7 @@ export const settings = pgTable(
     companyId: companyColumn(),
     key: text().notNull(),
     scope: settingScope().notNull(),
-    value: jsonb().notNull(),
+    value: jsonScalar().notNull(),
     ...standardColumns(),
   },
   (t) => [
@@ -41,8 +41,8 @@ export const settingsHistory = pgTable(
     id: uuid().primaryKey(),
     companyId: uuid().notNull(),
     key: text().notNull(),
-    oldValue: jsonb(),
-    newValue: jsonb().notNull(),
+    oldValue: jsonScalar(),
+    newValue: jsonScalar().notNull(),
     changedBy: userRef(),
     changedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },

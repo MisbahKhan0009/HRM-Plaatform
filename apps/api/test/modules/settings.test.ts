@@ -205,3 +205,10 @@ describe('PATCH /settings', () => {
     expect((await json(res)).code).toBe('MFA_REQUIRED');
   });
 });
+
+describe('JSON scalar settings', () => {
+  it('returns a money setting as the decimal string it was stored as (no double JSON parse)', async () => {
+    expect(find(await read(payroll.cookie), 'reimbursements.review_threshold').value).toBe('5000.00');
+    expect(find(await read(hr.cookie), 'employees.code_prefix').value).toBe('EMP-');
+  });
+});

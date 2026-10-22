@@ -268,3 +268,35 @@ export const DEFAULT_ROLES: readonly RoleDefinition[] = [
 
 /** Roles that require a strong session (passkey, or email code + TOTP); D-006, D-033. */
 export const STRONG_AUTH_ROLES = DEFAULT_ROLES.filter((r) => r.requiresStrongAuth).map((r) => r.code);
+
+const RESOURCE_LABEL: Record<string, string> = {
+  user: 'users',
+  role: 'roles',
+  settings: 'settings',
+  org: 'departments and positions',
+  employee: 'employees',
+  profile_change: 'profile changes',
+  compensation: 'salary structures',
+  payroll: 'payroll',
+  payslip: 'payslips',
+  attendance: 'attendance',
+  leave: 'leave',
+  reimbursement: 'claims',
+  document: 'documents',
+  approval: 'approvals',
+  report: 'reports',
+  audit: 'audit log',
+  system: 'system health',
+};
+const SCOPE_LABEL: Record<string, string> = { all: 'all employees', team: 'own team', own: 'own records' };
+
+/** A readable description of a permission code, for the roles screen and the permissions table. */
+export function describePermission(code: string): string {
+  const parts = code.split('.');
+  const resource = RESOURCE_LABEL[parts[0] ?? ''] ?? parts[0] ?? code;
+  const last = parts.at(-1) ?? '';
+  const scope = SCOPE_LABEL[last];
+  const verbs = parts.slice(1, scope ? -1 : undefined).map((p) => p.replaceAll('_', ' '));
+  const action = verbs.length ? verbs.join(' ') : 'access';
+  return `${action.charAt(0).toUpperCase()}${action.slice(1)} ${resource}${scope ? ` (${scope})` : ''}`;
+}

@@ -1,4 +1,4 @@
-import { DEFAULT_ROLES, PERMISSIONS, SETTINGS, type SettingKey } from '@hrm/contracts';
+import { DEFAULT_ROLES, describePermission, PERMISSIONS, SETTINGS, type SettingKey } from '@hrm/contracts';
 import { and, eq, sql } from 'drizzle-orm';
 import type { Db } from './client';
 import { uuidv7 } from './ids';
@@ -51,8 +51,8 @@ export async function seedCompany(
 
     await tx
       .insert(permissions)
-      .values(PERMISSIONS.map((code) => ({ code, description: code })))
-      .onConflictDoNothing();
+      .values(PERMISSIONS.map((code) => ({ code, description: describePermission(code) })))
+      .onConflictDoUpdate({ target: permissions.code, set: { description: sql`excluded.description` } });
 
     for (const role of DEFAULT_ROLES) {
       const [row] = await tx
