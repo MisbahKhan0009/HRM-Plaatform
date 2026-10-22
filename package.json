@@ -15,7 +15,8 @@
     "test": "turbo run test",
     "deps:check": "depcruise apps packages --config .dependency-cruiser.cjs",
     "tokens": "pnpm --filter @hrm/ui tokens",
-    "db:up": "docker compose up -d db"
+    "db:up": "docker compose up -d db",
+    "e2e": "pnpm --filter @hrm/e2e test"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",

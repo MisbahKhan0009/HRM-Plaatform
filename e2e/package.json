@@ -1,0 +1,21 @@
+{
+  "name": "@hrm/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "catalog:",
+    "@hrm/config": "workspace:*",
+    "@hrm/contracts": "workspace:*",
+    "@hrm/db": "workspace:*",
+    "@playwright/test": "catalog:",
+    "@types/node": "catalog:",
+    "drizzle-orm": "catalog:",
+    "postgres": "catalog:",
+    "typescript": "catalog:"
+  }
+}
