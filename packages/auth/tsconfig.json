@@ -1,1 +1,5 @@
-{ "extends": "../config/tsconfig.base.json", "include": ["src"] }
+{
+  "extends": "../config/tsconfig.base.json",
+  "compilerOptions": { "lib": ["ES2023", "DOM"], "types": ["node"] },
+  "include": ["src", "auth.cli.ts"]
+}

@@ -11,11 +11,14 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@hrm/db": "workspace:*"
+    "@hrm/db": "workspace:*",
+    "better-auth": "catalog:",
+    "@better-auth/passkey": "catalog:"
   },
   "devDependencies": {
     "@hrm/config": "workspace:*",
     "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "@types/node": "catalog:"
   }
 }

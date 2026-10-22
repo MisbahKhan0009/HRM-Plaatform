@@ -31,4 +31,5 @@ This is the master sequence for building the HRM platform. Each stage has an
 - [x] Stage 5 — Documentation: ~70 docs across `docs/00`–`10`, root `README`/`AGENTS`/`CONTRIBUTING`/`SECURITY`; index `docs/README.md`
 - [x] Owner decisions: defaults accepted (D-041…D-043); remaining go-live inputs listed in `docs/00-requirements/OPEN-QUESTIONS.md`
 - [x] Stage 6 — UX/UI design: 33 artboards on the Claude Design canvas covering all roles and flows (`docs/04-design/DESIGN-CANVAS.md`)
-- [ ] Stage 7 — Engineering foundation (next)
+- [x] Stage 7 — Engineering foundation: monorepo, API Worker, web SPA, DB migrations, token pipeline, CI, dependency rules; auth spike (`docs/05-backend/AUTH-SPIKE.md`)
+- [ ] Stage 8 — Development: Phase 1 Foundation (auth, RBAC, organization, employees, audit) (next)

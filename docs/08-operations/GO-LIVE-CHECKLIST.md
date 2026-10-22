@@ -82,3 +82,9 @@ Status: **Template.** Copy into the release PR for v1.0.0 and tick items with ev
 | HR | | | |
 | Finance / payroll | | | |
 | Technical lead | | | |
+
+## Added by the Stage 7 auth spike
+
+| Check | Evidence | Done |
+|---|---|---|
+| Workers Logs on staging show `cpuTime` under 10 ms (p95) for `/auth/sign-in/email-otp`, `/auth/two-factor/verify-totp` and passkey sign-in, with no 1102 errors | `docs/05-backend/AUTH-SPIKE.md` conclusions 2–3 | ☐ |
