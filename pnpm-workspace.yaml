@@ -30,6 +30,7 @@ catalog:
   drizzle-kit: ^0.31.0
   drizzle-orm: ^0.45.4
   fast-check: ^4.10.0
+  fflate: ^0.8.2
   hono: ^4.13.0
   i18next: ^26.0.0
   lucide-react: ^0.500.0

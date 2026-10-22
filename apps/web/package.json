@@ -13,6 +13,7 @@
     "@better-auth/passkey": "catalog:",
     "@hookform/resolvers": "catalog:",
     "@hrm/contracts": "workspace:*",
+    "@hrm/documents": "workspace:*",
     "@hrm/i18n": "workspace:*",
     "@hrm/ui": "workspace:*",
     "@tanstack/react-query": "catalog:",

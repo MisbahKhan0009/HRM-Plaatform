@@ -6,8 +6,10 @@ import type { ComponentType } from 'react';
 import { api } from '../../lib/api/client';
 import { formatRelative } from '../../lib/format';
 import { TeamTodayWidget, TodayAttendanceWidget } from '../attendance/widgets';
+import { ExpiringDocumentsWidget } from '../documents';
 import { PeopleOverviewWidget } from '../employees';
 import { LeaveBalancesWidget, MyLeaveRequestsWidget, WhoIsOnLeaveWidget } from '../leave/widgets';
+import { MyClaimsWidget } from '../reimbursements';
 import { systemQueries } from '../system/api';
 import { healthProblems, SystemHealthSummary } from '../system/components';
 
@@ -116,6 +118,7 @@ export const DASHBOARD_WIDGETS: DashboardWidget[] = [
   },
   { key: 'leave-balances', any: ['leave.request.own'], span: 6, Component: LeaveBalancesWidget },
   { key: 'my-leave-requests', any: ['leave.request.own'], span: 6, Component: MyLeaveRequestsWidget },
+  { key: 'my-claims', any: ['reimbursement.request.own'], span: 6, Component: MyClaimsWidget },
   { key: 'approvals', any: ['approval.inbox'], span: 6, hasPrimaryAction: true, Component: ApprovalsWidget },
   { key: 'team-today', any: ['attendance.read.team'], span: 6, Component: TeamTodayWidget },
   {
@@ -125,5 +128,6 @@ export const DASHBOARD_WIDGETS: DashboardWidget[] = [
     Component: WhoIsOnLeaveWidget,
   },
   { key: 'people-overview', any: ['report.hr'], span: 6, Component: PeopleOverviewWidget },
+  { key: 'expiring-documents', any: ['document.read.all'], span: 6, Component: ExpiringDocumentsWidget },
   { key: 'system-health', any: ['system.health.read'], span: 6, Component: SystemHealthWidget },
 ];

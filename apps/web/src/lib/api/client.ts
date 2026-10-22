@@ -58,7 +58,7 @@ export interface RequestOptions {
   noStepUp?: boolean;
 }
 
-function buildUrl(path: string, query?: RequestOptions['query']) {
+export function buildUrl(path: string, query?: RequestOptions['query']) {
   const url = new URL(`/api/v1${path}`, window.location.origin);
   for (const [k, v] of Object.entries(query ?? {})) {
     if (v !== undefined && v !== null && v !== '') url.searchParams.set(k, String(v));
@@ -105,8 +105,20 @@ export async function request<T>(method: string, path: string, options: RequestO
     }
   };
 
+  return handleResponse<T>(path, send, options.noStepUp ?? false);
+}
+
+/**
+ * Shared by `request` and `upload` (lib/api/upload.ts): opens the step-up dialog on 403 MFA_REQUIRED or
+ * REAUTH_REQUIRED and retries once, reports 401, and turns other failures into an ApiError.
+ */
+export async function handleResponse<T>(
+  path: string,
+  send: () => Promise<Response>,
+  noStepUp: boolean,
+): Promise<T> {
   let res = await send();
-  if (res.status === 403 && !options.noStepUp && stepUpHandler) {
+  if (res.status === 403 && !noStepUp && stepUpHandler) {
     const err = await toApiError(res.clone());
     if (err.code === 'MFA_REQUIRED' || err.code === 'REAUTH_REQUIRED') {
       const ok = await stepUpHandler(err.code);
