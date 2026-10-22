@@ -16,7 +16,7 @@
     "deps:check": "depcruise apps packages --config .dependency-cruiser.cjs",
     "tokens": "pnpm --filter @hrm/ui tokens",
     "db:up": "docker compose up -d db",
-    "e2e": "pnpm --filter @hrm/e2e test"
+    "e2e": "pnpm --filter @hrm/e2e e2e"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",

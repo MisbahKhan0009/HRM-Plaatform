@@ -147,9 +147,10 @@ Users cannot change their own roles, suspend, reactivate, deactivate or reset th
 | Method | Path | Permission + scope | Notes / transition |
 |---|---|---|---|
 | GET | `/reimbursement-claims` | `reimbursement.read.all`, `.review.team` or own | filters `status`, `employeeId`, `from`, `to` |
-| POST | `/reimbursement-claims` | `reimbursement.request.own` | `draft`; optional receipt `documentId` (FR-REIM-001) |
+| POST | `/reimbursement-claims` | `reimbursement.request.own` | `draft`; optional receipt `receiptDocumentId` (FR-REIM-001) |
+| GET | `/reimbursement-claims/{id}` | same scopes as the list | Claim with `payrollRunNumber` once included (US-REIM-003) |
 | PATCH / DELETE | `/reimbursement-claims/{id}` | own, `draft` only | |
-| POST | `/reimbursement-claims/{id}/submit` | own | `draft` → `submitted` |
+| POST | `/reimbursement-claims/{id}/submit` | own | `draft` → `submitted`; `422 INVALID_DATE` for a future date or one older than `reimbursements.max_claim_age_days` |
 | POST | `/reimbursement-claims/{id}/withdraw` | own | `submitted` → `withdrawn` |
 | POST | `/reimbursement-claims/{id}/approve` | `reimbursement.review.team` / `.all` | `submitted` → `approved` (FR-REIM-002) |
 | POST | `/reimbursement-claims/{id}/reject` | same | comment required |
@@ -162,7 +163,7 @@ Users cannot change their own roles, suspend, reactivate, deactivate or reset th
 |---|---|---|---|---|
 | GET | `/salary-structures` | `compensation.read.all` or own | | `?employeeId` |
 | POST | `/salary-structures` | `compensation.manage`, Strong | | `draft`; `{ employeeId, grossAmount, effectiveFrom, reason }` |
-| POST | `/salary-structures/{id}/approve` | `compensation.manage`, Fresh | | `draft` → `approved`; closes previous structure's `effectiveTo`; emits `salary_changed` event |
+| POST | `/salary-structures/{id}/approve` | `compensation.manage`, Fresh | | `draft` → `approved`; closes previous structure's `effectiveTo` (one starting the same day becomes `superseded`; `422` if a later structure is approved); emits `salary_changed` event |
 | GET | `/payroll/periods` | `payroll.read.all` | | |
 | POST | `/payroll/periods` | `payroll.prepare` | | `{ year, month }`; dates computed |
 | GET | `/payroll/runs` | `payroll.read.all` | | filters `periodId`, `status` |
@@ -170,15 +171,15 @@ Users cannot change their own roles, suspend, reactivate, deactivate or reset th
 | GET | `/payroll/runs/{id}` | `payroll.read.all` | | Run + totals + validation summary |
 | GET | `/payroll/runs/{id}/items` | `payroll.read.all` | | List; `?employeeId&flag` |
 | GET | `/payroll/runs/{id}/items/{itemId}` | `payroll.read.all` | | Item + line items + snapshot |
-| POST | `/payroll/runs/{id}/calculate` | `payroll.prepare`, Strong | key | `draft`/`calculated` → `calculated`; replaces items |
+| POST | `/payroll/runs/{id}/calculate` | `payroll.prepare`, Strong | key | `draft`/`calculated` → `calculated`; replaces items; `off_cycle` runs return `422` until their rules are defined |
 | POST | `/payroll/runs/{id}/validate` | `payroll.prepare` | | Re-runs validation, returns flags; no state change |
 | POST | `/payroll/runs/{id}/submit` | `payroll.prepare`, Strong | key | `calculated` → `submitted`; blocked by blocking flags |
-| POST | `/payroll/runs/{id}/return` | `payroll.approve`, Strong | | `submitted` → `returned` → `draft`; reason required |
+| POST | `/payroll/runs/{id}/return` | `payroll.approve`, Strong | | `calculated`/`submitted` → `returned` → `draft` in one call; `{ reason, version }` |
 | POST | `/payroll/runs/{id}/approve` | `payroll.approve`, Fresh | key | `submitted` → `approved`; self-approval needs `selfApprovalNote` (D-007) |
 | POST | `/payroll/runs/{id}/lock` | `payroll.lock`, Fresh | key | `approved` → `locked`; marks claims/adjustments |
 | POST | `/payroll/runs/{id}/payments` | `payroll.pay`, Fresh | key | Record one payment `{ payrollItemId, method, amount, paidOn, chequeNumber?, acknowledgedByName? }` |
-| POST | `/payroll/runs/{id}/payments/import` | `payroll.pay`, Fresh | key | CSV of payments; preview with `?dryRun=true` |
-| POST | `/payroll/payments/{paymentId}/cancel` | `payroll.pay`, Fresh | | reason required |
+| POST | `/payroll/runs/{id}/payments/import` | `payroll.pay`, Fresh | key | `{ csv }` with header `employeeCode,method,amount,paidOn` plus optional `chequeNumber,reference,acknowledgedByName`; preview with `?dryRun=true`; a file with any row error records nothing (`400`, one error per row) |
+| POST | `/payroll/payments/{paymentId}/cancel` | `payroll.pay`, Fresh | | `{ reason, outcome }`, `outcome` `cancelled` (default) or `failed` (bounced cheque); run must be `locked` |
 | POST | `/payroll/runs/{id}/mark-paid` | `payroll.pay`, Fresh | | `locked` → `paid` when every item is paid |
 | POST | `/payroll/runs/{id}/reconcile` | `payroll.pay`, Fresh | | `paid` → `reconciled` |
 | GET | `/payroll/runs/{id}/reconciliation` | `payroll.read.all` | | Gross, deductions, net vs payments per item (FR-PAY-015) |
@@ -189,6 +190,8 @@ Users cannot change their own roles, suspend, reactivate, deactivate or reset th
 | GET | `/payroll/payslips/me` | `payslip.read.own` | | Own published payslips |
 | GET | `/payroll/payslips` | `payslip.read.all` | | |
 | GET | `/payroll/payslips/{id}` | `payslip.read.all` or own | | Immutable `PayslipData` for browser PDF rendering (D-037); sets `firstViewedAt`; audited |
+
+Run transitions, salary-structure approval and adjustment decisions take the `version` the client read (API-STANDARDS §8). Payments are for exactly the item's net amount, one per item (D-042).
 
 The SRS endpoint `GET /payroll/payslips/{id}/download` is replaced by `GET /payroll/payslips/{id}`, because the browser builds the PDF.
 
