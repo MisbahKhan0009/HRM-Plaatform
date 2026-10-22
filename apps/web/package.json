@@ -10,15 +10,20 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@better-auth/passkey": "catalog:",
     "@hrm/contracts": "workspace:*",
     "@hrm/i18n": "workspace:*",
     "@hrm/ui": "workspace:*",
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-router": "catalog:",
+    "better-auth": "catalog:",
     "i18next": "catalog:",
+    "lucide-react": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-i18next": "catalog:"
+    "react-i18next": "catalog:",
+    "uqr": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@hrm/config": "workspace:*",

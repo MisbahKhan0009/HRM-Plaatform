@@ -10,43 +10,182 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as authRecoverRouteImport } from './routes/(auth)/recover'
+import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
+import { Route as authAcceptInviteTokenRouteImport } from './routes/(auth)/accept-invite.$token'
+import { Route as authSignInIndexRouteImport } from './routes/(auth)/sign-in/index'
+import { Route as authSignInTwoFactorRouteImport } from './routes/(auth)/sign-in/two-factor'
+import { Route as authSignInVerifyRouteImport } from './routes/(auth)/sign-in/verify'
+import { Route as AppApprovalsIndexRouteImport } from './routes/_app/approvals/index'
+import { Route as AppApprovalsApprovalIdRouteImport } from './routes/_app/approvals/$approvalId'
+import { Route as AppMeIndexRouteImport } from './routes/_app/me/index'
+import { Route as AppMePreferencesRouteImport } from './routes/_app/me/preferences'
+import { Route as AppMeSecurityRouteImport } from './routes/_app/me/security'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SignInRoute = SignInRouteImport.update({
-  id: '/sign-in',
-  path: '/sign-in',
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
+} as any)
+const authRecoverRoute = authRecoverRouteImport.update({
+  id: '/(auth)/recover',
+  path: '/recover',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const authAcceptInviteTokenRoute = authAcceptInviteTokenRouteImport.update({
+  id: '/(auth)/accept-invite/$token',
+  path: '/accept-invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authSignInIndexRoute = authSignInIndexRouteImport.update({
+  id: '/(auth)/sign-in/',
+  path: '/sign-in/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authSignInTwoFactorRoute = authSignInTwoFactorRouteImport.update({
+  id: '/(auth)/sign-in/two-factor',
+  path: '/sign-in/two-factor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authSignInVerifyRoute = authSignInVerifyRouteImport.update({
+  id: '/(auth)/sign-in/verify',
+  path: '/sign-in/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppApprovalsIndexRoute = AppApprovalsIndexRouteImport.update({
+  id: '/approvals/',
+  path: '/approvals/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppApprovalsApprovalIdRoute = AppApprovalsApprovalIdRouteImport.update({
+  id: '/approvals/$approvalId',
+  path: '/approvals/$approvalId',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMeIndexRoute = AppMeIndexRouteImport.update({
+  id: '/me/',
+  path: '/me/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMePreferencesRoute = AppMePreferencesRouteImport.update({
+  id: '/me/preferences',
+  path: '/me/preferences',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMeSecurityRoute = AppMeSecurityRouteImport.update({
+  id: '/me/security',
+  path: '/me/security',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/sign-in': typeof SignInRoute
+  '/recover': typeof authRecoverRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/accept-invite/$token': typeof authAcceptInviteTokenRoute
+  '/sign-in/two-factor': typeof authSignInTwoFactorRoute
+  '/sign-in/verify': typeof authSignInVerifyRoute
+  '/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
+  '/me/preferences': typeof AppMePreferencesRoute
+  '/me/security': typeof AppMeSecurityRoute
+  '/sign-in/': typeof authSignInIndexRoute
+  '/approvals/': typeof AppApprovalsIndexRoute
+  '/me/': typeof AppMeIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/sign-in': typeof SignInRoute
+  '/recover': typeof authRecoverRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/accept-invite/$token': typeof authAcceptInviteTokenRoute
+  '/sign-in/two-factor': typeof authSignInTwoFactorRoute
+  '/sign-in/verify': typeof authSignInVerifyRoute
+  '/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
+  '/me/preferences': typeof AppMePreferencesRoute
+  '/me/security': typeof AppMeSecurityRoute
+  '/sign-in': typeof authSignInIndexRoute
+  '/approvals': typeof AppApprovalsIndexRoute
+  '/me': typeof AppMeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/sign-in': typeof SignInRoute
+  '/_app': typeof AppRouteWithChildren
+  '/(auth)/recover': typeof authRecoverRoute
+  '/_app/dashboard': typeof AppDashboardRoute
+  '/(auth)/accept-invite/$token': typeof authAcceptInviteTokenRoute
+  '/(auth)/sign-in/two-factor': typeof authSignInTwoFactorRoute
+  '/(auth)/sign-in/verify': typeof authSignInVerifyRoute
+  '/_app/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
+  '/_app/me/preferences': typeof AppMePreferencesRoute
+  '/_app/me/security': typeof AppMeSecurityRoute
+  '/(auth)/sign-in/': typeof authSignInIndexRoute
+  '/_app/approvals/': typeof AppApprovalsIndexRoute
+  '/_app/me/': typeof AppMeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sign-in'
+  fullPaths:
+    | '/'
+    | '/recover'
+    | '/dashboard'
+    | '/accept-invite/$token'
+    | '/sign-in/two-factor'
+    | '/sign-in/verify'
+    | '/approvals/$approvalId'
+    | '/me/preferences'
+    | '/me/security'
+    | '/sign-in/'
+    | '/approvals/'
+    | '/me/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sign-in'
-  id: '__root__' | '/' | '/sign-in'
+  to:
+    | '/'
+    | '/recover'
+    | '/dashboard'
+    | '/accept-invite/$token'
+    | '/sign-in/two-factor'
+    | '/sign-in/verify'
+    | '/approvals/$approvalId'
+    | '/me/preferences'
+    | '/me/security'
+    | '/sign-in'
+    | '/approvals'
+    | '/me'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/(auth)/recover'
+    | '/_app/dashboard'
+    | '/(auth)/accept-invite/$token'
+    | '/(auth)/sign-in/two-factor'
+    | '/(auth)/sign-in/verify'
+    | '/_app/approvals/$approvalId'
+    | '/_app/me/preferences'
+    | '/_app/me/security'
+    | '/(auth)/sign-in/'
+    | '/_app/approvals/'
+    | '/_app/me/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  SignInRoute: typeof SignInRoute
+  AppRoute: typeof AppRouteWithChildren
+  authRecoverRoute: typeof authRecoverRoute
+  authAcceptInviteTokenRoute: typeof authAcceptInviteTokenRoute
+  authSignInTwoFactorRoute: typeof authSignInTwoFactorRoute
+  authSignInVerifyRoute: typeof authSignInVerifyRoute
+  authSignInIndexRoute: typeof authSignInIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,19 +197,121 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sign-in': {
-      id: '/sign-in'
-      path: '/sign-in'
-      fullPath: '/sign-in'
-      preLoaderRoute: typeof SignInRouteImport
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/recover': {
+      id: '/(auth)/recover'
+      path: '/recover'
+      fullPath: '/recover'
+      preLoaderRoute: typeof authRecoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/(auth)/accept-invite/$token': {
+      id: '/(auth)/accept-invite/$token'
+      path: '/accept-invite/$token'
+      fullPath: '/accept-invite/$token'
+      preLoaderRoute: typeof authAcceptInviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/sign-in/': {
+      id: '/(auth)/sign-in/'
+      path: '/sign-in'
+      fullPath: '/sign-in/'
+      preLoaderRoute: typeof authSignInIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/sign-in/two-factor': {
+      id: '/(auth)/sign-in/two-factor'
+      path: '/sign-in/two-factor'
+      fullPath: '/sign-in/two-factor'
+      preLoaderRoute: typeof authSignInTwoFactorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/sign-in/verify': {
+      id: '/(auth)/sign-in/verify'
+      path: '/sign-in/verify'
+      fullPath: '/sign-in/verify'
+      preLoaderRoute: typeof authSignInVerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/approvals/': {
+      id: '/_app/approvals/'
+      path: '/approvals'
+      fullPath: '/approvals/'
+      preLoaderRoute: typeof AppApprovalsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/approvals/$approvalId': {
+      id: '/_app/approvals/$approvalId'
+      path: '/approvals/$approvalId'
+      fullPath: '/approvals/$approvalId'
+      preLoaderRoute: typeof AppApprovalsApprovalIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/me/': {
+      id: '/_app/me/'
+      path: '/me'
+      fullPath: '/me/'
+      preLoaderRoute: typeof AppMeIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/me/preferences': {
+      id: '/_app/me/preferences'
+      path: '/me/preferences'
+      fullPath: '/me/preferences'
+      preLoaderRoute: typeof AppMePreferencesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/me/security': {
+      id: '/_app/me/security'
+      path: '/me/security'
+      fullPath: '/me/security'
+      preLoaderRoute: typeof AppMeSecurityRouteImport
+      parentRoute: typeof AppRoute
     }
   }
 }
 
+interface AppRouteChildren {
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppApprovalsApprovalIdRoute: typeof AppApprovalsApprovalIdRoute
+  AppMePreferencesRoute: typeof AppMePreferencesRoute
+  AppMeSecurityRoute: typeof AppMeSecurityRoute
+  AppApprovalsIndexRoute: typeof AppApprovalsIndexRoute
+  AppMeIndexRoute: typeof AppMeIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppDashboardRoute: AppDashboardRoute,
+  AppApprovalsApprovalIdRoute: AppApprovalsApprovalIdRoute,
+  AppMePreferencesRoute: AppMePreferencesRoute,
+  AppMeSecurityRoute: AppMeSecurityRoute,
+  AppApprovalsIndexRoute: AppApprovalsIndexRoute,
+  AppMeIndexRoute: AppMeIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  SignInRoute: SignInRoute,
+  AppRoute: AppRouteWithChildren,
+  authRecoverRoute: authRecoverRoute,
+  authAcceptInviteTokenRoute: authAcceptInviteTokenRoute,
+  authSignInTwoFactorRoute: authSignInTwoFactorRoute,
+  authSignInVerifyRoute: authSignInVerifyRoute,
+  authSignInIndexRoute: authSignInIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
