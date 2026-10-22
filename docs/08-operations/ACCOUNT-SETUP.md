@@ -40,7 +40,7 @@ This runbook creates every external account and resource the HRM needs, all on f
 
 1. Sign up at https://dash.cloudflare.com/sign-up with the operations mailbox. Enable 2FA under **My Profile → Authentication**.
 2. Add the backup owner: **Manage Account → Members → Invite**, role Super Administrator.
-3. Open **Workers & Pages**. Cloudflare asks you to pick a `workers.dev` subdomain. Choose it with care, for example `bigmatrix`: it becomes part of the app URL (`hrm-prod.bigmatrix.workers.dev`), and passkeys are tied to that URL (ADR-0004).
+3. Open **Workers & Pages**. Cloudflare asks you to pick a `workers.dev` subdomain. Choose it with care, for example `bigmatrix`: it becomes part of the app URL (`hrm.bigmatrix.workers.dev`), and passkeys are tied to that URL (ADR-0004).
 4. Stay on the **Workers Free** plan. Do not upgrade.
 
 ### 2.2 Log in Wrangler 🟠
@@ -120,7 +120,7 @@ pnpm --filter @hrm/api exec wrangler hyperdrive create hrm-prod-db \
 pnpm --filter @hrm/api exec wrangler hyperdrive list                      # 🟢 verify
 ```
 
-Copy each configuration **ID** into `apps/api/wrangler.jsonc` (`ENVIRONMENTS.md` §2). Hyperdrive is included in Workers Free with a daily query limit (ADR-0009; check the current limit in the dashboard under Hyperdrive).
+Copy each configuration **ID** into `apps/api/wrangler.jsonc` (`ENVIRONMENTS.md` §2), replacing `REPLACE-WITH-STAGING-HYPERDRIVE-ID` and `REPLACE-WITH-PRODUCTION-HYPERDRIVE-ID`. In the same file, replace `REPLACE-WITH-ACCOUNT-SUBDOMAIN` in both `APP_ORIGIN` values with the `workers.dev` subdomain chosen in §2.1. Commit the change through a PR; these values are not secret. Hyperdrive is included in Workers Free with a daily query limit (ADR-0009; check the current limit in the dashboard under Hyperdrive).
 
 ## 5. Google: Gmail sender (ADR-0007) 🖐
 
@@ -170,7 +170,7 @@ GitHub Free offers branch protection rules and deployment environments on **publ
 **Decided: public** (D-043). Apply the *Public* row. Because the code is public, never commit secrets, real employee data, `.dev.vars` or database dumps; secret scanning and push protection must be enabled (free for public repositories).
 
 ### 7.3 Actions secrets 🖐
-**Settings → Secrets and variables → Actions** (or per environment if environments exist). The full list with rotation rules is in `SECRETS.md` §3.
+**Settings → Secrets and variables → Actions** (or per environment if environments exist). The full list of secrets and variables, with rotation rules, is in `SECRETS.md` §3.
 
 ### 7.4 Dependabot 🟠
 Commit `.github/dependabot.yml` with weekly updates for `npm` (root) and `github-actions`. Done in Stage 7 scaffolding.

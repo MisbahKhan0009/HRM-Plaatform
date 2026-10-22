@@ -44,7 +44,7 @@
         "MAILER": "gmail"
       },
       "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "REPLACE-WITH-STAGING-HYPERDRIVE-ID" }],
-      "r2_buckets": [{ "binding": "FILES", "bucket_name": "hrm-files-staging" }],
+      "r2_buckets": [{ "binding": "FILES", "bucket_name": "hrm-staging-files" }],
       // Daily dispatcher only; no retry cron in staging (JOBS-AND-OUTBOX §1).
       "triggers": { "crons": ["5 18 * * *"] }
     },
@@ -58,7 +58,7 @@
         "MAILER": "gmail"
       },
       "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "REPLACE-WITH-PRODUCTION-HYPERDRIVE-ID" }],
-      "r2_buckets": [{ "binding": "FILES", "bucket_name": "hrm-files-production" }],
+      "r2_buckets": [{ "binding": "FILES", "bucket_name": "hrm-prod-files" }],
       // Outbox retry every 15 min 08:00–20:59 Dhaka Sun–Thu, and the daily dispatcher at 00:05 Dhaka.
       "triggers": { "crons": ["*/15 2-14 * * SUN-THU", "5 18 * * *"] }
     }

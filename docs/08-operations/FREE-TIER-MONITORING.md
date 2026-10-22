@@ -6,7 +6,7 @@ Status: **Accepted**, 2026-10-22. The HRM runs at $0 (D-032). Every service has 
 
 | Service | Limit (per ADR-0009) | What happens at the limit | Warn at | Where to check |
 |---|---|---|---|---|
-| Workers requests | 100k/day (static assets excluded) | Requests fail until 00:00 UTC | 50k/day | Dashboard → Workers → `hrm-prod` → Metrics |
+| Workers requests | 100k/day (static assets excluded) | Requests fail until 00:00 UTC | 50k/day | Dashboard → Workers → `hrm` → Metrics |
 | Workers CPU | 10 ms per request | That request fails (error 1102) | Any `exceededCpu` | Metrics → CPU time; `wrangler tail` |
 | Worker size | 3 MB compressed | Deploy fails | 2 MB (CI enforces, PB-03) | CI budget job |
 | Cron Triggers | Limited per account (verify) | Can't add more | — | Workers → Settings |
@@ -27,7 +27,7 @@ Status: **Accepted**, 2026-10-22. The HRM runs at $0 (D-032). Every service has 
 
 ## 2. Weekly check (5 minutes, every Sunday)
 
-1. Workers → `hrm-prod` → Metrics: errors, CPU time p99 (< 8 ms), any `exceededCpu`.
+1. Workers → `hrm` → Metrics: errors, CPU time p99 (< 8 ms), any `exceededCpu`.
 2. Neon → Usage: compute hours used this month. Projected = used ÷ days elapsed × days in month. If projected > 80, see §4.
 3. Sentry → Issues: anything new or unresolved.
 4. Health details page: jobs overdue, dead outbox messages, newest backup < 26 h.

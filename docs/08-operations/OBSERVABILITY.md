@@ -7,7 +7,7 @@ Status: **Accepted**, 2026-10-22. Covers logs, errors, health checks, job monito
 | Signal | Where | Retention | Who looks |
 |---|---|---|---|
 | Request and job logs (structured JSON) | Cloudflare Workers Logs (dashboard → Workers → `hrm-<env>` → Logs) | Short on the free plan (verify in dashboard) | Developers, on demand |
-| Live log stream | `wrangler tail hrm-prod --format pretty` | Live only | During incidents |
+| Live log stream | `wrangler tail hrm --format pretty` | Live only | During incidents |
 | Errors and exceptions (API and browser) | Sentry projects `hrm-api`, `hrm-web` | Per Sentry Developer plan | Owner gets email alerts |
 | Worker metrics (requests, errors, CPU time, wall time) | Cloudflare dashboard → Workers → Metrics | Dashboard default | Weekly review |
 | Business audit trail | Postgres `audit_logs` (in-app audit page) | Permanent | Authorised reviewers (FR-AUD-005) |

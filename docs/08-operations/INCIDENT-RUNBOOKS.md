@@ -9,9 +9,9 @@ Troubleshooting entries are symptom-first: find the symptom, run the cheapest ch
 ## Before anything: triage (2 minutes)
 
 ```bash
-BASE=https://hrm-prod.<account-subdomain>.workers.dev
+BASE=https://hrm.<account-subdomain>.workers.dev
 curl -sS -w '\nHTTP %{http_code} in %{time_total}s\n' "$BASE/api/v1/health"         # 🟢
-pnpm --filter @hrm/api exec wrangler tail hrm-prod --format pretty                     # 🟢 live requests, Ctrl-C to stop
+pnpm --filter @hrm/api exec wrangler tail hrm --format pretty                     # 🟢 live requests, Ctrl-C to stop
 ```
 
 Then check the provider status pages: https://www.cloudflarestatus.com, https://neonstatus.com, https://www.google.com/appsstatus.
@@ -42,7 +42,7 @@ Tell users in the company chat within 15 minutes if the app is down or payroll i
 **Cause:** the request used more than 10 ms of CPU (Workers Free, ADR-0009).
 
 **Fix:**
-1. 🟢 Find the route: `wrangler tail hrm-prod --status error --format json | grep exceededCpu`.
+1. 🟢 Find the route: `wrangler tail hrm --status error --format json | grep exceededCpu`.
 2. If a recent deploy introduced it, 🔴 roll back (`DEPLOYMENT.md` §6.1).
 3. Otherwise, reduce the work for that route (`docs/07-quality/PERFORMANCE-BUDGETS.md` §2): move aggregation to SQL, paginate, batch. Common culprits: large list without pagination, big Zod array parse, report computed in JavaScript.
 4. If it's a cron job, lower its batch size; the next run picks up the rest.
@@ -97,7 +97,7 @@ Tell users in the company chat within 15 minutes if the app is down or payroll i
 **Symptom:** health details show a job overdue (AL-08); outbox retries don't happen; leave accrual missing on the 1st.
 
 **Checks:**
-1. 🟢 Dashboard → Workers → `hrm-prod` → **Settings → Triggers**: are the Cron Triggers listed (`ENVIRONMENTS.md` §4)? A deploy with an empty `triggers.crons` removes them.
+1. 🟢 Dashboard → Workers → `hrm` → **Settings → Triggers**: are the Cron Triggers listed (`ENVIRONMENTS.md` §4)? A deploy with an empty `triggers.crons` removes them.
 2. 🟢 Workers → Metrics, filter by cron: are invocations happening, and with what outcome?
 3. 🟢 `job_runs` table: last `failed` row and `error_summary`.
 

@@ -37,6 +37,13 @@ Status: **Accepted**, 2026-10-22. Lists every secret and configuration value, wh
 | `BACKUP_AGE_IDENTITY` | restore-drill only | `age` **private** key | Only if you choose the automated drill (`BACKUP-AND-RESTORE.md` §2) |
 | `SENTRY_AUTH_TOKEN` | deploy workflows | Sentry token, scope `project:releases` | Yearly |
 
+GitHub Actions **variables** (Settings → Secrets and variables → Actions → *Variables*; not secret):
+
+| Name | Used by | Value |
+|---|---|---|
+| `STAGING_URL` | deploy-staging (smoke test) | `https://hrm-staging.<account-subdomain>.workers.dev`, same as staging `APP_ORIGIN` |
+| `PRODUCTION_URL` | deploy-production (smoke test) | `https://hrm.<account-subdomain>.workers.dev`, same as production `APP_ORIGIN` |
+
 If the repository has deployment environments (public repository, `ACCOUNT-SETUP.md` §7.2), production secrets go in the `production` environment and `BACKUP_AGE_IDENTITY` in `restore-drill`, so only approved runs can read them.
 
 ## 4. Kept only offline (owner's password manager)

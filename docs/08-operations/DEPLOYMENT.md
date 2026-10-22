@@ -79,7 +79,7 @@ Before every production migration, `deploy-production.yml` checks that the lates
 ## 5. Smoke checks (run after every deploy)
 
 ```bash
-BASE=https://hrm-prod.<account-subdomain>.workers.dev        # or the staging URL
+BASE=https://hrm.<account-subdomain>.workers.dev        # or the staging URL
 
 curl -fsS "$BASE/api/v1/health" | jq .                       # 🟢 {"status":"ok","db":"ok", "version":"v1.4.0"}
 curl -fsS -o /dev/null -w '%{http_code}\n' "$BASE/"           # 🟢 200 (SPA shell)

@@ -7,8 +7,8 @@ Status: **Accepted**, 2026-10-22. Describes the four environments, what each run
 | | local | CI | staging | production |
 |---|---|---|---|---|
 | Purpose | Development | Automated checks on every PR | Integration, UAT, release candidate | Real use |
-| Worker | `wrangler dev` (workerd on the laptop) | `vitest-plugin` (workerd in the runner) | `hrm-staging` | `hrm-prod` |
-| URL | `http://localhost:8787` | — | `https://hrm-staging.<account-subdomain>.workers.dev` | `https://hrm-prod.<account-subdomain>.workers.dev` |
+| Worker | `wrangler dev` (workerd on the laptop) | `vitest-plugin` (workerd in the runner) | `hrm-staging` | `hrm` |
+| URL | `http://localhost:8787` | — | `https://hrm-staging.<account-subdomain>.workers.dev` | `https://hrm.<account-subdomain>.workers.dev` |
 | Database | Postgres in Docker (`docker compose up db`) | Postgres service container | Neon branch `staging` | Neon branch `main` |
 | DB access from Worker | `localConnectionString` for Hyperdrive | direct | Hyperdrive config `hrm-staging-db` | Hyperdrive config `hrm-prod-db` |
 | Files | Miniflare local R2 (on disk) | Miniflare in-memory R2 | R2 bucket `hrm-staging-files` | R2 bucket `hrm-prod-files` |
@@ -18,7 +18,7 @@ Status: **Accepted**, 2026-10-22. Describes the four environments, what each run
 | Data | Synthetic seed | Synthetic factories | Synthetic seed, or anonymised copy (NFR-SEC-009) | Real |
 | Who has access | Developer | GitHub Actions | Developers, HR testers | Users; operators via dashboards |
 
-The production Worker name `hrm-prod` gives the URL `hrm-prod.<account-subdomain>.workers.dev`. If the owner prefers `hrm.<account-subdomain>.workers.dev`, set `name: "hrm"` for the production environment **before** the first production deploy. Changing it later changes the URL, which breaks every registered passkey (ADR-0004).
+The production Worker is named `hrm` (D-042), which gives the URL `hrm.<account-subdomain>.workers.dev`. Keep the name after the first production deploy: changing it changes the URL, which breaks every registered passkey (ADR-0004).
 
 ## 2. Wrangler configuration layout
 
@@ -52,8 +52,8 @@ One file, `apps/api/wrangler.jsonc`. Top-level values are for local development;
       "triggers": { "crons": ["<see section 4>"] }
     },
     "production": {
-      "name": "hrm-prod",
-      "vars": { "APP_ENV": "production", "APP_ORIGIN": "https://hrm-prod.<account-subdomain>.workers.dev", "MAIL_MODE": "gmail" },
+      "name": "hrm",
+      "vars": { "APP_ENV": "production", "APP_ORIGIN": "https://hrm.<account-subdomain>.workers.dev", "MAIL_MODE": "gmail" },
       "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "<hyperdrive id of hrm-prod-db>" }],
       "r2_buckets": [{ "binding": "FILES", "bucket_name": "hrm-prod-files" }],
       "triggers": { "crons": ["<see section 4>"] }
