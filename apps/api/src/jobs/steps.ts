@@ -1,4 +1,5 @@
 import { closeDayStep } from '../modules/attendance/attendance.jobs';
+import { documentExpiryReminders } from '../modules/documents/documents.jobs';
 import { maintenancePrune } from '../modules/health/maintenance.step';
 import type { DailyStep } from './dispatcher';
 
@@ -8,6 +9,7 @@ import type { DailyStep } from './dispatcher';
  */
 export const DAILY_STEPS: readonly DailyStep[] = [
   closeDayStep,
+  documentExpiryReminders,
   // Keep last: retention and audit counts run after every other step.
   maintenancePrune,
 ];

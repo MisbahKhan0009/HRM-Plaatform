@@ -198,11 +198,14 @@ The SRS endpoint `GET /payroll/payslips/{id}/download` is replaced by `GET /payr
 |---|---|---|---|
 | GET | `/employees/{id}/documents` | `document.read.all`, own (non-restricted), `document.payroll.read` (payroll category) | |
 | POST | `/employees/{id}/documents` | `document.manage`; employees may upload `receipt` documents for themselves with `reimbursement.request.own` | multipart; `{ category, title, issueDate?, expiryDate?, isRestricted? }` |
-| POST | `/documents/{id}/versions` | `document.manage` | New version; previous kept |
+| POST | `/documents/{id}/versions` | `document.manage` | multipart; new version, previous kept; optional `{ issueDate?, expiryDate? }` replace the document's dates |
 | GET | `/documents/{id}` | read rules | Metadata + versions |
 | GET | `/documents/{id}/download` | read rules | Streams current version (`?version=`); restricted categories audited (FR-DOC-007) |
-| POST | `/documents/{id}/delete` | `document.manage`, Fresh | Retention deletion; reason required |
-| GET | `/company/documents` | any session (policy category) | Company-wide documents |
+| POST | `/documents/{id}/delete` | `document.manage`, Fresh | Retention deletion; `{ reason, version }` |
+| GET | `/company/documents` | any session (policy category); `document.read.all` sees every category | Company-wide documents |
+| POST | `/company/documents` | `document.manage` | multipart, same fields as an employee upload; `employee_id` is NULL |
+
+Read rules: `document.read.all` reads every document; `document.payroll.read` reads the `payslip` category; `document.read.own` reads the caller's own documents that are not flagged `isRestricted`; any session reads non-restricted company documents of the `policy` category. Anything else returns 404. Uploads are limited to `documents.max_upload_mb` (`413 FILE_TOO_LARGE`) and to PDF, PNG, JPEG and WebP content checked by magic bytes, declared type and extension (`415 UNSUPPORTED_FILE_TYPE`).
 
 ## 10. Approvals
 
@@ -224,15 +227,17 @@ All reports enforce the same scopes as their source lists (FR-REP-006). Response
 
 | Method | Path | Permission | Filters |
 |---|---|---|---|
-| GET | `/reports/headcount` | `report.hr` | `asOf`, `departmentId`, grouping |
+| GET | `/reports/headcount` | `report.hr` | `asOf`, `departmentId`, `groupBy` (`department`, `position`, `status`) |
 | GET | `/reports/directory` | `report.hr`, `report.team` | `departmentId`, `status` |
 | GET | `/reports/attendance` | `report.hr`, `report.team` | `from`, `to`, `departmentId`, `employeeId` |
 | GET | `/reports/leave` | `report.hr`, `report.team` | `year`, `from`, `to`, `leaveTypeId`, `departmentId` |
 | GET | `/reports/payroll-register` | `report.payroll` | `runId` |
-| GET | `/reports/payroll-deductions` | `report.payroll` | `runId` or `year` |
+| GET | `/reports/payroll-deductions` | `report.payroll` | exactly one of `runId` or `year`; `year` counts runs that are `approved` or later |
 | GET | `/reports/payment-reconciliation` | `report.payroll` | `runId` |
-| GET | `/reports/reimbursements` | `report.payroll`, `report.hr` | `from`, `to`, `status` |
-| POST | `/reports/exports` | the report's permission | `{ report, filters, rowCount }`; audit only |
+| GET | `/reports/reimbursements` | `report.payroll`, `report.hr` | `from`, `to` (expense date, required), `status`; `draft` claims never appear |
+| POST | `/reports/exports` | the report's permission | `{ report, format?, filters, rowCount }`; audit only; `204` |
+
+`report.team` limits `directory`, `attendance` and `leave` to the caller's direct and indirect reports. `from`/`to` ranges are at most 366 days. Report responses are `{ data, page }`; headcount, payroll and reimbursement reports add a `summary` with totals over the whole result, computed in SQL. `report` in `POST /reports/exports` is one of `headcount`, `directory`, `attendance`, `leave`, `payroll_register`, `payroll_deductions`, `payment_reconciliation`, `reimbursements`; payroll reports are audited in the `payroll` category, the others in `business`.
 
 ## 13. Audit and health
 

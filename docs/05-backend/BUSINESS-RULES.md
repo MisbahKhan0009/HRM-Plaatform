@@ -361,3 +361,5 @@ Stored in `settings` (DATA-MODEL section 1). Changing a key needs `settings.<sco
 8. May an HR user record a manual attendance entry for their own employee record? v1 refuses it with `SELF_APPROVAL_FORBIDDEN`; another HR user records it.
 9. Should lateness and early leave be reported on a day with an approved half-day leave? v1 reports 0 for both, because rule 8 is skipped on those days.
 10. How late may a proposed correction check-out be? v1 accepts a check-out on the work date or the following calendar date (night after), never in the future.
+11. Document retention (X-003): may `POST /documents/{id}/delete` remove a document before its category's `documents.retention_days.<category>` period ends, and should a job delete documents automatically once that period ends? v1 lets `document.manage` delete at any time with a reason and runs no automatic deletion.
+12. Should the subject employee see their own documents in the restricted categories (`identity`, `contract`, `payslip`)? v1 shows them unless the document is flagged `isRestricted`, and audits every download in those categories.
