@@ -20,14 +20,20 @@ import { Route as authSignInTwoFactorRouteImport } from './routes/(auth)/sign-in
 import { Route as authSignInVerifyRouteImport } from './routes/(auth)/sign-in/verify'
 import { Route as AppApprovalsIndexRouteImport } from './routes/_app/approvals/index'
 import { Route as AppApprovalsApprovalIdRouteImport } from './routes/_app/approvals/$approvalId'
+import { Route as AppLeaveIndexRouteImport } from './routes/_app/leave/index'
+import { Route as AppLeaveCalendarRouteImport } from './routes/_app/leave/calendar'
+import { Route as AppLeaveManageRouteImport } from './routes/_app/leave/manage'
+import { Route as AppLeaveNewRouteImport } from './routes/_app/leave/new'
 import { Route as AppMeIndexRouteImport } from './routes/_app/me/index'
 import { Route as AppMePreferencesRouteImport } from './routes/_app/me/preferences'
 import { Route as AppMeSecurityRouteImport } from './routes/_app/me/security'
 import { Route as AppSettingsCompanyRouteImport } from './routes/_app/settings/company'
 import { Route as AppSettingsDepartmentsRouteImport } from './routes/_app/settings/departments'
 import { Route as AppSettingsHolidaysRouteImport } from './routes/_app/settings/holidays'
+import { Route as AppSettingsLeaveTypesRouteImport } from './routes/_app/settings/leave-types'
 import { Route as AppSettingsPositionsRouteImport } from './routes/_app/settings/positions'
 import { Route as AppSettingsWorkSchedulesRouteImport } from './routes/_app/settings/work-schedules'
+import { Route as AppLeaveRequestsRequestIdRouteImport } from './routes/_app/leave/requests/$requestId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -83,6 +89,26 @@ const AppApprovalsApprovalIdRoute = AppApprovalsApprovalIdRouteImport.update({
   path: '/approvals/$approvalId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppLeaveIndexRoute = AppLeaveIndexRouteImport.update({
+  id: '/leave/',
+  path: '/leave/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLeaveCalendarRoute = AppLeaveCalendarRouteImport.update({
+  id: '/leave/calendar',
+  path: '/leave/calendar',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLeaveManageRoute = AppLeaveManageRouteImport.update({
+  id: '/leave/manage',
+  path: '/leave/manage',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLeaveNewRoute = AppLeaveNewRouteImport.update({
+  id: '/leave/new',
+  path: '/leave/new',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppMeIndexRoute = AppMeIndexRouteImport.update({
   id: '/me/',
   path: '/me/',
@@ -113,6 +139,11 @@ const AppSettingsHolidaysRoute = AppSettingsHolidaysRouteImport.update({
   path: '/holidays',
   getParentRoute: () => AppSettingsRouteRoute,
 } as any)
+const AppSettingsLeaveTypesRoute = AppSettingsLeaveTypesRouteImport.update({
+  id: '/leave-types',
+  path: '/leave-types',
+  getParentRoute: () => AppSettingsRouteRoute,
+} as any)
 const AppSettingsPositionsRoute = AppSettingsPositionsRouteImport.update({
   id: '/positions',
   path: '/positions',
@@ -124,6 +155,12 @@ const AppSettingsWorkSchedulesRoute =
     path: '/work-schedules',
     getParentRoute: () => AppSettingsRouteRoute,
   } as any)
+const AppLeaveRequestsRequestIdRoute =
+  AppLeaveRequestsRequestIdRouteImport.update({
+    id: '/leave/requests/$requestId',
+    path: '/leave/requests/$requestId',
+    getParentRoute: () => AppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -134,16 +171,22 @@ export interface FileRoutesByFullPath {
   '/sign-in/two-factor': typeof authSignInTwoFactorRoute
   '/sign-in/verify': typeof authSignInVerifyRoute
   '/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
+  '/leave/calendar': typeof AppLeaveCalendarRoute
+  '/leave/manage': typeof AppLeaveManageRoute
+  '/leave/new': typeof AppLeaveNewRoute
   '/me/preferences': typeof AppMePreferencesRoute
   '/me/security': typeof AppMeSecurityRoute
   '/settings/company': typeof AppSettingsCompanyRoute
   '/settings/departments': typeof AppSettingsDepartmentsRoute
   '/settings/holidays': typeof AppSettingsHolidaysRoute
+  '/settings/leave-types': typeof AppSettingsLeaveTypesRoute
   '/settings/positions': typeof AppSettingsPositionsRoute
   '/settings/work-schedules': typeof AppSettingsWorkSchedulesRoute
   '/sign-in/': typeof authSignInIndexRoute
   '/approvals/': typeof AppApprovalsIndexRoute
+  '/leave/': typeof AppLeaveIndexRoute
   '/me/': typeof AppMeIndexRoute
+  '/leave/requests/$requestId': typeof AppLeaveRequestsRequestIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -154,16 +197,22 @@ export interface FileRoutesByTo {
   '/sign-in/two-factor': typeof authSignInTwoFactorRoute
   '/sign-in/verify': typeof authSignInVerifyRoute
   '/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
+  '/leave/calendar': typeof AppLeaveCalendarRoute
+  '/leave/manage': typeof AppLeaveManageRoute
+  '/leave/new': typeof AppLeaveNewRoute
   '/me/preferences': typeof AppMePreferencesRoute
   '/me/security': typeof AppMeSecurityRoute
   '/settings/company': typeof AppSettingsCompanyRoute
   '/settings/departments': typeof AppSettingsDepartmentsRoute
   '/settings/holidays': typeof AppSettingsHolidaysRoute
+  '/settings/leave-types': typeof AppSettingsLeaveTypesRoute
   '/settings/positions': typeof AppSettingsPositionsRoute
   '/settings/work-schedules': typeof AppSettingsWorkSchedulesRoute
   '/sign-in': typeof authSignInIndexRoute
   '/approvals': typeof AppApprovalsIndexRoute
+  '/leave': typeof AppLeaveIndexRoute
   '/me': typeof AppMeIndexRoute
+  '/leave/requests/$requestId': typeof AppLeaveRequestsRequestIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -176,16 +225,22 @@ export interface FileRoutesById {
   '/(auth)/sign-in/two-factor': typeof authSignInTwoFactorRoute
   '/(auth)/sign-in/verify': typeof authSignInVerifyRoute
   '/_app/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
+  '/_app/leave/calendar': typeof AppLeaveCalendarRoute
+  '/_app/leave/manage': typeof AppLeaveManageRoute
+  '/_app/leave/new': typeof AppLeaveNewRoute
   '/_app/me/preferences': typeof AppMePreferencesRoute
   '/_app/me/security': typeof AppMeSecurityRoute
   '/_app/settings/company': typeof AppSettingsCompanyRoute
   '/_app/settings/departments': typeof AppSettingsDepartmentsRoute
   '/_app/settings/holidays': typeof AppSettingsHolidaysRoute
+  '/_app/settings/leave-types': typeof AppSettingsLeaveTypesRoute
   '/_app/settings/positions': typeof AppSettingsPositionsRoute
   '/_app/settings/work-schedules': typeof AppSettingsWorkSchedulesRoute
   '/(auth)/sign-in/': typeof authSignInIndexRoute
   '/_app/approvals/': typeof AppApprovalsIndexRoute
+  '/_app/leave/': typeof AppLeaveIndexRoute
   '/_app/me/': typeof AppMeIndexRoute
+  '/_app/leave/requests/$requestId': typeof AppLeaveRequestsRequestIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -198,16 +253,22 @@ export interface FileRouteTypes {
     | '/sign-in/two-factor'
     | '/sign-in/verify'
     | '/approvals/$approvalId'
+    | '/leave/calendar'
+    | '/leave/manage'
+    | '/leave/new'
     | '/me/preferences'
     | '/me/security'
     | '/settings/company'
     | '/settings/departments'
     | '/settings/holidays'
+    | '/settings/leave-types'
     | '/settings/positions'
     | '/settings/work-schedules'
     | '/sign-in/'
     | '/approvals/'
+    | '/leave/'
     | '/me/'
+    | '/leave/requests/$requestId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -218,16 +279,22 @@ export interface FileRouteTypes {
     | '/sign-in/two-factor'
     | '/sign-in/verify'
     | '/approvals/$approvalId'
+    | '/leave/calendar'
+    | '/leave/manage'
+    | '/leave/new'
     | '/me/preferences'
     | '/me/security'
     | '/settings/company'
     | '/settings/departments'
     | '/settings/holidays'
+    | '/settings/leave-types'
     | '/settings/positions'
     | '/settings/work-schedules'
     | '/sign-in'
     | '/approvals'
+    | '/leave'
     | '/me'
+    | '/leave/requests/$requestId'
   id:
     | '__root__'
     | '/'
@@ -239,16 +306,22 @@ export interface FileRouteTypes {
     | '/(auth)/sign-in/two-factor'
     | '/(auth)/sign-in/verify'
     | '/_app/approvals/$approvalId'
+    | '/_app/leave/calendar'
+    | '/_app/leave/manage'
+    | '/_app/leave/new'
     | '/_app/me/preferences'
     | '/_app/me/security'
     | '/_app/settings/company'
     | '/_app/settings/departments'
     | '/_app/settings/holidays'
+    | '/_app/settings/leave-types'
     | '/_app/settings/positions'
     | '/_app/settings/work-schedules'
     | '/(auth)/sign-in/'
     | '/_app/approvals/'
+    | '/_app/leave/'
     | '/_app/me/'
+    | '/_app/leave/requests/$requestId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -340,6 +413,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppApprovalsApprovalIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/leave/': {
+      id: '/_app/leave/'
+      path: '/leave'
+      fullPath: '/leave/'
+      preLoaderRoute: typeof AppLeaveIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/leave/calendar': {
+      id: '/_app/leave/calendar'
+      path: '/leave/calendar'
+      fullPath: '/leave/calendar'
+      preLoaderRoute: typeof AppLeaveCalendarRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/leave/manage': {
+      id: '/_app/leave/manage'
+      path: '/leave/manage'
+      fullPath: '/leave/manage'
+      preLoaderRoute: typeof AppLeaveManageRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/leave/new': {
+      id: '/_app/leave/new'
+      path: '/leave/new'
+      fullPath: '/leave/new'
+      preLoaderRoute: typeof AppLeaveNewRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/me/': {
       id: '/_app/me/'
       path: '/me'
@@ -382,6 +483,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsHolidaysRouteImport
       parentRoute: typeof AppSettingsRouteRoute
     }
+    '/_app/settings/leave-types': {
+      id: '/_app/settings/leave-types'
+      path: '/leave-types'
+      fullPath: '/settings/leave-types'
+      preLoaderRoute: typeof AppSettingsLeaveTypesRouteImport
+      parentRoute: typeof AppSettingsRouteRoute
+    }
     '/_app/settings/positions': {
       id: '/_app/settings/positions'
       path: '/positions'
@@ -396,6 +504,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsWorkSchedulesRouteImport
       parentRoute: typeof AppSettingsRouteRoute
     }
+    '/_app/leave/requests/$requestId': {
+      id: '/_app/leave/requests/$requestId'
+      path: '/leave/requests/$requestId'
+      fullPath: '/leave/requests/$requestId'
+      preLoaderRoute: typeof AppLeaveRequestsRequestIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -403,6 +518,7 @@ interface AppSettingsRouteRouteChildren {
   AppSettingsCompanyRoute: typeof AppSettingsCompanyRoute
   AppSettingsDepartmentsRoute: typeof AppSettingsDepartmentsRoute
   AppSettingsHolidaysRoute: typeof AppSettingsHolidaysRoute
+  AppSettingsLeaveTypesRoute: typeof AppSettingsLeaveTypesRoute
   AppSettingsPositionsRoute: typeof AppSettingsPositionsRoute
   AppSettingsWorkSchedulesRoute: typeof AppSettingsWorkSchedulesRoute
 }
@@ -411,6 +527,7 @@ const AppSettingsRouteRouteChildren: AppSettingsRouteRouteChildren = {
   AppSettingsCompanyRoute: AppSettingsCompanyRoute,
   AppSettingsDepartmentsRoute: AppSettingsDepartmentsRoute,
   AppSettingsHolidaysRoute: AppSettingsHolidaysRoute,
+  AppSettingsLeaveTypesRoute: AppSettingsLeaveTypesRoute,
   AppSettingsPositionsRoute: AppSettingsPositionsRoute,
   AppSettingsWorkSchedulesRoute: AppSettingsWorkSchedulesRoute,
 }
@@ -422,20 +539,30 @@ interface AppRouteChildren {
   AppSettingsRouteRoute: typeof AppSettingsRouteRouteWithChildren
   AppDashboardRoute: typeof AppDashboardRoute
   AppApprovalsApprovalIdRoute: typeof AppApprovalsApprovalIdRoute
+  AppLeaveCalendarRoute: typeof AppLeaveCalendarRoute
+  AppLeaveManageRoute: typeof AppLeaveManageRoute
+  AppLeaveNewRoute: typeof AppLeaveNewRoute
   AppMePreferencesRoute: typeof AppMePreferencesRoute
   AppMeSecurityRoute: typeof AppMeSecurityRoute
   AppApprovalsIndexRoute: typeof AppApprovalsIndexRoute
+  AppLeaveIndexRoute: typeof AppLeaveIndexRoute
   AppMeIndexRoute: typeof AppMeIndexRoute
+  AppLeaveRequestsRequestIdRoute: typeof AppLeaveRequestsRequestIdRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppSettingsRouteRoute: AppSettingsRouteRouteWithChildren,
   AppDashboardRoute: AppDashboardRoute,
   AppApprovalsApprovalIdRoute: AppApprovalsApprovalIdRoute,
+  AppLeaveCalendarRoute: AppLeaveCalendarRoute,
+  AppLeaveManageRoute: AppLeaveManageRoute,
+  AppLeaveNewRoute: AppLeaveNewRoute,
   AppMePreferencesRoute: AppMePreferencesRoute,
   AppMeSecurityRoute: AppMeSecurityRoute,
   AppApprovalsIndexRoute: AppApprovalsIndexRoute,
+  AppLeaveIndexRoute: AppLeaveIndexRoute,
   AppMeIndexRoute: AppMeIndexRoute,
+  AppLeaveRequestsRequestIdRoute: AppLeaveRequestsRequestIdRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

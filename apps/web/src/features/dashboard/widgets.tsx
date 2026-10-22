@@ -5,6 +5,7 @@ import { Link } from '@tanstack/react-router';
 import type { ComponentType } from 'react';
 import { api } from '../../lib/api/client';
 import { formatRelative } from '../../lib/format';
+import { LeaveBalancesWidget, MyLeaveRequestsWidget, WhoIsOnLeaveWidget } from '../leave/widgets';
 
 export interface DashboardWidget {
   key: string;
@@ -72,5 +73,13 @@ function ApprovalsWidget({ primary }: { me: CurrentUser; primary: boolean }) {
  * widget with a primary action keeps the primary style.
  */
 export const DASHBOARD_WIDGETS: DashboardWidget[] = [
+  { key: 'leave-balances', any: ['leave.request.own'], span: 6, Component: LeaveBalancesWidget },
+  { key: 'my-leave-requests', any: ['leave.request.own'], span: 6, Component: MyLeaveRequestsWidget },
   { key: 'approvals', any: ['approval.inbox'], span: 6, Component: ApprovalsWidget },
+  {
+    key: 'who-is-on-leave',
+    any: ['leave.read.team', 'leave.read.all'],
+    span: 6,
+    Component: WhoIsOnLeaveWidget,
+  },
 ];
