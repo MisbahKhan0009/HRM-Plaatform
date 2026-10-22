@@ -42,6 +42,7 @@ Metadata conventions:
 | `user.auth_reset` | security | Admin reset of passkeys and TOTP |
 | `user.passkey_added`, `user.passkey_removed`, `user.totp_enabled`, `user.totp_disabled`, `user.backup_codes_regenerated` | security | Factor changes |
 | `role.granted`, `role.revoked`, `role.permissions_changed` | security | FR-AUD-002, FR-SET-005 |
+| `role.updated` | security | Role name or description changed |
 | `settings.changed` | technical / business / payroll by key scope | Any setting (FR-ORG-006); metadata has old and new value |
 | `company.updated`, `department.*`, `position.*`, `work_schedule.*`, `schedule_assignment.created`, `holiday.*` | business | Organization configuration (FR-ORG-006) |
 | `employee.created`, `employee.updated`, `employee.status_changed`, `employee.archived`, `employee.imported` | business | Lifecycle (FR-AUD-002) |
@@ -66,6 +67,7 @@ Metadata conventions:
 | `document.downloaded` | business | Restricted categories (`identity`, `contract`, `payslip`) and any download by someone other than the subject employee (FR-DOC-007) |
 | `report.exported` | business / payroll | Report name, filters, row count (FR-REP-005) |
 | `job.failed`, `outbox.message_dead` | technical | Background failures |
+| `job.run_requested` | technical | An admin re-ran a daily step (`POST /admin/jobs/{job}/run`); job, run key, date |
 
 A new audited action is added to this table and to the `AuditAction` union in `@hrm/contracts` in the same PR.
 
@@ -87,7 +89,7 @@ Salary amounts appear only in `payroll`-category events, which only payroll-auth
 |---|---|
 | `audit.read.all` | business, payroll, security |
 | `audit.read.payroll` | payroll |
-| `audit.read.technical` | technical, security (actor and action only; metadata of business events hidden) |
+| `audit.read.technical` | technical, security (actor and action only; metadata of business events hidden). Implemented as: metadata of technical events shown, metadata of security events omitted unless the reader also holds `audit.read.all` (open question C12) |
 
 Managers and employees see their own request history through the subject's endpoints (approval steps, request status), not through `/audit-logs` (SECURITY-MODEL matrix "Own request history").
 

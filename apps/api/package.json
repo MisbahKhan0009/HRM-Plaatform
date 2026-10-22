@@ -23,6 +23,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@better-auth/utils": "0.5.0",
     "@cloudflare/vitest-plugin": "catalog:",
     "@hrm/config": "workspace:*",
     "typescript": "catalog:",

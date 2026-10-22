@@ -68,15 +68,32 @@ export const SettingDtoSchema = z.object({
   key: z.string(),
   scope: z.enum(settingScopeValues),
   value: z.unknown(),
+  /** Seed default from the catalogue, so the UI can show "changed from default". */
+  defaultValue: z.unknown(),
+  /** Per-key optimistic lock (API-STANDARDS §8); 0 when the key has never been stored. */
   version: z.number().int(),
-  updatedAt: z.string(),
+  updatedAt: z.string().nullable(),
+  /** The caller holds `settings.<scope>.manage`. */
+  editable: z.boolean(),
 });
 export type SettingDto = z.infer<typeof SettingDtoSchema>;
 
+/** `GET /settings` and `PATCH /settings`: the keys the caller may read, grouped by scope (absent scopes are hidden). */
+export const SettingsGroupsSchema = z.object({
+  technical: z.array(SettingDtoSchema).optional(),
+  hr: z.array(SettingDtoSchema).optional(),
+  payroll: z.array(SettingDtoSchema).optional(),
+});
+export type SettingsGroups = z.infer<typeof SettingsGroupsSchema>;
+
+/**
+ * `PATCH /settings`: `{ changes: { "<key>": { value, version } } }`. Each key carries the version the client read, so
+ * a concurrent edit of one key does not block edits of others; all changes apply in one transaction or none do.
+ */
 export const UpdateSettingsInputSchema = z
   .object({
     changes: z
-      .record(z.string(), z.unknown())
+      .record(z.string(), z.object({ value: z.unknown(), version: z.number().int().min(0) }).strict())
       .refine((o) => Object.keys(o).length > 0 && Object.keys(o).length <= 30, {
         message: 'Between 1 and 30 changes',
       }),

@@ -39,26 +39,26 @@ Account recovery for users who lost their passkey and authenticator is an HR/adm
 | Method | Path | Permission | Notes | DTOs |
 |---|---|---|---|---|
 | GET | `/users` | `user.manage` | List; filter `status`, `q` | `UserSummary` |
-| POST | `/users/invitations` | `user.manage`, Strong | Create user in `invited`, link optional `employeeId`, email invite | `InviteUserInput` → `UserDetail` |
-| POST | `/users/{id}/invitations/resend` | `user.manage` | New token, old one revoked | `UserDetail` |
+| POST | `/users/invitations` | `user.manage`, Strong; also `role.manage` when `roleCodes` is not empty | Create user in `invited`, link optional `employeeId`, explicit `roleCodes`, email invite (7-day link); `409 EMAIL_TAKEN` (case-insensitive), `409 EMPLOYEE_ALREADY_LINKED` | `InviteUserInput` → `UserDetail` |
+| POST | `/users/{id}/invitations/resend` | `user.manage` | New token, old one revoked; `invited` users only | `UserDetail` |
 | GET | `/users/{id}` | `user.manage` | | `UserDetail` |
-| POST | `/users/{id}/suspend` | `user.manage`, Fresh | `active` → `suspended`, revokes sessions | `UserDetail` |
-| POST | `/users/{id}/reactivate` | `user.manage`, Fresh | `suspended` → `active` | `UserDetail` |
-| POST | `/users/{id}/deactivate` | `user.manage`, Fresh | → `deactivated` | `UserDetail` |
-| POST | `/users/{id}/reset-auth` | `user.manage`, Fresh | Removes passkeys + TOTP, revokes sessions, emails a sign-in link; audited | `UserDetail` |
-| POST | `/users/{id}/roles` | `role.manage`, Fresh | Replace explicit roles `{ roleCodes: [] }`; derived roles rejected | `UserDetail` |
+| POST | `/users/{id}/suspend` | `user.manage`, Fresh | `active` → `suspended`, revokes sessions; body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
+| POST | `/users/{id}/reactivate` | `user.manage`, Fresh | `suspended` → `active`; body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
+| POST | `/users/{id}/deactivate` | `user.manage`, Fresh | `invited`, `active` or `suspended` → `deactivated`, revokes sessions and open invitations; body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
+| POST | `/users/{id}/reset-auth` | `user.manage`, Fresh | Removes passkeys + TOTP, revokes sessions, emails a sign-in link; audited; `active` or `suspended` users only (`422` otherwise); body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
+| POST | `/users/{id}/roles` | `role.manage`, Fresh | Replace explicit roles `{ roleCodes: [], version }` (user version); derived roles rejected (`400`) | `ReplaceUserRolesInput` → `UserDetail` |
 | GET | `/roles` | `role.manage` or `settings.read` | Roles with permissions | `Role` |
-| PATCH | `/roles/{id}` | `role.manage`, Fresh | Change name/description/permissions | `UpdateRoleInput` → `Role` |
+| PATCH | `/roles/{id}` | `role.manage`, Fresh | Change name/description/permissions (full set) with `version`; derived roles are editable but never assignable; removing `role.manage` from a role the caller holds is refused (`422`) | `UpdateRoleInput` → `Role` |
 | GET | `/permissions` | `role.manage` | Permission catalogue | `Permission` |
 
-Users cannot change their own roles or suspend themselves (`SELF_APPROVAL_FORBIDDEN`).
+Users cannot change their own roles, suspend, reactivate, deactivate or reset their own account (`SELF_APPROVAL_FORBIDDEN`). Other companies' users and roles return `404`. Role changes are audited as `role.granted` and `role.revoked` (per role), `role.permissions_changed` and `role.updated`.
 
 ## 3. Organization and settings
 
 | Method | Path | Permission | Notes |
 |---|---|---|---|
-| GET | `/settings` | `settings.read` | All settings the caller may read, grouped by scope |
-| PATCH | `/settings` | `settings.<scope>.manage` per key, Strong | `{ changes: { key: value }, version }`; each key checked against its scope; writes `settings_history` |
+| GET | `/settings` | `settings.read`, or `settings.<scope>.manage` for that scope | All settings the caller may read, grouped by scope `{ technical?, hr?, payroll? }`; each item has `value`, `defaultValue`, per-key `version` (0 = never stored) and `editable` |
+| PATCH | `/settings` | `settings.<scope>.manage` per key, Strong | `{ changes: { key: { value, version } } }` (1 to 30 keys, per-key optimistic version, all or none); each key validated by its catalogue schema (`400` at `/changes/<key>/value`) and checked against its scope (`403`); writes `settings_history` and audits `settings.changed` (category: technical, business for `hr`, payroll) |
 | GET | `/company` | any session | Name, logo URL, timezone, currency |
 | PATCH | `/company` | `settings.hr.manage` | FR-ORG-001 |
 | GET / POST | `/departments` | read: any session; write: `org.manage` | |
@@ -238,8 +238,8 @@ All reports enforce the same scopes as their source lists (FR-REP-006). Response
 
 | Method | Path | Permission | Notes |
 |---|---|---|---|
-| GET | `/audit-logs` | `audit.read.all`, `audit.read.payroll` (category payroll), `audit.read.technical` (category technical, security) | `from`, `to` required; `actorUserId`, `action`, `entityType`, `entityId`, `employeeId` (FR-AUD-005) |
+| GET | `/audit-logs` | `audit.read.all`, `audit.read.payroll` (category payroll), `audit.read.technical` (category technical, security) | `from`, `to` required (Asia/Dhaka dates, inclusive, at most 366 days); `actorUserId`, `action` (prefix), `category`, `entityType`, `entityId`, `employeeId`, `page`, `pageSize` (FR-AUD-005); newest first, with actor names; `metadata` omitted where AUDIT.md §5 hides it |
 | GET | `/health` | public | `{ status: "ok" }` only; no dependency details |
-| GET | `/health/details` | `system.health.read` | DB latency, last `job_runs`, outbox backlog, dead messages (FR-SET-004) |
-| POST | `/admin/jobs/{job}/run` | `system.health.read` + `settings.technical.manage`, Strong | Re-run a scheduled job step for a `runKey` (JOBS-AND-OUTBOX section 4) |
+| GET | `/health/details` | `system.health.read` | DB latency, last `job_runs` per job, outbox counts by status and oldest pending age, email deliveries today (FR-SET-004) |
+| POST | `/admin/jobs/{job}/run` | `system.health.read` + `settings.technical.manage`, Strong | Re-run a daily step `{ runKey?, date? }` (date defaults to today, Asia/Dhaka; the step's calendar check is skipped); returns `outcome` `succeeded`, `skipped` (key already succeeded) or `failed`; `404` for an unknown step; audited `job.run_requested` (JOBS-AND-OUTBOX section 4) |
 | GET | `/openapi.json` | public in staging/local; disabled in production | |
