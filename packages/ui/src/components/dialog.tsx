@@ -142,12 +142,15 @@ export function Sheet({
   title,
   side = 'left',
   children,
+  className,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
   side?: 'left' | 'right';
   children: ReactNode;
+  /** Overrides, for example a wider record drawer. */
+  className?: string;
 }) {
   return (
     <D.Root open={open} onOpenChange={onOpenChange}>
@@ -158,6 +161,7 @@ export function Sheet({
           className={cn(
             'fixed inset-y-0 z-50 flex w-[min(320px,85vw)] flex-col overflow-y-auto border-line-strong bg-ground text-text',
             side === 'left' ? 'left-0 border-r' : 'right-0 border-l',
+            className,
           )}
         >
           <D.Title className="sr-only">{title}</D.Title>

@@ -20,7 +20,8 @@ export function TableContainer({
     <div className={cn('flex flex-col gap-3', className)}>
       {toolbar ? <div className="flex flex-wrap items-center gap-2">{toolbar}</div> : null}
       <div className="overflow-hidden rounded-card border border-line bg-surface">
-        <div className="overflow-x-auto">{children}</div>
+        {/* relative: keeps sr-only cells (absolutely positioned) inside the scroller, not the page */}
+        <div className="relative overflow-x-auto">{children}</div>
       </div>
       {footer}
     </div>
