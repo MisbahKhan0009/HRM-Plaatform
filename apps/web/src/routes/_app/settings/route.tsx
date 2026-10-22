@@ -7,6 +7,7 @@ export const Route = createFileRoute('/_app/settings')({ component: SettingsLayo
 
 const ITEMS: { to: string; label: string; any: Permission[] }[] = [
   { to: '/settings/company', label: 'Company', any: ['settings.read'] },
+  { to: '/settings/hr', label: 'HR settings', any: ['settings.read', 'settings.hr.manage'] },
   { to: '/settings/departments', label: 'Departments', any: ['settings.read', 'org.manage'] },
   { to: '/settings/positions', label: 'Positions', any: ['settings.read', 'org.manage'] },
   {
@@ -16,9 +17,9 @@ const ITEMS: { to: string; label: string; any: Permission[] }[] = [
   },
   { to: '/settings/holidays', label: 'Holidays', any: ['settings.read'] },
   { to: '/settings/leave-types', label: 'Leave types', any: ['settings.read', 'leave.policy.manage'] },
-  { to: '/settings/payroll', label: 'Payroll', any: ['settings.read'] },
+  { to: '/settings/payroll', label: 'Payroll', any: ['settings.read', 'settings.payroll.manage'] },
   { to: '/settings/users', label: 'Users', any: ['user.manage'] },
-  { to: '/settings/roles', label: 'Roles', any: ['role.manage'] },
+  { to: '/settings/roles', label: 'Roles', any: ['role.manage', 'settings.read'] },
   { to: '/settings/system', label: 'System health', any: ['system.health.read'] },
 ];
 

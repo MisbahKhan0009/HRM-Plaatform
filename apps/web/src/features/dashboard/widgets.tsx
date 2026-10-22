@@ -1,10 +1,12 @@
 import type { ApprovalSummary, CurrentUser, Permission } from '@hrm/contracts';
-import { Button, Card, CardHeader } from '@hrm/ui';
+import { Button, Card, CardHeader, LoadingBlock } from '@hrm/ui';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import type { ComponentType } from 'react';
 import { api } from '../../lib/api/client';
 import { formatRelative } from '../../lib/format';
+import { systemQueries } from '../system/api';
+import { healthProblems, SystemHealthSummary } from '../system/components';
 
 export interface DashboardWidget {
   key: string;
@@ -71,6 +73,35 @@ function ApprovalsWidget({ primary }: { me: CurrentUser; primary: boolean }) {
  * Widgets in dashboard order (INFORMATION-ARCHITECTURE §5). Feature modules add theirs here; the first visible
  * widget with a primary action keeps the primary style.
  */
+function SystemHealthWidget() {
+  const health = useQuery(systemQueries.health());
+  const problems = health.data ? healthProblems(health.data).length : 0;
+  return (
+    <Card aria-labelledby="w-system">
+      <CardHeader
+        id="w-system"
+        label="System health"
+        title={
+          !health.data ? 'System health' : problems ? 'Something needs attention' : 'Everything is running'
+        }
+        actions={
+          <Button variant="text" asChild>
+            <Link to="/settings/system">System health</Link>
+          </Button>
+        }
+      />
+      {health.data ? (
+        <SystemHealthSummary health={health.data} />
+      ) : health.isError ? (
+        <p className="text-text-2">We couldn't load system health. Try again later.</p>
+      ) : (
+        <LoadingBlock label="system health" rows={3} />
+      )}
+    </Card>
+  );
+}
+
 export const DASHBOARD_WIDGETS: DashboardWidget[] = [
   { key: 'approvals', any: ['approval.inbox'], span: 6, Component: ApprovalsWidget },
+  { key: 'system-health', any: ['system.health.read'], span: 6, Component: SystemHealthWidget },
 ];

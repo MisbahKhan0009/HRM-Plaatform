@@ -20,13 +20,19 @@ import { Route as authSignInTwoFactorRouteImport } from './routes/(auth)/sign-in
 import { Route as authSignInVerifyRouteImport } from './routes/(auth)/sign-in/verify'
 import { Route as AppApprovalsIndexRouteImport } from './routes/_app/approvals/index'
 import { Route as AppApprovalsApprovalIdRouteImport } from './routes/_app/approvals/$approvalId'
+import { Route as AppAuditIndexRouteImport } from './routes/_app/audit/index'
 import { Route as AppMeIndexRouteImport } from './routes/_app/me/index'
 import { Route as AppMePreferencesRouteImport } from './routes/_app/me/preferences'
 import { Route as AppMeSecurityRouteImport } from './routes/_app/me/security'
 import { Route as AppSettingsCompanyRouteImport } from './routes/_app/settings/company'
 import { Route as AppSettingsDepartmentsRouteImport } from './routes/_app/settings/departments'
 import { Route as AppSettingsHolidaysRouteImport } from './routes/_app/settings/holidays'
+import { Route as AppSettingsHrRouteImport } from './routes/_app/settings/hr'
+import { Route as AppSettingsPayrollRouteImport } from './routes/_app/settings/payroll'
 import { Route as AppSettingsPositionsRouteImport } from './routes/_app/settings/positions'
+import { Route as AppSettingsRolesRouteImport } from './routes/_app/settings/roles'
+import { Route as AppSettingsSystemRouteImport } from './routes/_app/settings/system'
+import { Route as AppSettingsUsersRouteImport } from './routes/_app/settings/users'
 import { Route as AppSettingsWorkSchedulesRouteImport } from './routes/_app/settings/work-schedules'
 
 const IndexRoute = IndexRouteImport.update({
@@ -83,6 +89,11 @@ const AppApprovalsApprovalIdRoute = AppApprovalsApprovalIdRouteImport.update({
   path: '/approvals/$approvalId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAuditIndexRoute = AppAuditIndexRouteImport.update({
+  id: '/audit/',
+  path: '/audit/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppMeIndexRoute = AppMeIndexRouteImport.update({
   id: '/me/',
   path: '/me/',
@@ -113,9 +124,34 @@ const AppSettingsHolidaysRoute = AppSettingsHolidaysRouteImport.update({
   path: '/holidays',
   getParentRoute: () => AppSettingsRouteRoute,
 } as any)
+const AppSettingsHrRoute = AppSettingsHrRouteImport.update({
+  id: '/hr',
+  path: '/hr',
+  getParentRoute: () => AppSettingsRouteRoute,
+} as any)
+const AppSettingsPayrollRoute = AppSettingsPayrollRouteImport.update({
+  id: '/payroll',
+  path: '/payroll',
+  getParentRoute: () => AppSettingsRouteRoute,
+} as any)
 const AppSettingsPositionsRoute = AppSettingsPositionsRouteImport.update({
   id: '/positions',
   path: '/positions',
+  getParentRoute: () => AppSettingsRouteRoute,
+} as any)
+const AppSettingsRolesRoute = AppSettingsRolesRouteImport.update({
+  id: '/roles',
+  path: '/roles',
+  getParentRoute: () => AppSettingsRouteRoute,
+} as any)
+const AppSettingsSystemRoute = AppSettingsSystemRouteImport.update({
+  id: '/system',
+  path: '/system',
+  getParentRoute: () => AppSettingsRouteRoute,
+} as any)
+const AppSettingsUsersRoute = AppSettingsUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
   getParentRoute: () => AppSettingsRouteRoute,
 } as any)
 const AppSettingsWorkSchedulesRoute =
@@ -139,10 +175,16 @@ export interface FileRoutesByFullPath {
   '/settings/company': typeof AppSettingsCompanyRoute
   '/settings/departments': typeof AppSettingsDepartmentsRoute
   '/settings/holidays': typeof AppSettingsHolidaysRoute
+  '/settings/hr': typeof AppSettingsHrRoute
+  '/settings/payroll': typeof AppSettingsPayrollRoute
   '/settings/positions': typeof AppSettingsPositionsRoute
+  '/settings/roles': typeof AppSettingsRolesRoute
+  '/settings/system': typeof AppSettingsSystemRoute
+  '/settings/users': typeof AppSettingsUsersRoute
   '/settings/work-schedules': typeof AppSettingsWorkSchedulesRoute
   '/sign-in/': typeof authSignInIndexRoute
   '/approvals/': typeof AppApprovalsIndexRoute
+  '/audit/': typeof AppAuditIndexRoute
   '/me/': typeof AppMeIndexRoute
 }
 export interface FileRoutesByTo {
@@ -159,10 +201,16 @@ export interface FileRoutesByTo {
   '/settings/company': typeof AppSettingsCompanyRoute
   '/settings/departments': typeof AppSettingsDepartmentsRoute
   '/settings/holidays': typeof AppSettingsHolidaysRoute
+  '/settings/hr': typeof AppSettingsHrRoute
+  '/settings/payroll': typeof AppSettingsPayrollRoute
   '/settings/positions': typeof AppSettingsPositionsRoute
+  '/settings/roles': typeof AppSettingsRolesRoute
+  '/settings/system': typeof AppSettingsSystemRoute
+  '/settings/users': typeof AppSettingsUsersRoute
   '/settings/work-schedules': typeof AppSettingsWorkSchedulesRoute
   '/sign-in': typeof authSignInIndexRoute
   '/approvals': typeof AppApprovalsIndexRoute
+  '/audit': typeof AppAuditIndexRoute
   '/me': typeof AppMeIndexRoute
 }
 export interface FileRoutesById {
@@ -181,10 +229,16 @@ export interface FileRoutesById {
   '/_app/settings/company': typeof AppSettingsCompanyRoute
   '/_app/settings/departments': typeof AppSettingsDepartmentsRoute
   '/_app/settings/holidays': typeof AppSettingsHolidaysRoute
+  '/_app/settings/hr': typeof AppSettingsHrRoute
+  '/_app/settings/payroll': typeof AppSettingsPayrollRoute
   '/_app/settings/positions': typeof AppSettingsPositionsRoute
+  '/_app/settings/roles': typeof AppSettingsRolesRoute
+  '/_app/settings/system': typeof AppSettingsSystemRoute
+  '/_app/settings/users': typeof AppSettingsUsersRoute
   '/_app/settings/work-schedules': typeof AppSettingsWorkSchedulesRoute
   '/(auth)/sign-in/': typeof authSignInIndexRoute
   '/_app/approvals/': typeof AppApprovalsIndexRoute
+  '/_app/audit/': typeof AppAuditIndexRoute
   '/_app/me/': typeof AppMeIndexRoute
 }
 export interface FileRouteTypes {
@@ -203,10 +257,16 @@ export interface FileRouteTypes {
     | '/settings/company'
     | '/settings/departments'
     | '/settings/holidays'
+    | '/settings/hr'
+    | '/settings/payroll'
     | '/settings/positions'
+    | '/settings/roles'
+    | '/settings/system'
+    | '/settings/users'
     | '/settings/work-schedules'
     | '/sign-in/'
     | '/approvals/'
+    | '/audit/'
     | '/me/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -223,10 +283,16 @@ export interface FileRouteTypes {
     | '/settings/company'
     | '/settings/departments'
     | '/settings/holidays'
+    | '/settings/hr'
+    | '/settings/payroll'
     | '/settings/positions'
+    | '/settings/roles'
+    | '/settings/system'
+    | '/settings/users'
     | '/settings/work-schedules'
     | '/sign-in'
     | '/approvals'
+    | '/audit'
     | '/me'
   id:
     | '__root__'
@@ -244,10 +310,16 @@ export interface FileRouteTypes {
     | '/_app/settings/company'
     | '/_app/settings/departments'
     | '/_app/settings/holidays'
+    | '/_app/settings/hr'
+    | '/_app/settings/payroll'
     | '/_app/settings/positions'
+    | '/_app/settings/roles'
+    | '/_app/settings/system'
+    | '/_app/settings/users'
     | '/_app/settings/work-schedules'
     | '/(auth)/sign-in/'
     | '/_app/approvals/'
+    | '/_app/audit/'
     | '/_app/me/'
   fileRoutesById: FileRoutesById
 }
@@ -340,6 +412,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppApprovalsApprovalIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/audit/': {
+      id: '/_app/audit/'
+      path: '/audit'
+      fullPath: '/audit/'
+      preLoaderRoute: typeof AppAuditIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/me/': {
       id: '/_app/me/'
       path: '/me'
@@ -382,11 +461,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsHolidaysRouteImport
       parentRoute: typeof AppSettingsRouteRoute
     }
+    '/_app/settings/hr': {
+      id: '/_app/settings/hr'
+      path: '/hr'
+      fullPath: '/settings/hr'
+      preLoaderRoute: typeof AppSettingsHrRouteImport
+      parentRoute: typeof AppSettingsRouteRoute
+    }
+    '/_app/settings/payroll': {
+      id: '/_app/settings/payroll'
+      path: '/payroll'
+      fullPath: '/settings/payroll'
+      preLoaderRoute: typeof AppSettingsPayrollRouteImport
+      parentRoute: typeof AppSettingsRouteRoute
+    }
     '/_app/settings/positions': {
       id: '/_app/settings/positions'
       path: '/positions'
       fullPath: '/settings/positions'
       preLoaderRoute: typeof AppSettingsPositionsRouteImport
+      parentRoute: typeof AppSettingsRouteRoute
+    }
+    '/_app/settings/roles': {
+      id: '/_app/settings/roles'
+      path: '/roles'
+      fullPath: '/settings/roles'
+      preLoaderRoute: typeof AppSettingsRolesRouteImport
+      parentRoute: typeof AppSettingsRouteRoute
+    }
+    '/_app/settings/system': {
+      id: '/_app/settings/system'
+      path: '/system'
+      fullPath: '/settings/system'
+      preLoaderRoute: typeof AppSettingsSystemRouteImport
+      parentRoute: typeof AppSettingsRouteRoute
+    }
+    '/_app/settings/users': {
+      id: '/_app/settings/users'
+      path: '/users'
+      fullPath: '/settings/users'
+      preLoaderRoute: typeof AppSettingsUsersRouteImport
       parentRoute: typeof AppSettingsRouteRoute
     }
     '/_app/settings/work-schedules': {
@@ -403,7 +517,12 @@ interface AppSettingsRouteRouteChildren {
   AppSettingsCompanyRoute: typeof AppSettingsCompanyRoute
   AppSettingsDepartmentsRoute: typeof AppSettingsDepartmentsRoute
   AppSettingsHolidaysRoute: typeof AppSettingsHolidaysRoute
+  AppSettingsHrRoute: typeof AppSettingsHrRoute
+  AppSettingsPayrollRoute: typeof AppSettingsPayrollRoute
   AppSettingsPositionsRoute: typeof AppSettingsPositionsRoute
+  AppSettingsRolesRoute: typeof AppSettingsRolesRoute
+  AppSettingsSystemRoute: typeof AppSettingsSystemRoute
+  AppSettingsUsersRoute: typeof AppSettingsUsersRoute
   AppSettingsWorkSchedulesRoute: typeof AppSettingsWorkSchedulesRoute
 }
 
@@ -411,7 +530,12 @@ const AppSettingsRouteRouteChildren: AppSettingsRouteRouteChildren = {
   AppSettingsCompanyRoute: AppSettingsCompanyRoute,
   AppSettingsDepartmentsRoute: AppSettingsDepartmentsRoute,
   AppSettingsHolidaysRoute: AppSettingsHolidaysRoute,
+  AppSettingsHrRoute: AppSettingsHrRoute,
+  AppSettingsPayrollRoute: AppSettingsPayrollRoute,
   AppSettingsPositionsRoute: AppSettingsPositionsRoute,
+  AppSettingsRolesRoute: AppSettingsRolesRoute,
+  AppSettingsSystemRoute: AppSettingsSystemRoute,
+  AppSettingsUsersRoute: AppSettingsUsersRoute,
   AppSettingsWorkSchedulesRoute: AppSettingsWorkSchedulesRoute,
 }
 
@@ -425,6 +549,7 @@ interface AppRouteChildren {
   AppMePreferencesRoute: typeof AppMePreferencesRoute
   AppMeSecurityRoute: typeof AppMeSecurityRoute
   AppApprovalsIndexRoute: typeof AppApprovalsIndexRoute
+  AppAuditIndexRoute: typeof AppAuditIndexRoute
   AppMeIndexRoute: typeof AppMeIndexRoute
 }
 
@@ -435,6 +560,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppMePreferencesRoute: AppMePreferencesRoute,
   AppMeSecurityRoute: AppMeSecurityRoute,
   AppApprovalsIndexRoute: AppApprovalsIndexRoute,
+  AppAuditIndexRoute: AppAuditIndexRoute,
   AppMeIndexRoute: AppMeIndexRoute,
 }
 

@@ -2,9 +2,10 @@ import { UpdateCompanyInputSchema } from '@hrm/contracts';
 import { Button, Card, Input, KeyValueList, LoadingBlock, notify, Textarea } from '@hrm/ui';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { PageHeader } from '../../../components/page-header';
 import { orgQueries, useUpdateCompany } from '../../../features/organization/api';
+import { SettingsScopeForm } from '../../../features/settings/settings-form';
 import { useErrorMessage } from '../../../lib/api/errors';
 import { requireAny, useCan } from '../../../lib/auth/me';
 import { applyServerErrors, FormError, FormField, useZodForm } from '../../../lib/forms';
@@ -19,6 +20,7 @@ export const Route = createFileRoute('/_app/settings/company')({
 function CompanyPage() {
   const { data: company } = useSuspenseQuery(orgQueries.company());
   const canEdit = useCan('settings.hr.manage');
+  const canEditTechnical = useCan('settings.technical.manage');
   const save = useUpdateCompany();
   const errorMessage = useErrorMessage();
   const [formError, setFormError] = useState<string | null>(null);
@@ -112,6 +114,21 @@ function CompanyPage() {
           ]}
         />
       </Card>
+      <section aria-labelledby="technical-settings" className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <h2 id="technical-settings" className="font-display text-xl font-semibold">
+            Technical settings
+          </h2>
+          <p className="text-text-2">
+            {canEditTechnical
+              ? 'File uploads and sign-in sessions.'
+              : 'File uploads and sign-in sessions. Only a system admin can change these.'}
+          </p>
+        </div>
+        <Suspense fallback={<LoadingBlock label="technical settings" />}>
+          <SettingsScopeForm scope="technical" sections={['Files', 'Sessions']} hideFixed />
+        </Suspense>
+      </section>
     </div>
   );
 }
