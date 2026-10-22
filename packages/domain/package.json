@@ -11,7 +11,9 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@date-fns/tz": "catalog:",
     "@hrm/contracts": "workspace:*",
+    "date-fns": "catalog:",
     "decimal.js": "catalog:"
   },
   "devDependencies": {

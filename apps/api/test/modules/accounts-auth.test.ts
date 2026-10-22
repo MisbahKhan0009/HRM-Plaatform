@@ -1,8 +1,8 @@
 import { schema } from '@hrm/db';
 import { eq } from 'drizzle-orm';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { memoryMailer } from '../src/lib/mailer';
-import { call, eventually, type Fixture, json, login, setupCompany } from './harness';
+import { memoryMailer } from '../../src/lib/mailer';
+import { call, eventually, type Fixture, json, login, setupCompany } from '../harness';
 
 let f: Fixture;
 beforeAll(async () => {

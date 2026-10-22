@@ -41,3 +41,18 @@ export async function recordAudit(tx: Queryable, actor: Actor, event: AuditEvent
     metadata: redact(event.metadata ?? {}) as Record<string, unknown>,
   });
 }
+
+/** `{ field: { from, to } }` for the fields an update actually changed (AUDIT.md §2 metadata conventions). */
+export function changes(
+  before: Record<string, unknown>,
+  after: Record<string, unknown>,
+  fields: readonly string[],
+) {
+  const out: Record<string, { from: unknown; to: unknown }> = {};
+  for (const f of fields) {
+    const a = before[f] instanceof Date ? (before[f] as Date).toISOString() : before[f];
+    const b = after[f] instanceof Date ? (after[f] as Date).toISOString() : after[f];
+    if (JSON.stringify(a) !== JSON.stringify(b)) out[f] = { from: a ?? null, to: b ?? null };
+  }
+  return out;
+}
