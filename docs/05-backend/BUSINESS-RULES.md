@@ -370,3 +370,6 @@ Stored in `settings` (DATA-MODEL section 1). Changing a key needs `settings.<sco
 17. Who are an employee's colleagues on the team calendar when `leave.calendar.visible_to_team` is on? v1 shows employees who share the same manager.
 18. Are `optional` holidays excluded from leave days like other holidays? v1 excludes every holiday type.
 19. An employee eligible before 1 January who has no grant for the year (for example at go-live) receives the full annual entitlement from the daily `leave.eligibility_grants` step. Confirm.
+20. On rehire, does `joining_date` reset to the rehire date, or keep the first joining date for length of service? v1 resets it (the old dates stay in the `rehired` employment event), so payroll does not pay the gap between separation and rehire.
+21. Should the CSV import create existing staff directly as `probation` or `active` with their historical joining date? v1 creates every imported employee in `draft`, the same as `POST /employees`; HR then runs the lifecycle actions.
+22. Does the status become `separated` on the last employed day (`separation_date`) or on the day after? v1 applies it on `separation_date`; payroll uses the dates (6.1, 6.2), and login access ends the day after.

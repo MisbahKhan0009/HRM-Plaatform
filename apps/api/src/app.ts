@@ -11,6 +11,7 @@ import { approvalRoutes } from './modules/approvals/approvals.routes';
 import { attendanceRoutes } from './modules/attendance/attendance.routes';
 import { auditRoutes } from './modules/audit/audit.routes';
 import { documentRoutes } from './modules/documents/documents.routes';
+import { employeeRoutes } from './modules/employees/employees.routes';
 import { healthRoutes } from './modules/health/health.routes';
 import { systemRoutes } from './modules/health/system.routes';
 import { leaveRoutes } from './modules/leave/leave.routes';
@@ -48,6 +49,7 @@ app.route('/api/v1', attendanceRoutes);
 app.route('/api/v1', documentRoutes);
 app.route('/api/v1', reportRoutes);
 app.route('/api/v1', leaveRoutes);
+app.route('/api/v1', employeeRoutes);
 
 // Better Auth serves the rest of /auth/* (sign-in, passkeys, TOTP, sessions); our routes above match first.
 app.on(['GET', 'POST'], '/api/v1/auth/*', (c) => c.var.deps.auth().handler(c.req.raw));
