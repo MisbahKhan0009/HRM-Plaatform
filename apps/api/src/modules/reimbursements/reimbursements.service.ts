@@ -10,7 +10,13 @@ import {
   type UpdateClaimInput,
 } from '@hrm/contracts';
 import { type RequestScope, type Tx, uuidv7 } from '@hrm/db';
-import { checkClaimExpenseDate, isClaimEditable, nextClaimStatus, toBusinessDate } from '@hrm/domain';
+import {
+  checkClaimExpenseDate,
+  isClaimEditable,
+  nextClaimStatus,
+  toBusinessDate,
+  toMoneyString,
+} from '@hrm/domain';
 import { recordAudit } from '../../lib/audit';
 import type { AuthContext } from '../../lib/auth-context';
 import { nextCodeNumber, padded } from '../../lib/codes';
@@ -97,7 +103,15 @@ export async function listClaims(deps: Deps, auth: AuthContext, q: ClaimListQuer
     q.pageSize,
     pageOffset(q),
   );
-  return { data: rows.map(toClaim), page: pageMeta(q, total) };
+  const page = { data: rows.map(toClaim), page: pageMeta(q, total) };
+  if (!auth.can(P.reimbursement.read.all)) return page;
+  const pending = await repo.approvedNotIncluded(deps.db, auth.companyId);
+  return {
+    ...page,
+    summary: {
+      approvedNotIncluded: { count: pending.count, amount: money(toMoneyString(pending.amount)) },
+    },
+  };
 }
 
 export async function getClaim(deps: Deps, auth: AuthContext, id: string) {

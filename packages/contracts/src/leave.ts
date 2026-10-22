@@ -94,6 +94,11 @@ export const LeaveTypeSchema = z.object({
   sortOrder: z.number().int(),
   /** The policy in force today; null when the type has none yet. */
   currentPolicy: LeavePolicySchema.nullable(),
+  /**
+   * `GET /leave/types` only: whether the caller's own employee may request this type for a leave starting today
+   * (the eligibility rule `POST /leave/requests` applies). Absent when the caller has no employee record.
+   */
+  eligible: z.boolean().optional(),
   ...auditFields,
 });
 export type LeaveType = z.infer<typeof LeaveTypeSchema>;
@@ -350,8 +355,9 @@ export type CancelLeaveRequestInput = z.infer<typeof CancelLeaveRequestInputSche
 
 // Calendar (FR-LEAVE-011) -----------------------------------------------------------------------------------------------
 
+/** `departmentId` narrows the calendar for readers with `leave.read.all`; other callers' filter is ignored. */
 export const LeaveCalendarQuerySchema = z
-  .object({ from: IsoDateSchema, to: IsoDateSchema })
+  .object({ from: IsoDateSchema, to: IsoDateSchema, departmentId: z.uuid().optional() })
   .strict()
   .superRefine((v, ctx) => {
     if (v.to < v.from) ctx.addIssue({ code: 'custom', path: ['to'], message: 'End before start.' });

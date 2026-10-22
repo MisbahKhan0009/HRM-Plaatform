@@ -33,6 +33,7 @@ import {
   RejectInputSchema,
   ReturnPayrollRunInputSchema,
   RunItemParamSchema,
+  RunPaymentQuerySchema,
   SalaryStructureQuerySchema,
   SalaryStructureSchema,
   VersionInputSchema,
@@ -407,6 +408,27 @@ payrollRoutes.openapi(
     c.json(
       await payments.recordPayment(c.var.deps, c.var.auth, c.req.valid('param').id, c.req.valid('json')),
       201,
+    ),
+);
+
+payrollRoutes.openapi(
+  createRoute({
+    method: 'get',
+    path: '/payroll/runs/{id}/payments',
+    operationId: 'payrollRuns.payments',
+    tags,
+    security,
+    'x-permission': 'payroll.read.all',
+    request: { params: IdParamSchema, query: RunPaymentQuerySchema },
+    responses: {
+      200: jsonContent(paginated(PayrollPaymentSchema), 'Payments of the run'),
+      ...problemResponses(400, 401, 403, 404),
+    },
+  }),
+  async (c) =>
+    c.json(
+      await payments.listRunPayments(c.var.deps, c.var.auth, c.req.valid('param').id, c.req.valid('query')),
+      200,
     ),
 );
 

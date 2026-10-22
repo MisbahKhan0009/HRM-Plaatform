@@ -6,6 +6,7 @@ import type {
   PublishPayslipsResult,
   Reconciliation,
   RecordPaymentInput,
+  RunPaymentQuery,
   VersionInput,
 } from '@hrm/contracts';
 import { type Tx, uuidv7 } from '@hrm/db';
@@ -15,6 +16,7 @@ import type { AuthContext } from '../../lib/auth-context';
 import { withDbErrors } from '../../lib/db-errors';
 import type { Deps } from '../../lib/deps';
 import { enqueue } from '../../lib/outbox';
+import { pageMeta, pageOffset } from '../../lib/pagination';
 import { AppError, invalidTransition, notFound, validationFailed, versionConflict } from '../../lib/problem';
 import { money, toPayment, toRun } from './payroll.dto';
 import { payrollPolicy as policy } from './payroll.policy';
@@ -351,6 +353,21 @@ async function reconciliationOf(deps: Deps | { db: Tx }, view: repo.RunView): Pr
     balanced: items.every((i) => i.outstanding.amount === '0.00'),
     items,
   };
+}
+
+/** `GET /payroll/runs/{id}/payments` (`payroll.read.all`): every payment of the run, including cancelled ones. */
+export async function listRunPayments(deps: Deps, auth: AuthContext, runId: string, q: RunPaymentQuery) {
+  policy.read(auth);
+  const view = await repo.findRun(deps.db, auth.companyId, runId);
+  if (!view) throw notFound();
+  const { rows, total } = await repo.listRunPayments(
+    deps.db,
+    runId,
+    q.status ? { status: q.status } : {},
+    q.pageSize,
+    pageOffset(q),
+  );
+  return { data: rows.map(toPayment), page: pageMeta(q, total) };
 }
 
 /** `GET /payroll/runs/{id}/reconciliation` (FR-PAY-015, PAY-11). */

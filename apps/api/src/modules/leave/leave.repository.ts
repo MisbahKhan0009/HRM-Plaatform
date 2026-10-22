@@ -600,6 +600,7 @@ export function calendarEntries(
   scope: RequestScope,
   range: { from: string; to: string },
   statuses: readonly string[],
+  departmentId?: string,
 ) {
   return db
     .select({
@@ -626,6 +627,7 @@ export function calendarEntries(
         inArray(leaveRequests.status, [...statuses]),
         lte(leaveRequests.startDate, range.to),
         gte(leaveRequests.endDate, range.from),
+        departmentId ? eq(employees.departmentId, departmentId) : undefined,
       ),
     )
     .orderBy(asc(leaveRequests.startDate), asc(leaveRequests.id))

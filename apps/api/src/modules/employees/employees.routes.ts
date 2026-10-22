@@ -506,6 +506,24 @@ employeeRoutes.openapi(
   },
 );
 
+employeeRoutes.openapi(
+  createRoute({
+    method: 'get',
+    path: '/profile-change-requests/{id}',
+    operationId: 'profileChangeRequests.get',
+    tags,
+    security,
+    'x-permission': 'profile_change.review.all | own',
+    request: { params: IdParamSchema },
+    responses: {
+      200: jsonContent(ProfileChangeRequestSchema, 'One request'),
+      ...problemResponses(400, 401, 403, 404),
+    },
+  }),
+  async (c) =>
+    c.json(await profileChanges.getProfileChange(c.var.deps, c.var.auth, c.req.valid('param').id), 200),
+);
+
 const decide = (action: 'approve' | 'reject') =>
   createRoute({
     method: 'post',

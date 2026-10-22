@@ -1,6 +1,14 @@
 import { createRoute } from '@hono/zod-openapi';
-import { HealthDetailsSchema, JobParamSchema, JobRunResultSchema, RunJobInputSchema } from '@hrm/contracts';
+import {
+  HealthDetailsSchema,
+  JobListSchema,
+  JobParamSchema,
+  JobRunResultSchema,
+  OutboxRetryResultSchema,
+  RunJobInputSchema,
+} from '@hrm/contracts';
 import { jsonBody, jsonContent, problemResponses, SESSION_SECURITY } from '../../lib/openapi';
+import { processOutbox } from '../../lib/outbox';
 import { createRouter } from '../../lib/router';
 import * as service from './system.service';
 
@@ -46,4 +54,44 @@ systemRoutes.openapi(
       await service.runDailyStep(c.var.deps, c.var.auth, c.req.valid('param').job, c.req.valid('json')),
       200,
     ),
+);
+
+systemRoutes.openapi(
+  createRoute({
+    method: 'get',
+    path: '/admin/jobs',
+    operationId: 'admin.listJobs',
+    tags,
+    security,
+    'x-permission': 'system.health.read',
+    responses: {
+      200: jsonContent(JobListSchema, 'Daily steps with their last run'),
+      ...problemResponses(401, 403),
+    },
+  }),
+  async (c) => c.json(await service.listJobs(c.var.deps, c.var.auth), 200),
+);
+
+systemRoutes.openapi(
+  createRoute({
+    method: 'post',
+    path: '/admin/outbox/retry',
+    operationId: 'admin.retryOutbox',
+    tags,
+    security,
+    description:
+      'Makes every `failed` outbox message due now and sends up to 20 of them after the response. `dead` ' +
+      'messages are not retried.',
+    'x-permission': 'system.health.read + settings.technical.manage, strong session',
+    responses: {
+      200: jsonContent(OutboxRetryResultSchema, 'Messages reset and being sent'),
+      ...problemResponses(401, 403),
+    },
+  }),
+  async (c) => {
+    const { deps, auth } = c.var;
+    const { result, outboxIds } = await service.retryFailedOutbox(deps, auth);
+    deps.defer(processOutbox(deps, outboxIds));
+    return c.json(result, 200);
+  },
 );

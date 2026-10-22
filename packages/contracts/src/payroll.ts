@@ -144,8 +144,12 @@ export const PayrollRunSchema = z.object({
   calculatedAt: z.string().nullable(),
   submittedAt: z.string().nullable(),
   preparedBy: z.uuid().nullable(),
+  /** Name of the user who prepared the run; null while nobody has. */
+  preparedByName: z.string().nullable(),
   approvedAt: z.string().nullable(),
   approvedBy: z.uuid().nullable(),
+  /** Name of the approving user; null until approved. */
+  approvedByName: z.string().nullable(),
   selfApproved: z.boolean(),
   selfApprovalNote: z.string().nullable(),
   returnedReason: z.string().nullable(),
@@ -257,6 +261,12 @@ export const PayrollPaymentSchema = z.object({
   ...auditFields,
 });
 export type PayrollPayment = z.infer<typeof PayrollPaymentSchema>;
+
+/** `GET /payroll/runs/{id}/payments`: every payment of the run, newest first per employee. */
+export const RunPaymentQuerySchema = PageQuerySchema.extend({
+  status: csvEnum(paymentStatusValues).optional(),
+}).strict();
+export type RunPaymentQuery = z.infer<typeof RunPaymentQuerySchema>;
 
 const optionalText = (max: number) => z.string().trim().min(1).max(max).optional();
 
@@ -378,6 +388,9 @@ export const PayrollAdjustmentSchema = z.object({
   selfApproved: z.boolean(),
   selfApprovalNote: z.string().nullable(),
   appliedPayrollItemId: z.uuid().nullable(),
+  /** The user who created the adjustment; approving one's own adjustment needs a self-approval note (D-007). */
+  createdByUserId: z.uuid().nullable(),
+  createdByName: z.string().nullable(),
   ...auditFields,
 });
 export type PayrollAdjustment = z.infer<typeof PayrollAdjustmentSchema>;
@@ -456,6 +469,14 @@ export const PayslipDataSchema = z.object({
   totals: TotalsSchema,
   ruleVersion: z.string(),
   paymentStatus: z.enum(paymentStatusValues),
+  /** The item's `paid` payment; null while the item is unpaid. */
+  payment: z
+    .object({
+      method: z.enum(paymentMethodValues),
+      paidOn: IsoDateSchema,
+      chequeNumber: z.string().nullable(),
+    })
+    .nullable(),
   publishedAt: z.string(),
   firstViewedAt: z.string().nullable(),
 });

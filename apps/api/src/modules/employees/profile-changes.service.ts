@@ -143,6 +143,19 @@ export async function listProfileChanges(deps: Deps, auth: AuthContext, query: P
   return { data: rows.map(toProfileChange), page: pageMeta(query, total) };
 }
 
+/**
+ * `GET /profile-change-requests/{id}`: same scopes as the list. HR reads any request; everyone else only their own;
+ * a request outside the caller's scope is 404.
+ */
+export async function getProfileChange(deps: Deps, auth: AuthContext, id: string) {
+  policy.listProfileChanges(auth);
+  const row = await repo.findProfileChange(deps.db, auth.companyId, id);
+  if (!row) throw notFound();
+  if (!policy.reviewProfileChanges(auth) && (!auth.employeeId || row.request.employeeId !== auth.employeeId))
+    throw notFound();
+  return toProfileChange(row);
+}
+
 /** Writes approved values to the employee and contact rows, in the decision's transaction. */
 async function applyChanges(
   tx: Tx,

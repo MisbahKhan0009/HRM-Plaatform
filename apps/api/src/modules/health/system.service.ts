@@ -1,4 +1,11 @@
-import { type HealthDetails, type JobRunResult, P, type RunJobInput } from '@hrm/contracts';
+import {
+  type HealthDetails,
+  type JobList,
+  type JobRunResult,
+  type OutboxRetryResult,
+  P,
+  type RunJobInput,
+} from '@hrm/contracts';
 import { schema } from '@hrm/db';
 import { addDays, businessDayBounds, toBusinessDate } from '@hrm/domain';
 import { and, eq, sql } from 'drizzle-orm';
@@ -114,4 +121,69 @@ export async function runDailyStep(
     details: (run?.details ?? {}) as Record<string, unknown>,
     error: run?.error ?? null,
   };
+}
+
+/** `GET /admin/jobs` (same permission as `/health/details`): every daily step, in dispatcher order, with its last run. */
+export async function listJobs(deps: Deps, auth: AuthContext): Promise<JobList> {
+  requirePermission(auth, P.system.health.read);
+  const runs = new Map((await latestRuns(deps, auth.companyId)).map((r) => [r.job, r]));
+  await recordAudit(deps.db, auth.actor, {
+    action: 'job.listed',
+    category: 'technical',
+    entityType: 'job',
+    metadata: { jobs: DAILY_STEPS.length },
+  });
+  return {
+    data: DAILY_STEPS.map((step) => {
+      const r = runs.get(step.job);
+      return {
+        job: step.job,
+        lastRun: r
+          ? {
+              runKey: r.run_key,
+              status: r.status as 'running' | 'succeeded' | 'failed',
+              startedAt: r.started_at,
+              finishedAt: r.finished_at,
+              items: Number(r.items),
+            }
+          : null,
+      };
+    }),
+  };
+}
+
+/** Messages sent right away by one retry; the rest wait for the outbox cron (JOBS-AND-OUTBOX §2.3). */
+const RETRY_BATCH = 20;
+
+/**
+ * `POST /admin/outbox/retry`: makes every `failed` message of the company due now (dead messages stay dead) and
+ * returns the ids to send after commit. The reset and its audit row share one transaction.
+ */
+export async function retryFailedOutbox(
+  deps: Deps,
+  auth: AuthContext,
+): Promise<{ result: OutboxRetryResult; outboxIds: string[] }> {
+  requirePermission(auth, P.system.health.read);
+  requirePermission(auth, P.settings.technical.manage);
+  requireStrong(auth);
+  const now = deps.clock.now();
+  const ids = await deps.db.transaction(async (tx) => {
+    const rows = await tx
+      .update(schema.outboxMessages)
+      .set({ nextAttemptAt: now })
+      .where(
+        and(eq(schema.outboxMessages.companyId, auth.companyId), eq(schema.outboxMessages.status, 'failed')),
+      )
+      .returning({ id: schema.outboxMessages.id });
+    await recordAudit(tx, auth.actor, {
+      action: 'outbox.retry_requested',
+      category: 'technical',
+      entityType: 'outbox_message',
+      metadata: { reset: rows.length },
+    });
+    // uuidv7 ids sort oldest first.
+    return rows.map((r) => r.id).sort();
+  });
+  const outboxIds = ids.slice(0, RETRY_BATCH);
+  return { result: { reset: ids.length, processing: outboxIds.length }, outboxIds };
 }

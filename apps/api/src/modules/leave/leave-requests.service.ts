@@ -92,7 +92,14 @@ async function resolveEmployee(deps: Deps, auth: AuthContext, employeeId: string
   return { employee, onBehalf: false };
 }
 
-const invalidDate = (detail: string) => new AppError('INVALID_DATE', 'Invalid date', detail);
+/** INVALID_DATE names the offending body field when there is one, so a form can show it next to the date. */
+const invalidDate = (detail: string, field?: 'startDate' | 'endDate') =>
+  new AppError(
+    'INVALID_DATE',
+    'Invalid date',
+    detail,
+    field ? [{ path: `/${field}`, code: 'invalid_date', message: detail }] : [],
+  );
 const notEligible = (detail: string) => new AppError('LEAVE_NOT_ELIGIBLE', 'Not eligible', detail);
 
 /** BUSINESS-RULES 3.1 and FR-LEAVE-005: everything a request needs that does not depend on locked state. */
@@ -113,11 +120,11 @@ async function evaluate(
   if (type.requiresReason && !input.reason)
     throw validationFailed([{ path: '/reason', code: 'required', message: 'A reason is required.' }]);
   if (leaveYearOf(input.startDate) !== leaveYearOf(input.endDate))
-    throw invalidDate('A request may not span two leave years; submit one request per year.');
+    throw invalidDate('A request may not span two leave years; submit one request per year.', 'endDate');
   if (!employee.joiningDate || input.startDate < employee.joiningDate)
-    throw invalidDate('The leave starts before the joining date.');
+    throw invalidDate('The leave starts before the joining date.', 'startDate');
   if (employee.separationDate && input.endDate > employee.separationDate)
-    throw invalidDate('The leave ends after the separation date.');
+    throw invalidDate('The leave ends after the separation date.', 'endDate');
 
   const leavePolicy = await repo.policyOnDate(deps.db, auth.companyId, type.id, input.startDate);
   if (!leavePolicy) throw notEligible('No policy for this leave type covers the start date.');
@@ -140,6 +147,7 @@ async function evaluate(
       leavePolicy.minNoticeDays > 0
         ? `This leave type needs ${leavePolicy.minNoticeDays} days' notice.`
         : 'The leave starts in the past.',
+      'startDate',
     );
 
   const cal = await repo.workCalendar(deps.db, auth.companyId, employee.id, input.startDate, input.endDate);
@@ -156,7 +164,8 @@ async function evaluate(
         'No working days',
         'The dates are only weekends and holidays.',
       );
-    if (counted.reason === 'SPANS_LEAVE_YEARS') throw invalidDate('A request may not span two leave years.');
+    if (counted.reason === 'SPANS_LEAVE_YEARS')
+      throw invalidDate('A request may not span two leave years.', 'endDate');
     throw validationFailed([{ path: '/endDate', code: 'invalid_range', message: 'Invalid date range.' }]);
   }
   if (leavePolicy.maxConsecutiveDays !== null && counted.units.gt(leavePolicy.maxConsecutiveDays))

@@ -262,6 +262,7 @@ describe('run transitions (DOMAIN-MODEL 5.6)', () => {
       post(s.po, `/payroll/runs/${run.id}/approve`, { version: run.version, selfApprovalNote: note }),
     );
     expect(done).toMatchObject({ status: 'approved', selfApproved: true, selfApprovalNote: note });
+    expect(done).toMatchObject({ preparedByName: 'Pat Payroll', approvedByName: 'Pat Payroll' });
     const audit = (await auditFor(s.f.db, run.id)).at(-1);
     expect(audit?.metadata).toMatchObject({ to: 'approved', selfApproved: true, note });
   });
@@ -281,6 +282,16 @@ describe('run transitions (DOMAIN-MODEL 5.6)', () => {
     }
     const done = await approve(s, run);
     expect(done).toMatchObject({ status: 'approved', selfApproved: false });
+    expect(done).toMatchObject({
+      preparedBy: s.po.userId,
+      preparedByName: 'Pat Payroll',
+      approvedBy: s.director.userId,
+      approvedByName: 'Dana Director',
+    });
+    const listed = await ok<{ data: Run[] }>(get(auditor, `/payroll/runs?periodId=${done.period.id}`));
+    expect(listed.data[0]).toMatchObject({ preparedByName: 'Pat Payroll', approvedByName: 'Dana Director' });
+    const draft = await runTo(s, 2028, 6, 'draft');
+    expect(draft).toMatchObject({ preparedByName: 'Pat Payroll', approvedByName: null });
     const decided = (await outboxFor(s.f.db, s.f.companyId, ['email.request_decided'])).find(
       (x) => x.dedupeKey === `payroll_run.approved:${run.id}`,
     );
@@ -490,11 +501,17 @@ describe('payroll adjustments (US-PAY-010, DOMAIN-MODEL 5.7)', () => {
       post(s.po, '/payroll/adjustments', body),
       201,
     );
-    expect(created).toMatchObject({ status: 'pending', lineCode: 'deduction' });
-    const list = await ok<{ data: { id: string }[] }>(
+    expect(created).toMatchObject({
+      status: 'pending',
+      lineCode: 'deduction',
+      createdByUserId: s.po.userId,
+      createdByName: 'Pat Payroll',
+    });
+    const list = await ok<{ data: { id: string; createdByUserId: string; createdByName: string }[] }>(
       get(auditor, `/payroll/adjustments?status=pending&periodId=${p.id}`),
     );
     expect(list.data.map((x) => x.id)).toEqual([created.id]);
+    expect(list.data[0]).toMatchObject({ createdByUserId: s.po.userId, createdByName: 'Pat Payroll' });
     expect((await get(staff, '/payroll/adjustments')).status).toBe(403);
   });
 

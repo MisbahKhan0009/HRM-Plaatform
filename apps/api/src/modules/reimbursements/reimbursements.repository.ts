@@ -48,6 +48,21 @@ export async function findClaim(db: Queryable, scope: RequestScope, id: string):
   return row ?? null;
 }
 
+/** Approved claims of the company not yet included in a run (payroll picks them up on its next lock). */
+export async function approvedNotIncluded(db: Queryable, companyId: string) {
+  const [row] = await db
+    .select({ n: sql<number>`count(*)::int`, amount: sql<string>`coalesce(sum(${claims.amount}), 0)::text` })
+    .from(claims)
+    .where(
+      and(
+        eq(claims.companyId, companyId),
+        eq(claims.status, 'approved'),
+        sql`${claims.payrollItemId} IS NULL`,
+      ),
+    );
+  return { count: row?.n ?? 0, amount: row?.amount ?? '0' };
+}
+
 /** Locks the claim row for a transition (MODULE-GUIDE §6: load with lock, check, write). */
 export async function lockClaim(tx: Tx, scope: RequestScope, id: string): Promise<ClaimRow | null> {
   const [row] = await tx

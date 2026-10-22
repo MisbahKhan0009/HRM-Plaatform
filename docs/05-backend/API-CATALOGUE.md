@@ -97,6 +97,7 @@ Users cannot change their own roles, suspend, reactivate, deactivate or reset th
 | POST | `/employees/import/commit` | `employee.manage` | key | Re-sends `{ csv, previewToken, mapping? }`; the server re-validates and creates the valid rows in `draft`; nothing is stored between preview and commit | `EmployeeImportCommitInput` → `EmployeeImportResult` |
 | GET | `/me/profile` | `employee.read.own` | | Shortcut to own `EmployeeSelf` | |
 | GET / POST | `/profile-change-requests` | list: `profile_change.review.all` or own; create: `profile_change.request.own` | | Create derives employee from session | `ProfileChangeRequest` |
+| GET | `/profile-change-requests/{id}` | `profile_change.review.all` or own | | Same scopes as the list; another employee's request returns 404 | `ProfileChangeRequest` |
 | POST | `/profile-change-requests/{id}/approve` | `profile_change.review.all` | | applies changes | |
 | POST | `/profile-change-requests/{id}/reject` | `profile_change.review.all` | | comment required | |
 | POST | `/profile-change-requests/{id}/withdraw` | own | | | |
@@ -123,7 +124,7 @@ Users cannot change their own roles, suspend, reactivate, deactivate or reset th
 
 | Method | Path | Permission + scope | Idem. | Notes / transition |
 |---|---|---|---|---|
-| GET | `/leave/types` | any session | | Active types with current policy summary |
+| GET | `/leave/types` | any session | | Active types with current policy summary; with an employee record each type has `eligible` (the create endpoint's eligibility rule, for a leave starting today), otherwise `eligible` is omitted |
 | POST | `/leave/types` | `leave.policy.manage` | | |
 | PATCH | `/leave/types/{id}` | `leave.policy.manage` | | |
 | GET / POST | `/leave/types/{id}/policies` | `leave.policy.manage` | | New policy version, `effectiveFrom` today or later |
@@ -133,7 +134,7 @@ Users cannot change their own roles, suspend, reactivate, deactivate or reset th
 | POST | `/leave/balances/adjustments` | `leave.balance.adjust`, Strong | key | `{ employeeId, leaveTypeId, year, amount, reason }`; `201` with the balance after the adjustment; a negative amount may not take `available` below zero unless the policy allows it (`422 INSUFFICIENT_BALANCE`) |
 | POST | `/leave/requests/preview` | `leave.request.own` (or `leave.request.review.all` with `employeeId`) | | Same body as create; computes working days and balance effect without saving |
 | GET | `/leave/requests` | `leave.read.all` / `.team` or own | | filters `status`, `employeeId`, `leaveTypeId`, `from`, `to` |
-| POST | `/leave/requests` | `leave.request.own` (or `leave.request.review.all` with `employeeId` = on behalf) | | Creates the request directly in `pending` and posts the reservation (DOMAIN-MODEL 5.3); `draft` is not exposed in v1 |
+| POST | `/leave/requests` | `leave.request.own` (or `leave.request.review.all` with `employeeId` = on behalf) | | Creates the request directly in `pending` and posts the reservation (DOMAIN-MODEL 5.3); `draft` is not exposed in v1; `422 INVALID_DATE` (here and in preview) names the field in `errors[0].path` (`/startDate` or `/endDate`) |
 | GET | `/leave/requests/{id}` | read scopes or own | | |
 | POST | `/leave/requests/{id}/withdraw` | own | | `pending` → `withdrawn`; releases reservation |
 | POST | `/leave/requests/{id}/approve` | `leave.request.review.team` / `.all` | key | `pending` → `approved`; release + usage (atomic) |
@@ -141,13 +142,13 @@ Users cannot change their own roles, suspend, reactivate, deactivate or reset th
 | POST | `/leave/requests/{id}/cancel` | own (or HR on behalf) | | `approved` → `cancellation_pending`; future or current leave only |
 | POST | `/leave/requests/{id}/cancel/approve` | review scopes | key | → `cancelled`; posts reversal |
 | POST | `/leave/requests/{id}/cancel/reject` | review scopes | | → `approved`; comment required |
-| GET | `/leave/calendar` | `leave.read.all` / `.team`; own team for employees (setting `leave.calendar.visible_to_team`) | | `from`, `to` (max 92 days); shows type only to readers with `leave.read.*` and on the caller's own entries (FR-LEAVE-011); colleagues are employees with the same manager, approved leave only |
+| GET | `/leave/calendar` | `leave.read.all` / `.team`; own team for employees (setting `leave.calendar.visible_to_team`) | | `from`, `to` (max 92 days); optional `departmentId` applies to `leave.read.all` readers only and is ignored for everyone else; shows type only to readers with `leave.read.*` and on the caller's own entries (FR-LEAVE-011); colleagues are employees with the same manager, approved leave only |
 
 ## 7. Reimbursements
 
 | Method | Path | Permission + scope | Notes / transition |
 |---|---|---|---|
-| GET | `/reimbursement-claims` | `reimbursement.read.all`, `.review.team` or own | filters `status`, `employeeId`, `from`, `to` |
+| GET | `/reimbursement-claims` | `reimbursement.read.all`, `.review.team` or own | filters `status`, `employeeId`, `from`, `to`; with `reimbursement.read.all` the response adds `summary.approvedNotIncluded { count, amount }` over the whole company, independent of the filters |
 | POST | `/reimbursement-claims` | `reimbursement.request.own` | `draft`; optional receipt `receiptDocumentId` (FR-REIM-001) |
 | GET | `/reimbursement-claims/{id}` | same scopes as the list | Claim with `payrollRunNumber` once included (US-REIM-003) |
 | PATCH / DELETE | `/reimbursement-claims/{id}` | own, `draft` only | |
@@ -167,7 +168,7 @@ Users cannot change their own roles, suspend, reactivate, deactivate or reset th
 | POST | `/salary-structures/{id}/approve` | `compensation.manage`, Fresh | | `draft` → `approved`; closes previous structure's `effectiveTo` (one starting the same day becomes `superseded`; `422` if a later structure is approved); emits `salary_changed` event |
 | GET | `/payroll/periods` | `payroll.read.all` | | |
 | POST | `/payroll/periods` | `payroll.prepare` | | `{ year, month }`; dates computed |
-| GET | `/payroll/runs` | `payroll.read.all` | | filters `periodId`, `status` |
+| GET | `/payroll/runs` | `payroll.read.all` | | filters `periodId`, `status`; each run carries `preparedByName` and `approvedByName` |
 | POST | `/payroll/runs` | `payroll.prepare`, Strong | key | `{ periodId, runType }` → `draft`; `409 PAYROLL_RUN_EXISTS` |
 | GET | `/payroll/runs/{id}` | `payroll.read.all` | | Run + totals + validation summary |
 | GET | `/payroll/runs/{id}/items` | `payroll.read.all` | | List; `?employeeId&flag` |
@@ -178,6 +179,7 @@ Users cannot change their own roles, suspend, reactivate, deactivate or reset th
 | POST | `/payroll/runs/{id}/return` | `payroll.approve`, Strong | | `calculated`/`submitted` → `returned` → `draft` in one call; `{ reason, version }` |
 | POST | `/payroll/runs/{id}/approve` | `payroll.approve`, Fresh | key | `submitted` → `approved`; self-approval needs `selfApprovalNote` (D-007) |
 | POST | `/payroll/runs/{id}/lock` | `payroll.lock`, Fresh | key | `approved` → `locked`; marks claims/adjustments |
+| GET | `/payroll/runs/{id}/payments` | `payroll.read.all` | | List of every payment of the run (cancelled and failed included), by employee code then newest first; filter `status` |
 | POST | `/payroll/runs/{id}/payments` | `payroll.pay`, Fresh | key | Record one payment `{ payrollItemId, method, amount, paidOn, chequeNumber?, acknowledgedByName? }` |
 | POST | `/payroll/runs/{id}/payments/import` | `payroll.pay`, Fresh | key | `{ csv }` with header `employeeCode,method,amount,paidOn` plus optional `chequeNumber,reference,acknowledgedByName`; preview with `?dryRun=true`; a file with any row error records nothing (`400`, one error per row) |
 | POST | `/payroll/payments/{paymentId}/cancel` | `payroll.pay`, Fresh | | `{ reason, outcome }`, `outcome` `cancelled` (default) or `failed` (bounced cheque); run must be `locked` |
@@ -185,12 +187,12 @@ Users cannot change their own roles, suspend, reactivate, deactivate or reset th
 | POST | `/payroll/runs/{id}/reconcile` | `payroll.pay`, Fresh | | `paid` → `reconciled` |
 | GET | `/payroll/runs/{id}/reconciliation` | `payroll.read.all` | | Gross, deductions, net vs payments per item (FR-PAY-015) |
 | POST | `/payroll/runs/{id}/publish-payslips` | `payroll.pay`, Fresh | key | Creates `payslips`; queues emails |
-| GET / POST | `/payroll/adjustments` | read `payroll.read.all`; create `payroll.prepare` | key on POST | |
+| GET / POST | `/payroll/adjustments` | read `payroll.read.all`; create `payroll.prepare` | key on POST | Each adjustment carries `createdByUserId` and `createdByName` |
 | POST | `/payroll/adjustments/{id}/approve` | `payroll.approve`, Fresh | | |
 | POST | `/payroll/adjustments/{id}/reject` | `payroll.approve` | | |
 | GET | `/payroll/payslips/me` | `payslip.read.own` | | Own published payslips |
 | GET | `/payroll/payslips` | `payslip.read.all` | | |
-| GET | `/payroll/payslips/{id}` | `payslip.read.all` or own | | Immutable `PayslipData` for browser PDF rendering (D-037); sets `firstViewedAt`; audited |
+| GET | `/payroll/payslips/{id}` | `payslip.read.all` or own | | Immutable `PayslipData` for browser PDF rendering (D-037), with `payment { method, paidOn, chequeNumber }` from the item's `paid` payment (null while unpaid); sets `firstViewedAt`; audited |
 
 Run transitions, salary-structure approval and adjustment decisions take the `version` the client read (API-STANDARDS §8). Payments are for exactly the item's net amount, one per item (D-042).
 
@@ -251,4 +253,6 @@ All reports enforce the same scopes as their source lists (FR-REP-006). Response
 | GET | `/health` | public | `{ status: "ok" }` only; no dependency details |
 | GET | `/health/details` | `system.health.read` | DB latency, last `job_runs` per job, outbox counts by status and oldest pending age, email deliveries today (FR-SET-004) |
 | POST | `/admin/jobs/{job}/run` | `system.health.read` + `settings.technical.manage`, Strong | Re-run a daily step `{ runKey?, date? }` (date defaults to today, Asia/Dhaka; the step's calendar check is skipped); returns `outcome` `succeeded`, `skipped` (key already succeeded) or `failed`; `404` for an unknown step; audited `job.run_requested` (JOBS-AND-OUTBOX section 4) |
+| GET | `/admin/jobs` | `system.health.read` | Every daily step in dispatcher order with its last run for the caller's company (`lastRun` null when it never ran); audited `job.listed` |
+| POST | `/admin/outbox/retry` | `system.health.read` + `settings.technical.manage`, Strong | Sets `next_attempt_at` to now on the company's `failed` messages (`dead` ones stay dead) and sends up to 20 of them after commit; returns `{ reset, processing }`; audited `outbox.retry_requested` |
 | GET | `/openapi.json` | public in staging/local; disabled in production | |

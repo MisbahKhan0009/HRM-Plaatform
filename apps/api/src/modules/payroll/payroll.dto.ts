@@ -60,8 +60,10 @@ export const toRun = (v: repo.RunView): PayrollRun => {
     calculatedAt: isoOrNull(r.calculatedAt),
     submittedAt: isoOrNull(r.submittedAt),
     preparedBy: r.preparedBy,
+    preparedByName: r.preparedBy ? v.preparedByName : null,
     approvedAt: isoOrNull(r.approvedAt),
     approvedBy: r.approvedBy,
+    approvedByName: r.approvedBy ? v.approvedByName : null,
     selfApproved: r.selfApproved,
     selfApprovalNote: r.selfApprovalNote,
     returnedReason: r.returnedReason,
@@ -121,6 +123,8 @@ export const toAdjustment = (v: repo.AdjustmentView): PayrollAdjustment => {
     selfApproved: a.selfApproved,
     selfApprovalNote: a.selfApprovalNote,
     appliedPayrollItemId: a.appliedPayrollItemId,
+    createdByUserId: a.createdBy,
+    createdByName: a.createdBy ? v.createdByName : null,
     ...stamp(a),
   };
 };
