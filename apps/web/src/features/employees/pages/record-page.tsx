@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PageHeader } from '../../../components/page-header';
 import { canAny, useMe } from '../../../lib/auth/me';
+import { DocumentsTab } from '../../documents';
 import { employeeQueries } from '../api';
 import { ContactCard } from '../components/contact-card';
 import { ContractsCard } from '../components/contracts-card';
@@ -158,7 +159,12 @@ export function EmployeeRecordPage() {
             <ContractsCard employeeId={employee.id} canEdit={canManage && employee.status !== 'archived'} />
           </TabPanel>
         ) : null}
-        {(['documents', 'attendance', 'leave', 'compensation'] as const).map((v) =>
+        {visible.documents ? (
+          <TabPanel value="documents">
+            <DocumentsTab employeeId={employee.id} employeeName={employee.displayName} />
+          </TabPanel>
+        ) : null}
+        {(['attendance', 'leave', 'compensation'] as const).map((v) =>
           visible[v] ? (
             <TabPanel key={v} value={v}>
               <ModuleLink employee={employee} tab={v} />

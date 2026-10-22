@@ -41,7 +41,6 @@ export function ClaimDetailPage() {
   const me = useMe();
   const isOwner = me?.employee?.id === claim.employee.id;
   const canReview = useCan('reimbursement.review.team', 'reimbursement.review.all');
-  const canReadAllDocuments = useCan('document.read.all');
   const canReadAll = useCan('reimbursement.read.all');
   const [dialog, setDialog] = useState<Pending>(null);
   const submit = useSubmitClaim();
@@ -87,16 +86,13 @@ export function ClaimDetailPage() {
       </>
     ) : null;
 
+  // The owner, document readers and the claim's reviewers may open the receipt (documents policy receiptReview).
   const receipt = claim.receiptDocumentId ? (
-    isOwner || canReadAllDocuments ? (
-      <Button variant="text" asChild>
-        <a href={downloadUrl(claim.receiptDocumentId)} download>
-          Download receipt
-        </a>
-      </Button>
-    ) : (
-      'Attached'
-    )
+    <Button variant="text" asChild>
+      <a href={downloadUrl(claim.receiptDocumentId)} download>
+        Download receipt
+      </a>
+    </Button>
   ) : (
     <span className="text-text-2">No receipt</span>
   );

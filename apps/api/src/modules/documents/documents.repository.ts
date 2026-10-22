@@ -14,6 +14,17 @@ export function visibleTo(access: DocumentReadAccess): SQL {
   if (access.payroll) parts.push(and(isNotNull(documents.employeeId), eq(documents.category, 'payslip')));
   if (access.ownEmployeeId)
     parts.push(and(eq(documents.employeeId, access.ownEmployeeId), eq(documents.isRestricted, false)));
+  if (access.receiptReview) {
+    const attached = sql`EXISTS (SELECT 1 FROM reimbursement_claims rc WHERE rc.receipt_document_id = ${documents.id})`;
+    if (access.receiptReview === 'all') parts.push(and(eq(documents.category, 'receipt'), attached));
+    else {
+      const team = sql`(WITH RECURSIVE team AS (
+          SELECT id, 1 AS depth FROM employees WHERE manager_id = ${access.receiptReview.teamOf}
+          UNION ALL SELECT e.id, t.depth + 1 FROM employees e JOIN team t ON e.manager_id = t.id WHERE t.depth < 50
+        ) SELECT id FROM team)`;
+      parts.push(and(eq(documents.category, 'receipt'), attached, sql`${documents.employeeId} IN ${team}`));
+    }
+  }
   return or(...parts) as SQL;
 }
 

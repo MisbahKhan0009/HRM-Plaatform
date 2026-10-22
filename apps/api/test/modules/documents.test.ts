@@ -603,3 +603,34 @@ describe('company documents', () => {
     expect(res.status).toBe(403);
   });
 });
+
+describe('receipts for claim reviewers', () => {
+  it("lets a manager read the receipt on a team member's claim, and nobody else's", async () => {
+    const manager = await f.signIn({ employee: true, strong: false });
+    const report = await f.signIn({ employee: { managerId: manager.employeeId }, strong: false });
+    const outsider = await f.signIn({ employee: true, strong: false });
+    await f.employee({ managerId: outsider.employeeId }); // outsider is a manager too, of someone else
+    const res = await upload(
+      `/api/v1/employees/${report.employeeId}/documents`,
+      report.cookie,
+      { category: 'receipt', title: 'Bus fare' },
+      { bytes: JPEG, name: 'fare.jpg', type: 'image/jpeg' },
+    );
+    const receipt = await json<Doc>(res);
+    const { uuidv7 } = await import('@hrm/db');
+    await f.db.insert(schema.reimbursementClaims).values({
+      id: uuidv7(),
+      companyId: f.companyId,
+      claimNumber: `RC-T${Date.now()}`,
+      employeeId: report.employeeId as string,
+      expenseDate: '2026-10-01',
+      amount: '120.00',
+      description: 'Bus fare',
+      receiptDocumentId: receipt.id,
+      status: 'submitted',
+    });
+    expect((await call('GET', `/api/v1/documents/${receipt.id}`, { cookie: manager.cookie })).status).toBe(200);
+    expect((await call('GET', `/api/v1/documents/${receipt.id}/download`, { cookie: manager.cookie })).status).toBe(200);
+    expect((await call('GET', `/api/v1/documents/${receipt.id}`, { cookie: outsider.cookie })).status).toBe(404);
+  });
+});

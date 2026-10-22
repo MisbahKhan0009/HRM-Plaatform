@@ -14,6 +14,11 @@ export interface DocumentReadAccess {
   all: boolean;
   payroll: boolean;
   ownEmployeeId: string | null;
+  /**
+   * Claim reviewers may open the receipt attached to a claim they can review: `all` with
+   * `reimbursement.review.all`, or the reviewer's employee id for their team with `reimbursement.review.team`.
+   */
+  receiptReview: 'all' | { teamOf: string } | null;
 }
 
 export const documentsPolicy = {
@@ -22,6 +27,11 @@ export const documentsPolicy = {
       all: auth.can(P.document.read.all),
       payroll: auth.can(P.document.payroll.read),
       ownEmployeeId: auth.can(P.document.read.own) ? auth.employeeId : null,
+      receiptReview: auth.can(P.reimbursement.review.all)
+        ? 'all'
+        : auth.can(P.reimbursement.review.team) && auth.employeeId
+          ? { teamOf: auth.employeeId }
+          : null,
     };
   },
 
