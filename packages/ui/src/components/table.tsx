@@ -20,7 +20,15 @@ export function TableContainer({
     <div className={cn('flex flex-col gap-3', className)}>
       {toolbar ? <div className="flex flex-wrap items-center gap-2">{toolbar}</div> : null}
       <div className="overflow-hidden rounded-card border border-line bg-surface">
-        <div className="overflow-x-auto">{children}</div>
+        {/* `relative` keeps absolutely positioned content (sr-only labels) inside the scroll area, so it can't widen
+            the page; the scroll area is focusable so keyboard users can scroll it (WCAG 2.1.1). */}
+        <div
+          // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region must be reachable by keyboard
+          tabIndex={0}
+          className="relative overflow-x-auto focus-visible:outline-2 focus-visible:outline-offset-[-2px]"
+        >
+          {children}
+        </div>
       </div>
       {footer}
     </div>
