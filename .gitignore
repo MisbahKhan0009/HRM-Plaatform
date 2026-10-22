@@ -11,3 +11,6 @@ coverage/
 .DS_Store
 playwright-report/
 test-results/
+
+# Agent worktrees (local only)
+.claude/worktrees/
