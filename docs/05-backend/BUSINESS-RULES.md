@@ -358,3 +358,9 @@ Stored in `settings` (DATA-MODEL section 1). Changing a key needs `settings.<sco
 5. Does a transport claim need a receipt above some amount? v1 makes the receipt optional at every amount.
 6. Should approved but unpaid reimbursement claims of a separated employee be paid in an off-cycle run? v1 includes them in the final regular run only if approved before it is calculated.
 7. ~~Mid-month salary change~~: decided, split-period proration (D-041).
+8. Off-cycle runs: what does an `off_cycle` run pay (only claims and adjustments, or prorated salary as well), and which claims and adjustments may it take? v1 creates off-cycle runs but refuses to calculate them (`422`).
+9. PAY-13a lets HR exclude an employee without a salary structure from a run "with a reason (audited)". No endpoint for this is defined; v1 requires fixing the structure and recalculating.
+10. PAY-13d and US-PAY-004 say the reviewer must acknowledge the net-change warning before approval. 6.5 makes the flag non-blocking and the API has no acknowledgement field; v1 shows the flag and does not block.
+11. PAY-09 asks that the first item snapshot be kept in history. 6.7 replaces items on recalculation and AUDIT.md forbids full snapshots in audit metadata; v1 keeps the run's audit trail (totals per calculation) and the salary-structure audit, not earlier snapshots. Is that sufficient?
+12. Items with a net amount of zero cannot carry a payment (payments are positive). v1 treats them as settled for `mark-paid`. Confirm.
+13. A failed or cancelled payment is allowed only while the run is `locked`. Once the run is `paid`, a bounced cheque has no documented transition back. What should happen?
