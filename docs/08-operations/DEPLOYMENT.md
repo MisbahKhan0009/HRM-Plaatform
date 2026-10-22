@@ -43,27 +43,24 @@ git push origin v1.4.0
 Prerequisite: `ACCOUNT-SETUP.md` done for that environment.
 
 ```bash
-cd apps/api
 # 1. 🟠 Create the database schema (run as neondb_owner, direct connection)
-DATABASE_URL="<owner direct string for the branch>" pnpm --filter @hrm/db migrate
-
-# 2. 🟠 Seed reference data only: company, roles, permissions, leave types, default schedule
-DATABASE_URL="<owner direct string>" pnpm --filter @hrm/db seed:reference
-#    staging only: synthetic demo data
-DATABASE_URL="<owner staging direct string>" pnpm --filter @hrm/db seed:demo
-
+DATABASE_URL="<owner direct string for the branch>" pnpm --filter @hrm/db db:migrate
+# 2. 🟠 Reference data (company, roles, permissions, settings, leave types, default schedule) and the first
+#    administrator, who signs in with an emailed code and invites everyone else. Safe to run again.
+DATABASE_URL="<owner direct string>" SEED_COMPANY_NAME="Big-Matrix Solutions" \
+  SEED_ADMIN_EMAIL=owner@example.com SEED_ADMIN_NAME="Owner Name" SEED_ADMIN_ROLES=system_admin,hr_admin \
+  pnpm --filter @hrm/db db:seed
+#    staging only: synthetic demo people (refuses a Neon URL unless SEED_DEMO_CONFIRM=staging)
+DATABASE_URL="<owner staging direct string>" SEED_DEMO_CONFIRM=staging pnpm --filter @hrm/db db:seed:demo
 # 3. 🟠 Build the SPA, then deploy the Worker (creates it on first deploy)
 pnpm --filter @hrm/web build
-pnpm exec wrangler deploy --env staging
-
+pnpm --filter @hrm/api exec wrangler deploy --env staging
 # 4. 🟠 Set secrets (ACCOUNT-SETUP §8), then redeploy so they're picked up
-pnpm exec wrangler deploy --env staging
-
-# 5. 🟠 Create the first system_admin + hr_admin invitations
-DATABASE_URL="<owner direct string>" pnpm --filter @hrm/scripts bootstrap-admin --email owner@example.com
+pnpm --filter @hrm/api exec wrangler secret put BETTER_AUTH_SECRET --env staging
+pnpm --filter @hrm/api exec wrangler deploy --env staging
 ```
 
-Production follows the same steps with `--env production` and **without** `seed:demo`. In production, run steps 1–2 and 5 from the owner's machine only once; every later migration runs from `deploy-production.yml`.
+Production follows the same steps with `--env production` and **without** `db:seed:demo`. In production, run steps 1–2 from the owner's machine only once; every later migration runs from `deploy-production.yml`.
 
 ## 4. Database migrations: expand/contract
 
