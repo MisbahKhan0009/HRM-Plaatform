@@ -1,12 +1,22 @@
 import { expect, expectAccessible, lastEmail, test } from '../support/fixtures';
 
 // E2E-01: sign in with an email code, register a passkey, sign out, sign in again with the passkey.
-test('E2E-01 email code sign-in, passkey registration and passkey sign-in', async ({ page, baseURL, context }) => {
+test('E2E-01 email code sign-in, passkey registration and passkey sign-in', async ({
+  page,
+  baseURL,
+  context,
+}) => {
   const base = baseURL as string;
   const cdp = await context.newCDPSession(page);
   await cdp.send('WebAuthn.enable');
   await cdp.send('WebAuthn.addVirtualAuthenticator', {
-    options: { protocol: 'ctap2', transport: 'internal', hasResidentKey: true, hasUserVerification: true, isUserVerified: true },
+    options: {
+      protocol: 'ctap2',
+      transport: 'internal',
+      hasResidentKey: true,
+      hasUserVerification: true,
+      isUserVerified: true,
+    },
   });
 
   await page.goto('/dashboard');
@@ -17,8 +27,11 @@ test('E2E-01 email code sign-in, passkey registration and passkey sign-in', asyn
   await expect(page).toHaveURL(/\/sign-in\/verify/);
   await expectAccessible(page);
 
-  await expect.poll(async () => (await lastEmail(page, base, 'employee@example.test'))?.subject ?? '').toMatch(/\d{6}/);
-  const code = /(\d{6})/.exec((await lastEmail(page, base, 'employee@example.test'))?.subject ?? '')?.[1] ?? '';
+  await expect
+    .poll(async () => (await lastEmail(page, base, 'employee@example.test'))?.subject ?? '')
+    .toMatch(/\d{6}/);
+  const code =
+    /(\d{6})/.exec((await lastEmail(page, base, 'employee@example.test'))?.subject ?? '')?.[1] ?? '';
   await page.getByLabel('Sign-in code').fill(code);
   await page.getByRole('button', { name: 'Verify' }).click();
   await expect(page).toHaveURL(/\/dashboard/);

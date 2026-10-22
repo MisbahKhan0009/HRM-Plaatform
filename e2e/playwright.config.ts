@@ -16,7 +16,16 @@ export default defineConfig({
   globalSetup: './global-setup.ts',
   use: { baseURL: BASE_URL, trace: 'retain-on-failure', screenshot: 'only-on-failure' },
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        // Machines with a preinstalled Chromium of another build (PW_CHROMIUM_PATH); CI installs its own.
+        ...(process.env.PW_CHROMIUM_PATH
+          ? { launchOptions: { executablePath: process.env.PW_CHROMIUM_PATH } }
+          : {}),
+      },
+    },
     // Nightly and before release (TESTING-STRATEGY §4): other engines and mobile viewports.
     ...(process.env.E2E_ALL_BROWSERS
       ? [

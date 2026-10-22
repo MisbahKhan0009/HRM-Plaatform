@@ -140,7 +140,7 @@ function UserMenu() {
       <MenuTrigger asChild>
         <button
           type="button"
-          aria-label={t('nav.userMenu')}
+          aria-label={`${initials(me.user.name)}, ${t('nav.userMenu')}`}
           className="grid size-9 cursor-pointer place-items-center rounded-full border border-line-strong bg-ground-2 font-mono text-sm font-medium"
         >
           {initials(me.user.name)}

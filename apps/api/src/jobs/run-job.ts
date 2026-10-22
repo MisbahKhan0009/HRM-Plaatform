@@ -37,7 +37,7 @@ export async function runJob(
       .select()
       .from(jobRuns)
       .where(and(eq(jobRuns.companyId, companyId), eq(jobRuns.job, job), eq(jobRuns.runKey, runKey)));
-    if (!existing || existing.status !== 'failed') return 'skipped';
+    if (existing?.status !== 'failed') return 'skipped';
     const [retry] = await deps.db
       .update(jobRuns)
       .set({ status: 'running', startedAt: deps.clock.now(), error: null })

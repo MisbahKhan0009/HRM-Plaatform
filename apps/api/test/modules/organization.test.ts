@@ -230,3 +230,11 @@ describe('company', () => {
     ).toBe(403);
   });
 });
+
+describe('approvals inbox', () => {
+  it('lists permission-assigned steps to a holder of that permission (array parameters regression)', async () => {
+    const res = await call('GET', '/api/v1/approvals/inbox', { cookie: hr.cookie });
+    expect(res.status).toBe(200);
+    expect((await json<{ data: unknown[] }>(res)).data).toEqual([]);
+  });
+});

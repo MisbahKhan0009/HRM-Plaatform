@@ -1,5 +1,5 @@
 import type { ApprovalDetail, ApprovalSubjectType, ApprovalSummary, Permission } from '@hrm/contracts';
-import type { Queryable } from '@hrm/db';
+import { inList, type Queryable } from '@hrm/db';
 import { type SQL, sql } from 'drizzle-orm';
 
 type Row = {
@@ -74,7 +74,7 @@ export function inbox(
     db,
     sql`ar.company_id = ${input.companyId} AND ar.state = 'open'
       AND EXISTS (SELECT 1 FROM approval_steps s WHERE s.approval_request_id = ar.id AND s.decision = 'pending'
-        AND (s.approver_user_id = ${input.userId} OR s.approver_permission = ANY(${sql.param(perms)}::text[])))
+        AND (s.approver_user_id = ${input.userId} OR s.approver_permission IN (${inList(perms)})))
       AND (ar.requester_user_id <> ${input.userId} OR ar.subject_type IN ('payroll_run', 'payroll_adjustment'))${typeFilter(input.subjectType)}`,
     input.limit,
     input.offset,

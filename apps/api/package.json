@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "wrangler dev",
     "build": "wrangler deploy --dry-run --env production --outdir dist",
-    "typecheck": "wrangler types --check --strict-vars=false && tsc -p tsconfig.json",
-    "types": "wrangler types --strict-vars=false",
+    "typecheck": "wrangler types --check --strict-vars=false --env-file .dev.vars.example && tsc -p tsconfig.json",
+    "types": "wrangler types --strict-vars=false --env-file .dev.vars.example",
     "test": "vitest run"
   },
   "dependencies": {

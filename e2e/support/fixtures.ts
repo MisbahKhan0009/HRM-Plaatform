@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { type BrowserContext, expect, type Page, test as base } from '@playwright/test';
+import { type BrowserContext, test as base, expect, type Page } from '@playwright/test';
 import { type E2EUserKey, userEmail } from './users';
 
 /** Signs a context in through the test-only route (TESTING-STRATEGY §4); strong sessions for privileged roles. */
@@ -20,7 +20,9 @@ export async function lastEmail(page: Page, baseURL: string, to: string) {
 
 /** Fails on serious or critical axe violations (TESTING-STRATEGY §4). */
 export async function expectAccessible(page: Page) {
-  const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
+  const results = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+    .analyze();
   const blocking = results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
   expect(blocking.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`)).toEqual([]);
 }

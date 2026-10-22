@@ -22,7 +22,7 @@ env:
 jobs:
   verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 30
     services:
       postgres:
         image: postgres:16-alpine
@@ -61,3 +61,9 @@ jobs:
         run: |
           pnpm --filter @hrm/db db:migrate
           pnpm --filter @hrm/db db:check
+      - name: End-to-end journeys (Chromium)
+        env:
+          E2E_DATABASE_URL: postgres://hrm:hrm@localhost:5432/hrm_e2e
+        run: |
+          pnpm --filter @hrm/e2e exec playwright install --with-deps chromium
+          pnpm e2e
