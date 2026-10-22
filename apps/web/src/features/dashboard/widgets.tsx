@@ -5,6 +5,7 @@ import { Link } from '@tanstack/react-router';
 import type { ComponentType } from 'react';
 import { api } from '../../lib/api/client';
 import { formatRelative } from '../../lib/format';
+import { PeopleOverviewWidget } from '../employees';
 
 export interface DashboardWidget {
   key: string;
@@ -73,4 +74,5 @@ function ApprovalsWidget({ primary }: { me: CurrentUser; primary: boolean }) {
  */
 export const DASHBOARD_WIDGETS: DashboardWidget[] = [
   { key: 'approvals', any: ['approval.inbox'], span: 6, Component: ApprovalsWidget },
+  { key: 'people', any: ['report.hr'], span: 6, Component: PeopleOverviewWidget },
 ];
