@@ -5,15 +5,21 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "build": "wrangler deploy --dry-run --outdir dist",
-    "typecheck": "wrangler types --check && tsc -p tsconfig.json",
-    "types": "wrangler types",
+    "build": "wrangler deploy --dry-run --env production --outdir dist",
+    "typecheck": "wrangler types --check --strict-vars=false && tsc -p tsconfig.json",
+    "types": "wrangler types --strict-vars=false",
     "test": "vitest run"
   },
   "dependencies": {
     "@hono/zod-openapi": "catalog:",
+    "@hrm/auth": "workspace:*",
     "@hrm/contracts": "workspace:*",
+    "@hrm/db": "workspace:*",
+    "@hrm/domain": "workspace:*",
+    "@hrm/mailer": "workspace:*",
+    "drizzle-orm": "catalog:",
     "hono": "catalog:",
+    "postgres": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

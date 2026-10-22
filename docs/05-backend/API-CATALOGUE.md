@@ -23,7 +23,7 @@ Better Auth serves its routes under `/api/v1/auth/*` (`basePath`). The exact Bet
 | POST | `/auth/two-factor/disable` | session, Fresh | Not allowed while the user holds a role with `requires_strong_auth` |
 | POST | `/auth/two-factor/generate-backup-codes` | session, Fresh | Replace recovery codes |
 | POST | `/auth/step-up/totp` | session | **custom.** Verify TOTP or backup code on the current session, set `strong_auth_at` |
-| POST | `/auth/step-up/passkey` | session | **custom.** Verify passkey assertion on the current session, set `strong_auth_at` |
+| POST | `/auth/passkey/verify-authentication` (step-up) | session | Passkey sign-in on top of a weak session replaces it with a strong one (D-045) |
 | GET | `/auth/me` | session | **custom.** Identity, employee link, roles, permissions, `strongAuth`, theme, locale (FR-AUTH-004). Response `CurrentUser` |
 | PATCH | `/auth/me/preferences` | session | **custom.** `{ theme: "ink" \| "paper", locale }` (D-040). Response `CurrentUser` |
 | GET | `/auth/list-sessions` | session | Own sessions |

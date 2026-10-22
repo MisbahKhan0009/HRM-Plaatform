@@ -7,4 +7,6 @@ export const auth = createAuth({
   secret: 'schema-generation-only-not-a-real-secret',
   baseURL: 'http://localhost:8787',
   sendSignInCode: async () => {},
+  canSignIn: async () => true,
+  onSignedIn: async () => {},
 });

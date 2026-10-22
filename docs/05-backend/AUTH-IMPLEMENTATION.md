@@ -54,7 +54,7 @@ export function createAuth(env: Env, db: Db, mailer: Mailer) {
       expiresIn: 60 * 60 * 24 * 7,      // absolute 7 days
       updateAge: 60 * 60,               // refresh expiry at most hourly
       freshAge: 60 * 15,                // "Fresh" = 15 min (SECURITY-MODEL section 7)
-      cookieCache: { enabled: false },  // always read the DB, so suspension takes effect at once
+      cookieCache: { enabled: true, maxAge: 60 }, // D-044; suspension is still immediate (section 3.1)
       additionalFields: {
         strongAuthAt: { type: 'date', required: false, input: false },
         authMethod:   { type: 'string', required: false, input: false },
@@ -94,7 +94,19 @@ A session is **strong** when `strongAuthAt` is set. It is set:
 
 - on passkey sign-in, by an `after` hook on `/passkey/verify-authentication` (`authMethod = 'passkey'`);
 - on `POST /auth/step-up/totp` after a valid TOTP or backup code;
-- on `POST /auth/step-up/passkey` after a valid passkey assertion on an existing session.
+- on passkey step-up: the client runs a passkey sign-in on top of the weak session; the after-hook deletes the weak session and marks the new one strong (D-045). `POST /auth/step-up/passkey` is therefore not a separate endpoint.
+
+Implementation: Better Auth's `hooks.after` in `packages/auth/src/create-auth.ts` writes `strong_auth_at` and `auth_method`; `POST /auth/step-up/totp` forwards the code to `/two-factor/verify-totp` or `/two-factor/verify-backup-code` so Better Auth's checks and rate limits apply.
+
+### Factor changes (D-045)
+
+| Situation | Requirement |
+|---|---|
+| No passkey and no confirmed authenticator yet | Session created within the last 15 minutes, or strong auth within 15 minutes |
+| A factor already exists | Strong auth within the last 15 minutes (`403 REAUTH_REQUIRED` otherwise) |
+| Disable the authenticator while holding a role with `requires_strong_auth` | Refused (`403 FORBIDDEN`) |
+
+The session middleware applies these checks before Better Auth handles `/two-factor/enable`, `/two-factor/disable`, `/two-factor/generate-backup-codes`, `/passkey/generate-register-options`, `/passkey/verify-registration` and `/passkey/delete-passkey`.
 
 Email OTP sign-in creates a session with `authMethod = 'email_otp'` and no `strongAuthAt`.
 
@@ -105,7 +117,7 @@ Email OTP sign-in creates a session with `authMethod = 'email_otp'` and no `stro
 1. Rejects users whose `status` is not `active` with `403 ACCOUNT_SUSPENDED`, and deletes the session.
 2. Builds the effective role set: explicit `user_roles`, plus `manager` if the linked employee has at least one direct report, plus `employee` if a linked employee exists.
 3. If any effective role has `requires_strong_auth` and `strongAuthAt` is NULL, every route except `/auth/me`, `/auth/step-up/*`, `/auth/two-factor/*` (enrolment), `/auth/passkey/*` (enrolment) and `/auth/sign-out` returns `403 MFA_REQUIRED`. The UI then runs step-up.
-4. Idle timeout: if `now - session.updatedAt` exceeds `security.session_idle_hours` (8) or, for privileged users, `security.privileged_idle_hours` (1), the session is deleted and the request gets `401 UNAUTHENTICATED`.
+4. Idle timeout: the middleware refreshes `sessions.updated_at` at most every 5 minutes of activity; if `now - session.updatedAt` exceeds `security.session_idle_hours` (8) or, for privileged users, `security.privileged_idle_hours` (1), the session is deleted and the request gets `401 UNAUTHENTICATED`.
 
 `requireFresh` (routes marked **Fresh** in the catalogue) additionally requires `now - strongAuthAt <= 15 min`, else `403 REAUTH_REQUIRED`.
 
@@ -145,7 +157,7 @@ The Gmail account that sends codes is itself a recovery dependency; its protecti
 
 - Cookie `hrm.session_token`: `HttpOnly; Secure; SameSite=Lax; Path=/`. No token is ever readable by JavaScript.
 - `POST /auth/sign-out` deletes the current session (FR-AUTH-003). `GET /auth/list-sessions` and `POST /auth/revoke-session` let users end their other sessions.
-- Suspending or deactivating a user deletes all their sessions in the same transaction (FR-AUTH-006). `cookieCache` is disabled so the next request is rejected.
+- Suspending or deactivating a user deletes all their sessions in the same transaction (FR-AUTH-006). The 60 s cookie cache does not delay this: the session middleware reads the session row and user status on every request (D-044).
 - Changing a user's roles keeps sessions but forces the next request to re-evaluate roles (roles are read per request, not cached in the cookie).
 
 ## 8. CSRF and origin checks

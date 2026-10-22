@@ -337,7 +337,7 @@ Stored in `settings` (DATA-MODEL section 1). Changing a key needs `settings.<sco
 | `employees.required_fields` | hr | string[] | `["firstName","lastName","joiningDate","departmentId","positionId"]` | employee validation |
 | `attendance.checkout_window_hours` | hr | int | 16 | 2.1 |
 | `attendance.correction_window_days` | hr | int | 7 | corrections older than this are rejected |
-| `leave.calendar.visible_to_team` | hr | bool | true | team calendar for employees (FR-LEAVE-011) |
+| `leave.calendar.visible_to_team` | hr | bool | false (D-042) | team calendar for employees (FR-LEAVE-011) |
 | `approvals.hide_reviewer` | hr | bool | false | FR-ESS-007 |
 | `payroll.anomaly_threshold_percent` | payroll | int | 20 | 6.5 |
 | `payroll.allow_self_approval` | payroll | bool | true | D-007 |

@@ -21,12 +21,12 @@ describe('GET /api/v1/health', () => {
 });
 
 describe('unknown API routes', () => {
-  it('return a 404 problem document', async () => {
+  it('ask for a session first, so routes cannot be probed anonymously', async () => {
     const res = await call('/api/v1/nope');
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(401);
     expect(res.headers.get('Content-Type')).toBe('application/problem+json');
     const body = (await res.json()) as { code: string; requestId: string };
-    expect(body.code).toBe('NOT_FOUND');
+    expect(body.code).toBe('UNAUTHENTICATED');
     expect(body.requestId).toBe(res.headers.get('X-Request-Id'));
   });
 });

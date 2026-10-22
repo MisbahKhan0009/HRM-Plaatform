@@ -16,3 +16,7 @@ export function createDb(connectionString: string) {
 }
 
 export type Db = ReturnType<typeof createDb>['db'];
+/** A Drizzle transaction; repositories take one and never open their own (CODING-STANDARDS §3). */
+export type Tx = Parameters<Parameters<Db['transaction']>[0]>[0];
+/** Anything that can run a query: the client or a transaction. */
+export type Queryable = Db | Tx;

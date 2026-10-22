@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@hrm/config": "workspace:*",
+    "@types/node": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

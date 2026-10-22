@@ -48,6 +48,9 @@ jobs:
       - name: Dependency rules
         run: pnpm deps:check
       - name: Typecheck, test, build
+        env:
+          # API tests recreate this database and apply migrations (apps/api/test/global-setup.ts).
+          TEST_DATABASE_URL: postgres://hrm:hrm@localhost:5432/hrm_test
         run: pnpm turbo run typecheck test build
       - name: Worker bundle budget
         run: node scripts/check-worker-size.mjs

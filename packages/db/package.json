@@ -12,9 +12,11 @@
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:check": "drizzle-kit check"
+    "db:check": "drizzle-kit check",
+    "db:seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
+    "@hrm/contracts": "workspace:*",
     "drizzle-orm": "catalog:",
     "postgres": "catalog:"
   },
@@ -22,6 +24,7 @@
     "@hrm/config": "workspace:*",
     "@types/node": "catalog:",
     "drizzle-kit": "catalog:",
+    "tsx": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

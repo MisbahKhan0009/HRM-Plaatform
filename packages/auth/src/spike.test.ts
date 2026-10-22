@@ -41,6 +41,8 @@ describe.skipIf(!url)('Better Auth passwordless spike', () => {
     sendSignInCode: async ({ email, otp }) => {
       codes.set(email, otp);
     },
+    canSignIn: async () => true,
+    onSignedIn: async () => {},
   });
   const cpu: Record<string, number[]> = {};
 

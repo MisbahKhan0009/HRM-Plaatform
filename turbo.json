@@ -12,7 +12,8 @@
     },
     "test": {
       "dependsOn": ["^build"],
-      "outputs": []
+      "outputs": [],
+      "passThroughEnv": ["AUTH_SPIKE_DATABASE_URL"]
     },
     "dev": {
       "cache": false,
@@ -28,7 +29,8 @@
     },
     "@hrm/api#test": {
       "dependsOn": ["^build", "@hrm/web#build"],
-      "outputs": []
+      "outputs": [],
+      "passThroughEnv": ["TEST_DATABASE_URL"]
     }
   },
   "globalEnv": ["CI"]
