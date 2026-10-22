@@ -64,6 +64,7 @@ request → request-id → secure headers → error handler
 | `documents.expiry_reminders` | daily dispatcher | Emails HR about documents and contracts that are expiring |
 | `leave.accrue` | daily dispatcher, on day 1 | Posts monthly accrual entries per policy |
 | `leave.year_end` | daily dispatcher, on 1 Jan | Carry-forward and expiry entries |
+| `accounts.apply_access_revocation` | daily dispatcher | Deactivates users the day after their separation date (SRS §7.5) |
 | `maintenance.prune` | daily dispatcher | Prunes old sessions, sent outbox rows, expired idempotency records |
 
 Every job is idempotent (safe to re-run), records itself in `job_runs` (FR-SET-004), and does set-based SQL to stay within the 10 ms CPU limit (ADR-0009).

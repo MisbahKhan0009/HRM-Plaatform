@@ -47,7 +47,7 @@ Terms used across the HRM documentation and code. Code identifiers are in `code`
 |---|---|
 | ADR | Architecture Decision Record, in `docs/01-tech-stack/adr/`. |
 | Audit log | Append-only record of who did what to which entity and when (`audit` module). |
-| Cron Trigger | Cloudflare's scheduler. One trigger runs every minute and dispatches all jobs (ADR-0002). |
+| Cron Trigger | Cloudflare's scheduler. Production has two: an outbox retry every 15 minutes in Dhaka working hours, and one daily dispatcher (ADR-0002, ARCHITECTURE §4). |
 | DTO | Data Transfer Object: the shape an API returns for a given permission level, such as `EmployeeBasic` or `EmployeeFull`. |
 | Email OTP | One-time code sent by email for sign-in (D-033). |
 | Hyperdrive | Cloudflare service that pools database connections between Workers and Neon. |

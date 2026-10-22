@@ -269,7 +269,7 @@ As a `payroll_officer`, I set an employee's gross salary with an effective date.
 ### US-PAY-002 Create a payroll run
 As a `payroll_officer`, I create a run for a month. FR-PAY-004, FR-PAY-012.
 - Given no regular run exists for November 2026, when I create one, then it is `draft` with run number `PR-2026-11-01`.
-- Given a regular run for November already exists and is not `returned`, when I create another regular run, then I get `RUN_EXISTS`.
+- Given a regular run for November already exists and is not `returned`, when I create another regular run, then I get `PAYROLL_RUN_EXISTS`.
 
 ### US-PAY-003 Calculate
 As a `payroll_officer`, I calculate a run. FR-PAY-005, FR-PAY-006, FR-PAY-007, FR-PAY-019, D-022.
@@ -293,7 +293,7 @@ As a `payroll.approve` holder, I approve or return a submitted run. FR-PAY-009, 
 ### US-PAY-006 Lock
 As a `payroll_officer`, I lock an approved run. FR-PAY-011, FR-PAY-019.
 - Given an `approved` run, when I lock it with a recent strong session, then it becomes `locked` and no endpoint can change its items.
-- Given someone attempts to edit a locked item, then they get `RUN_LOCKED`.
+- Given someone attempts to edit a locked item, then they get `PAYROLL_RUN_LOCKED`.
 - Given a mistake is found after lock, then the fix is a `PayrollAdjustment` applied in a later run.
 
 ### US-PAY-007 Record payments
@@ -301,7 +301,7 @@ As a `payroll_officer`, I record cash and cheque payments. FR-PAY-014, D-021.
 - Given a locked run, when I record a cheque payment with number, date and amount for an item, then the payment is `paid`.
 - Given I record a cash payment, then a cash acknowledgment reference is required.
 - Given every item is paid, then the run becomes `paid` and included claims become `paid`.
-- Given a payment amount differs from the item's net, then I get `AMOUNT_MISMATCH` unless I mark it as a partial payment with a reason.
+- Given a payment amount differs from the item's net, then I get `PAYMENT_AMOUNT_MISMATCH` unless I mark it as a partial payment with a reason.
 
 ### US-PAY-008 Reconciliation
 As a `payroll_officer`, I reconcile the run. FR-PAY-015.

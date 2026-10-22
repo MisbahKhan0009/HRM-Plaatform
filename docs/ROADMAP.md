@@ -28,4 +28,5 @@ This is the master sequence for building the HRM platform. Each stage has an
 - [x] Stage 3 — AI tooling & skills: 39 free skills in `.claude/skills/`, inventory `docs/SKILLS.md`; brand source snapshot `docs/02-brand/source/`
 - [x] Brand app adaptation approved (Ink default + light toggle) — `docs/02-brand/APP-UI-ADAPTATION.md`
 - [x] Stage 4 — Monorepo structure approved: `docs/03-architecture/MONOREPO.md`
-- [ ] Stage 5 — Documentation (in progress)
+- [x] Stage 5 — Documentation: ~70 docs across `docs/00`–`10`, root `README`/`AGENTS`/`CONTRIBUTING`/`SECURITY`; index `docs/README.md`
+- [ ] Owner decisions open: `docs/00-requirements/OPEN-QUESTIONS.md` → then Stage 6 — UX/UI design

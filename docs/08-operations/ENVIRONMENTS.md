@@ -82,11 +82,11 @@ Placeholders in `<…>` are filled in once, during `ACCOUNT-SETUP.md`. Hyperdriv
 
 Business settings (company name, schedules, leave policies) live in the database `settings` tables, not in Wrangler.
 
-## 4. Cron schedule and Neon compute (open issue)
+## 4. Cron schedule and Neon compute
 
-`docs/03-architecture/ARCHITECTURE.md` §4 runs the job dispatcher every minute. **A database query every minute stops Neon from ever scaling to zero.** At Neon Free's minimum size of 0.25 CU, an always-on compute uses 0.25 × 720 h ≈ 180 CU-hours a month, above the 100 CU-hour allowance (ADR-0009). When the allowance runs out, Neon suspends compute until the next month and the app stops.
+**A database query every minute would stop Neon from ever scaling to zero**, so there is no per-minute cron (adopted 2026-10-22, see `docs/03-architecture/ARCHITECTURE.md` §4 and D-036). At Neon Free's minimum size of 0.25 CU, an always-on compute uses 0.25 × 720 h ≈ 180 CU-hours a month, above the 100 CU-hour allowance (ADR-0009). When the allowance runs out, Neon suspends compute until the next month and the app stops.
 
-Until the architecture owner decides, staging and production use this proposed schedule:
+Production uses this schedule (staging runs only the daily dispatcher):
 
 | Cron expression (UTC) | Asia/Dhaka | Runs |
 |---|---|---|

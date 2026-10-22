@@ -241,4 +241,5 @@ All reports enforce the same scopes as their source lists (FR-REP-006). Response
 | GET | `/audit-logs` | `audit.read.all`, `audit.read.payroll` (category payroll), `audit.read.technical` (category technical, security) | `from`, `to` required; `actorUserId`, `action`, `entityType`, `entityId`, `employeeId` (FR-AUD-005) |
 | GET | `/health` | public | `{ status: "ok" }` only; no dependency details |
 | GET | `/health/details` | `system.health.read` | DB latency, last `job_runs`, outbox backlog, dead messages (FR-SET-004) |
+| POST | `/admin/jobs/{job}/run` | `system.health.read` + `settings.technical.manage`, Strong | Re-run a scheduled job step for a `runKey` (JOBS-AND-OUTBOX section 4) |
 | GET | `/openapi.json` | public in staging/local; disabled in production | |

@@ -94,6 +94,8 @@ Scope is part of the permission codename: `<resource>.<action>.<scope>`.
 | `audit.read.technical` | ✓ | | | | | | |
 | `system.health.read` | ✓ | | | | | | |
 
+Team leave calendar: employees see colleagues' approved leave (name and dates only, never the leave type) only when the setting `leave.calendar.visible_to_team` is on (default off; owner decision pending).
+
 `hr_admin` reads salary (D-008) but cannot change it. `system_admin` has no business data permissions by default (SRS §6.1). The matrix is seed data; roles and grants can be changed by `role.manage`, and every change is audited.
 
 ## 5. Field-level rules
@@ -116,7 +118,7 @@ Requesters never approve their own requests (FR-WF-004), except payroll as above
 
 ## 7. Authentication summary (ADR-0004)
 
-Passwordless: passkeys or email OTP; TOTP for strong sessions. Invite-only. Session cookie `HttpOnly; Secure; SameSite=Lax`; idle timeout 8 h, absolute 7 days; privileged roles: idle 1 h. Rate limits on OTP send/verify (per email and per IP). Sensitive actions (role change, payroll lock, payment recording) require a session authenticated within the last 15 min (re-auth).
+Passwordless: passkeys or email OTP; TOTP for strong sessions. Invite-only. Session cookie `HttpOnly; Secure; SameSite=Lax`; idle timeout 8 h, absolute 7 days; privileged roles: idle 1 h. Rate limits on OTP send/verify (per email and per IP). A weak session that needs strong auth gets `403 MFA_REQUIRED` and is upgraded in place via `POST /auth/step-up/totp` or `/auth/step-up/passkey` (`docs/05-backend/AUTH-IMPLEMENTATION.md`). Sensitive actions (role change, payroll lock, payment recording) require a session authenticated within the last 15 min (re-auth).
 
 ## 8. Data protection
 

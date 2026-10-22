@@ -76,7 +76,8 @@ adjustment_status:      pending | approved | rejected | applied
 payroll_run_type:       regular | off_cycle
 payroll_run_status:     draft | calculated | submitted | returned | approved | locked | paid | reconciled
 payroll_line_kind:      earning | deduction
-payroll_line_code:      base_salary | proration_adjustment | reimbursement | addition | deduction | arrears
+payroll_line_code:      base_salary | reimbursement | addition | deduction | proration_adjustment* | arrears*
+                        (* reserved, not produced by v1 calculation)
 payment_method:         cash | cheque
 payment_status:         unpaid | paid | failed | cancelled
 adjustment_type:        addition | deduction
