@@ -1,6 +1,6 @@
 # Monorepo structure
 
-Status: **Proposed** (Stage 4), awaiting owner approval. Scaffolding happens in Stage 7 (engineering foundation).
+Status: **Approved** by owner (2026-10-22). Scaffolding happens in Stage 7 (engineering foundation).
 
 Tooling: **pnpm workspaces + Turborepo**, TypeScript strict, **Biome** for lint and format (one fast tool, free). Package scope: `@hrm/*`. Node version pinned in `.nvmrc` and the `packageManager` field.
 

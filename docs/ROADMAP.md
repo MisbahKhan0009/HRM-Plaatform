@@ -27,4 +27,5 @@ This is the master sequence for building the HRM platform. Each stage has an
 - [x] Stage 2 — Tech stack selection: `docs/01-tech-stack/TECH-STACK.md` + ADR-0001…0009 (revised for $0 cost, D-032)
 - [x] Stage 3 — AI tooling & skills: 39 free skills in `.claude/skills/`, inventory `docs/SKILLS.md`; brand source snapshot `docs/02-brand/source/`
 - [x] Brand app adaptation approved (Ink default + light toggle) — `docs/02-brand/APP-UI-ADAPTATION.md`
-- [ ] Stage 4 — Monorepo structure plan: proposed in `docs/03-architecture/MONOREPO.md`, awaiting approval
+- [x] Stage 4 — Monorepo structure approved: `docs/03-architecture/MONOREPO.md`
+- [ ] Stage 5 — Documentation (in progress)
