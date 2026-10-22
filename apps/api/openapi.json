@@ -26014,6 +26014,555 @@
         }
       }
     },
+    "/api/v1/attendance/corrections/{id}": {
+      "get": {
+        "operationId": "attendanceCorrections.get",
+        "tags": [
+          "attendance"
+        ],
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "x-permission": "attendance.correction.review.all | attendance.correction.review.team | own",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Correction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "employee": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "employeeCode": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "employeeCode",
+                        "name"
+                      ]
+                    },
+                    "workDate": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "approved",
+                        "rejected",
+                        "withdrawn"
+                      ]
+                    },
+                    "proposedCheckInAt": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "proposedCheckOutAt": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "reason": {
+                      "type": "string"
+                    },
+                    "decidedAt": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "decisionComment": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "version": {
+                      "type": "integer"
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "employee",
+                    "workDate",
+                    "status",
+                    "proposedCheckInAt",
+                    "proposedCheckOutAt",
+                    "reason",
+                    "decidedAt",
+                    "decisionComment",
+                    "version",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input (VALIDATION_FAILED)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "VALIDATION_FAILED",
+                        "IDEMPOTENCY_KEY_REQUIRED",
+                        "UNAUTHENTICATED",
+                        "OTP_INVALID",
+                        "TOTP_INVALID",
+                        "FORBIDDEN",
+                        "MFA_REQUIRED",
+                        "REAUTH_REQUIRED",
+                        "ACCOUNT_SUSPENDED",
+                        "CSRF_ORIGIN_MISMATCH",
+                        "SELF_APPROVAL_FORBIDDEN",
+                        "NOT_FOUND",
+                        "VERSION_CONFLICT",
+                        "INVALID_TRANSITION",
+                        "EMAIL_TAKEN",
+                        "WORK_EMAIL_TAKEN",
+                        "EMPLOYEE_ALREADY_LINKED",
+                        "DEPARTMENT_CODE_TAKEN",
+                        "DUPLICATE",
+                        "IDEMPOTENCY_KEY_REUSED",
+                        "IDEMPOTENCY_IN_PROGRESS",
+                        "PAYROLL_RUN_LOCKED",
+                        "PAYROLL_RUN_EXISTS",
+                        "SELF_MANAGER",
+                        "ALREADY_CHECKED_IN",
+                        "NOT_CHECKED_IN",
+                        "REPORTING_CYCLE",
+                        "OVERLAPPING_LEAVE",
+                        "PAYMENT_AMOUNT_MISMATCH",
+                        "FILE_TOO_LARGE",
+                        "UNSUPPORTED_FILE_TYPE",
+                        "INVALID_DATE",
+                        "INSUFFICIENT_BALANCE",
+                        "LEAVE_NOT_ELIGIBLE",
+                        "LEAVE_NO_WORKING_DAYS",
+                        "PAYROLL_MISSING_SALARY_STRUCTURE",
+                        "PAYROLL_NEGATIVE_NET",
+                        "PAYROLL_CURRENCY_MISMATCH",
+                        "PAYROLL_MIDPERIOD_SALARY_CHANGE_UNCONFIRMED",
+                        "SELF_APPROVAL_NOTE_REQUIRED",
+                        "BUSINESS_RULE_VIOLATION",
+                        "RATE_LIMITED",
+                        "INTERNAL_ERROR",
+                        "DEPENDENCY_UNAVAILABLE"
+                      ]
+                    },
+                    "detail": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "path": {
+                            "type": "string"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "path",
+                          "code",
+                          "message"
+                        ]
+                      },
+                      "default": []
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "status",
+                    "code",
+                    "requestId"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "VALIDATION_FAILED",
+                        "IDEMPOTENCY_KEY_REQUIRED",
+                        "UNAUTHENTICATED",
+                        "OTP_INVALID",
+                        "TOTP_INVALID",
+                        "FORBIDDEN",
+                        "MFA_REQUIRED",
+                        "REAUTH_REQUIRED",
+                        "ACCOUNT_SUSPENDED",
+                        "CSRF_ORIGIN_MISMATCH",
+                        "SELF_APPROVAL_FORBIDDEN",
+                        "NOT_FOUND",
+                        "VERSION_CONFLICT",
+                        "INVALID_TRANSITION",
+                        "EMAIL_TAKEN",
+                        "WORK_EMAIL_TAKEN",
+                        "EMPLOYEE_ALREADY_LINKED",
+                        "DEPARTMENT_CODE_TAKEN",
+                        "DUPLICATE",
+                        "IDEMPOTENCY_KEY_REUSED",
+                        "IDEMPOTENCY_IN_PROGRESS",
+                        "PAYROLL_RUN_LOCKED",
+                        "PAYROLL_RUN_EXISTS",
+                        "SELF_MANAGER",
+                        "ALREADY_CHECKED_IN",
+                        "NOT_CHECKED_IN",
+                        "REPORTING_CYCLE",
+                        "OVERLAPPING_LEAVE",
+                        "PAYMENT_AMOUNT_MISMATCH",
+                        "FILE_TOO_LARGE",
+                        "UNSUPPORTED_FILE_TYPE",
+                        "INVALID_DATE",
+                        "INSUFFICIENT_BALANCE",
+                        "LEAVE_NOT_ELIGIBLE",
+                        "LEAVE_NO_WORKING_DAYS",
+                        "PAYROLL_MISSING_SALARY_STRUCTURE",
+                        "PAYROLL_NEGATIVE_NET",
+                        "PAYROLL_CURRENCY_MISMATCH",
+                        "PAYROLL_MIDPERIOD_SALARY_CHANGE_UNCONFIRMED",
+                        "SELF_APPROVAL_NOTE_REQUIRED",
+                        "BUSINESS_RULE_VIOLATION",
+                        "RATE_LIMITED",
+                        "INTERNAL_ERROR",
+                        "DEPENDENCY_UNAVAILABLE"
+                      ]
+                    },
+                    "detail": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "path": {
+                            "type": "string"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "path",
+                          "code",
+                          "message"
+                        ]
+                      },
+                      "default": []
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "status",
+                    "code",
+                    "requestId"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed (FORBIDDEN, MFA_REQUIRED, REAUTH_REQUIRED, SELF_APPROVAL_FORBIDDEN, CSRF_ORIGIN_MISMATCH)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "VALIDATION_FAILED",
+                        "IDEMPOTENCY_KEY_REQUIRED",
+                        "UNAUTHENTICATED",
+                        "OTP_INVALID",
+                        "TOTP_INVALID",
+                        "FORBIDDEN",
+                        "MFA_REQUIRED",
+                        "REAUTH_REQUIRED",
+                        "ACCOUNT_SUSPENDED",
+                        "CSRF_ORIGIN_MISMATCH",
+                        "SELF_APPROVAL_FORBIDDEN",
+                        "NOT_FOUND",
+                        "VERSION_CONFLICT",
+                        "INVALID_TRANSITION",
+                        "EMAIL_TAKEN",
+                        "WORK_EMAIL_TAKEN",
+                        "EMPLOYEE_ALREADY_LINKED",
+                        "DEPARTMENT_CODE_TAKEN",
+                        "DUPLICATE",
+                        "IDEMPOTENCY_KEY_REUSED",
+                        "IDEMPOTENCY_IN_PROGRESS",
+                        "PAYROLL_RUN_LOCKED",
+                        "PAYROLL_RUN_EXISTS",
+                        "SELF_MANAGER",
+                        "ALREADY_CHECKED_IN",
+                        "NOT_CHECKED_IN",
+                        "REPORTING_CYCLE",
+                        "OVERLAPPING_LEAVE",
+                        "PAYMENT_AMOUNT_MISMATCH",
+                        "FILE_TOO_LARGE",
+                        "UNSUPPORTED_FILE_TYPE",
+                        "INVALID_DATE",
+                        "INSUFFICIENT_BALANCE",
+                        "LEAVE_NOT_ELIGIBLE",
+                        "LEAVE_NO_WORKING_DAYS",
+                        "PAYROLL_MISSING_SALARY_STRUCTURE",
+                        "PAYROLL_NEGATIVE_NET",
+                        "PAYROLL_CURRENCY_MISMATCH",
+                        "PAYROLL_MIDPERIOD_SALARY_CHANGE_UNCONFIRMED",
+                        "SELF_APPROVAL_NOTE_REQUIRED",
+                        "BUSINESS_RULE_VIOLATION",
+                        "RATE_LIMITED",
+                        "INTERNAL_ERROR",
+                        "DEPENDENCY_UNAVAILABLE"
+                      ]
+                    },
+                    "detail": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "path": {
+                            "type": "string"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "path",
+                          "code",
+                          "message"
+                        ]
+                      },
+                      "default": []
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "status",
+                    "code",
+                    "requestId"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or outside your scope",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "VALIDATION_FAILED",
+                        "IDEMPOTENCY_KEY_REQUIRED",
+                        "UNAUTHENTICATED",
+                        "OTP_INVALID",
+                        "TOTP_INVALID",
+                        "FORBIDDEN",
+                        "MFA_REQUIRED",
+                        "REAUTH_REQUIRED",
+                        "ACCOUNT_SUSPENDED",
+                        "CSRF_ORIGIN_MISMATCH",
+                        "SELF_APPROVAL_FORBIDDEN",
+                        "NOT_FOUND",
+                        "VERSION_CONFLICT",
+                        "INVALID_TRANSITION",
+                        "EMAIL_TAKEN",
+                        "WORK_EMAIL_TAKEN",
+                        "EMPLOYEE_ALREADY_LINKED",
+                        "DEPARTMENT_CODE_TAKEN",
+                        "DUPLICATE",
+                        "IDEMPOTENCY_KEY_REUSED",
+                        "IDEMPOTENCY_IN_PROGRESS",
+                        "PAYROLL_RUN_LOCKED",
+                        "PAYROLL_RUN_EXISTS",
+                        "SELF_MANAGER",
+                        "ALREADY_CHECKED_IN",
+                        "NOT_CHECKED_IN",
+                        "REPORTING_CYCLE",
+                        "OVERLAPPING_LEAVE",
+                        "PAYMENT_AMOUNT_MISMATCH",
+                        "FILE_TOO_LARGE",
+                        "UNSUPPORTED_FILE_TYPE",
+                        "INVALID_DATE",
+                        "INSUFFICIENT_BALANCE",
+                        "LEAVE_NOT_ELIGIBLE",
+                        "LEAVE_NO_WORKING_DAYS",
+                        "PAYROLL_MISSING_SALARY_STRUCTURE",
+                        "PAYROLL_NEGATIVE_NET",
+                        "PAYROLL_CURRENCY_MISMATCH",
+                        "PAYROLL_MIDPERIOD_SALARY_CHANGE_UNCONFIRMED",
+                        "SELF_APPROVAL_NOTE_REQUIRED",
+                        "BUSINESS_RULE_VIOLATION",
+                        "RATE_LIMITED",
+                        "INTERNAL_ERROR",
+                        "DEPENDENCY_UNAVAILABLE"
+                      ]
+                    },
+                    "detail": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "path": {
+                            "type": "string"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "path",
+                          "code",
+                          "message"
+                        ]
+                      },
+                      "default": []
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "status",
+                    "code",
+                    "requestId"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/attendance": {
       "get": {
         "operationId": "attendance.list",
