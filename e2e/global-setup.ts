@@ -66,5 +66,13 @@ export default async function globalSetup() {
       employeeIds.set(u.key, employeeId);
     }
   }
+  // The seeded codes bypass the API, so start the employee code sequence after them (BUSINESS-RULES §8).
+  await db
+    .insert(schema.codeSequences)
+    .values({ companyId, scope: 'employee', nextValue: employeeIds.size + 1 })
+    .onConflictDoUpdate({
+      target: [schema.codeSequences.companyId, schema.codeSequences.scope],
+      set: { nextValue: employeeIds.size + 1 },
+    });
   await sql.end();
 }
