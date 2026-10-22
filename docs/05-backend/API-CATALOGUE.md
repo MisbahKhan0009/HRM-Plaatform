@@ -51,7 +51,7 @@ Account recovery for users who lost their passkey and authenticator is an HR/adm
 | PATCH | `/roles/{id}` | `role.manage`, Fresh | Change name/description/permissions | `UpdateRoleInput` → `Role` |
 | GET | `/permissions` | `role.manage` | Permission catalogue | `Permission` |
 
-Users cannot change their own roles or suspend themselves (`SELF_APPROVAL_NOT_ALLOWED`).
+Users cannot change their own roles or suspend themselves (`SELF_APPROVAL_FORBIDDEN`).
 
 ## 3. Organization and settings
 
@@ -166,7 +166,7 @@ Users cannot change their own roles or suspend themselves (`SELF_APPROVAL_NOT_AL
 | GET | `/payroll/periods` | `payroll.read.all` | | |
 | POST | `/payroll/periods` | `payroll.prepare` | | `{ year, month }`; dates computed |
 | GET | `/payroll/runs` | `payroll.read.all` | | filters `periodId`, `status` |
-| POST | `/payroll/runs` | `payroll.prepare`, Strong | key | `{ periodId, runType }` → `draft`; `409 RUN_EXISTS` |
+| POST | `/payroll/runs` | `payroll.prepare`, Strong | key | `{ periodId, runType }` → `draft`; `409 PAYROLL_RUN_EXISTS` |
 | GET | `/payroll/runs/{id}` | `payroll.read.all` | | Run + totals + validation summary |
 | GET | `/payroll/runs/{id}/items` | `payroll.read.all` | | List; `?employeeId&flag` |
 | GET | `/payroll/runs/{id}/items/{itemId}` | `payroll.read.all` | | Item + line items + snapshot |

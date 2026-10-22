@@ -93,7 +93,7 @@ The service converts `ok: false` into the matching `AppError`.
 ### 4.3 Rules
 
 - Never catch an error just to log and rethrow; the middleware logs once with the request id.
-- Catch only to translate: database unique violations (`23505`) become `409` with the documented code (`WORK_EMAIL_TAKEN`, `RUN_EXISTS`, ...) through `mapDbError()`; never leak constraint names.
+- Catch only to translate: database unique violations (`23505`) become `409` with the documented code (`WORK_EMAIL_TAKEN`, `PAYROLL_RUN_EXISTS`, ...) through `mapDbError()`; never leak constraint names.
 - Unknown errors become `500 INTERNAL_ERROR`, are reported to Sentry, and the response contains only `requestId`.
 - Never use errors for control flow in loops.
 
@@ -150,7 +150,7 @@ The service converts `ok: false` into the matching `AppError`.
 
 - Every service function has tests for: success, each documented error code, and each scope (own, team, all, outside scope returns 404).
 - Domain functions use table-driven tests and property-based tests with `fast-check` for arithmetic (proration sums, ledger balance equals sum of entries).
-- Test names state behaviour: `it('rejects approval by the requester with SELF_APPROVAL_NOT_ALLOWED')`.
+- Test names state behaviour: `it('rejects approval by the requester with SELF_APPROVAL_FORBIDDEN')`.
 - Strategy and tooling: `docs/07-quality/TESTING-STRATEGY.md`.
 
 ## 13. Comments and documentation

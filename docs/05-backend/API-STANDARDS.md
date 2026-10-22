@@ -141,7 +141,7 @@ Field `code` values are the Zod issue code or a custom code from `@hrm/contracts
 | 403 | `REAUTH_REQUIRED` | Sensitive action needs recent strong auth |
 | 403 | `ACCOUNT_SUSPENDED` | User status `suspended` or `deactivated` |
 | 403 | `CSRF_ORIGIN_MISMATCH` | Origin header missing or wrong |
-| 403 | `SELF_APPROVAL_NOT_ALLOWED` | Approver is the requester (FR-WF-004) |
+| 403 | `SELF_APPROVAL_FORBIDDEN` | Approver is the requester (FR-WF-004) |
 | 404 | `NOT_FOUND` | Missing, or exists outside the caller's scope (IDOR rule) |
 | 409 | `VERSION_CONFLICT` | `version` does not match (someone else saved first) |
 | 409 | `INVALID_TRANSITION` | Action not allowed from the current status |
@@ -152,20 +152,23 @@ Field `code` values are the Zod issue code or a custom code from `@hrm/contracts
 | 409 | `DUPLICATE` | Any other unique constraint (employee code, holiday date, cheque number ...); `errors[].path` names the field |
 | 409 | `IDEMPOTENCY_KEY_REUSED` | Same key with a different request body |
 | 409 | `IDEMPOTENCY_IN_PROGRESS` | Same key, first request still running |
-| 409 | `RUN_LOCKED` | Change would modify a locked payroll run (or a closed payroll period) |
-| 409 | `RUN_EXISTS` | A regular payroll run already exists for the period |
+| 409 | `PAYROLL_RUN_LOCKED` | Change would modify a locked payroll run (or a closed payroll period) |
+| 409 | `PAYROLL_RUN_EXISTS` | A regular payroll run already exists for the period |
 | 409 | `SELF_MANAGER` | Employee set as their own manager (FR-ORG-004) |
 | 409 | `REPORTING_CYCLE` | Manager assignment would create a cycle (FR-ORG-005) |
 | 409 | `ALREADY_CHECKED_IN` / `NOT_CHECKED_IN` | Attendance punch out of order |
 | 409 | `OVERLAPPING_LEAVE` | Overlaps an existing active leave request |
-| 409 | `AMOUNT_MISMATCH` | Recorded payments would exceed the item's net amount, or reconciliation totals disagree (FR-PAY-015) |
+| 409 | `PAYMENT_AMOUNT_MISMATCH` | Recorded payments would exceed the item's net amount, or reconciliation totals disagree (FR-PAY-015) |
 | 413 | `FILE_TOO_LARGE` | Upload over 10 MB |
 | 415 | `UNSUPPORTED_FILE_TYPE` | MIME or magic bytes not in allow-list |
 | 422 | `INVALID_DATE` | A date breaks a business rule: in the future for attendance, outside the correction window, before joining, spanning two leave years |
 | 422 | `INSUFFICIENT_BALANCE` | Not enough available leave balance and the policy forbids a negative balance |
 | 422 | `LEAVE_NOT_ELIGIBLE` | Policy eligibility not met |
 | 422 | `LEAVE_NO_WORKING_DAYS` | Range contains only weekends and holidays |
-| 422 | `PAYROLL_VALIDATION_FAILED` | Run has blocking validation flags; `errors` lists them per employee |
+| 422 | `PAYROLL_MISSING_SALARY_STRUCTURE` | `submit` blocked: an eligible employee has no approved salary structure; `errors` lists every blocking item |
+| 422 | `PAYROLL_NEGATIVE_NET` | `submit` blocked: an item's net amount is negative |
+| 422 | `PAYROLL_CURRENCY_MISMATCH` | `submit` blocked: an input is not in the run currency |
+| 422 | `PAYROLL_MIDPERIOD_SALARY_CHANGE_UNCONFIRMED` | `calculate` blocked: an employee's salary changes inside the period and the owner has not set the mid-period policy (BUSINESS-RULES 6.3) |
 | 422 | `SELF_APPROVAL_NOTE_REQUIRED` | Payroll self-approval without justification (D-007) |
 | 422 | `BUSINESS_RULE_VIOLATION` | Other documented rule; `detail` names it |
 | 429 | `RATE_LIMITED` | Too many requests; `Retry-After` header set |
@@ -227,3 +230,7 @@ Every response: `X-Request-Id`, `Cache-Control: no-store` (all API data is priva
 - Request DTOs are named `<Action><Entity>Input` (`CreateEmployeeInput`, `ApproveLeaveRequestInput`).
 - Inputs are strict Zod objects (`.strict()`): unknown properties return `400`.
 - Text inputs are trimmed; empty strings become `null` only where the DTO says so.
+
+### Payroll blocking codes
+
+When `submit` finds blocking validation flags, the top-level `code` is the first present in this order: `PAYROLL_MISSING_SALARY_STRUCTURE`, `PAYROLL_NEGATIVE_NET`, `PAYROLL_CURRENCY_MISMATCH`. `errors` lists every blocking item across all employees as `{ "path": "/items/<payrollItemId>", "code": "<flag>", "message": "..." }`, so the UI shows all problems at once.
