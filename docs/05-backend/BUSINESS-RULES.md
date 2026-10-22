@@ -24,7 +24,7 @@ Values marked **seed default** are configuration, not policy decisions. The owne
 
 For one `(employee, work_date)`:
 
-1. If correction or manual-entry events exist, take the latest one by `recorded_at`. Its `check_in_at` and `check_out_at` replace the corresponding web punches; a side it leaves NULL keeps the web value.
+1. If correction or manual-entry events exist, take the latest one by `recorded_at`. Its `check_in_at` and `check_out_at` replace the corresponding web punches; a side it leaves NULL keeps the web value. The day then has one effective pair: the override's check-in, else the earliest web check-in, and its check-out, else the check-out of the last web pair (NULL when that pair is open). A check-out that is not after the check-in counts as missing.
 2. Otherwise pair web events in time order: each `check_in` pairs with the next `check_out`.
 3. `first_in_at` = earliest effective check-in; `last_out_at` = latest effective check-out.
 4. `span_minutes` = sum over complete pairs of `(check_out - check_in)` in whole minutes, rounded down.
@@ -64,12 +64,12 @@ Schedule: Sun to Thu, core 10:00 to 16:00, `min_daily_minutes` 480, `break_minut
 
 | Day | Punches (Asia/Dhaka) | worked | late | Status |
 |---|---|---|---|---|
-| Sun 2 Nov 2026 | 09:05 in, 18:10 out | 545 - 60 = 485 | 0 | `present` |
-| Mon 3 Nov | 10:40 in, 19:00 out | 500 - 60 = 440 | 40 | `short_hours` (rule 7 before 8) |
-| Tue 4 Nov | 08:00 in, 15:30 out | 450 - 60 = 390 | 0 | `short_hours` |
-| Wed 5 Nov | 09:30 in, no out | 0 | 0 | `missing_punch` |
-| Thu 6 Nov | 07:00 in, 17:00 out (but 15:00 to 15:30 gap: out 15:00, in 15:30) | 570 - 60 = 510 | 0 | `present` |
-| Fri 7 Nov | none | 0 | 0 | `weekend` |
+| Sun 1 Nov 2026 | 09:05 in, 18:10 out | 545 - 60 = 485 | 0 | `present` |
+| Mon 2 Nov | 10:40 in, 19:00 out | 500 - 60 = 440 | 40 | `short_hours` (rule 7 before 8) |
+| Tue 3 Nov | 08:00 in, 15:30 out | 450 - 60 = 390 | 0 | `short_hours` |
+| Wed 4 Nov | 09:30 in, no out | 0 | 0 | `missing_punch` |
+| Thu 5 Nov | 07:00 in, 17:00 out (but 15:00 to 15:30 gap: out 15:00, in 15:30) | 570 - 60 = 510 | 0 | `present` |
+| Fri 6 Nov | none | 0 | 0 | `weekend` |
 
 ## 3. Leave quantities
 
@@ -358,3 +358,6 @@ Stored in `settings` (DATA-MODEL section 1). Changing a key needs `settings.<sco
 5. Does a transport claim need a receipt above some amount? v1 makes the receipt optional at every amount.
 6. Should approved but unpaid reimbursement claims of a separated employee be paid in an off-cycle run? v1 includes them in the final regular run only if approved before it is calculated.
 7. ~~Mid-month salary change~~: decided, split-period proration (D-041).
+8. May an HR user record a manual attendance entry for their own employee record? v1 refuses it with `SELF_APPROVAL_FORBIDDEN`; another HR user records it.
+9. Should lateness and early leave be reported on a day with an approved half-day leave? v1 reports 0 for both, because rule 8 is skipped on those days.
+10. How late may a proposed correction check-out be? v1 accepts a check-out on the work date or the following calendar date (night after), never in the future.

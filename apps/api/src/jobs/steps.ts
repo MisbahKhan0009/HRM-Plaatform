@@ -1,3 +1,4 @@
+import { closeDayStep } from '../modules/attendance/attendance.jobs';
 import { maintenancePrune } from '../modules/health/maintenance.step';
 import type { DailyStep } from './dispatcher';
 
@@ -6,6 +7,7 @@ import type { DailyStep } from './dispatcher';
  * the order is visible in one place.
  */
 export const DAILY_STEPS: readonly DailyStep[] = [
+  closeDayStep,
   // Keep last: retention and audit counts run after every other step.
   maintenancePrune,
 ];

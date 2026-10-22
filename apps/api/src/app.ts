@@ -8,6 +8,7 @@ import { session } from './middleware/session';
 import { authRoutes } from './modules/accounts/auth.routes';
 import { usersRoutes } from './modules/accounts/users.routes';
 import { approvalRoutes } from './modules/approvals/approvals.routes';
+import { attendanceRoutes } from './modules/attendance/attendance.routes';
 import { auditRoutes } from './modules/audit/audit.routes';
 import { healthRoutes } from './modules/health/health.routes';
 import { systemRoutes } from './modules/health/system.routes';
@@ -40,6 +41,7 @@ app.route('/api/v1', usersRoutes);
 app.route('/api/v1', settingsRoutes);
 app.route('/api/v1', auditRoutes);
 app.route('/api/v1', systemRoutes);
+app.route('/api/v1', attendanceRoutes);
 
 // Better Auth serves the rest of /auth/* (sign-in, passkeys, TOTP, sessions); our routes above match first.
 app.on(['GET', 'POST'], '/api/v1/auth/*', (c) => c.var.deps.auth().handler(c.req.raw));
