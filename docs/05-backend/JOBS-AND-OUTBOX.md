@@ -82,10 +82,10 @@ Runs at 00:05 Asia/Dhaka. Steps run in this order; a failing step is recorded an
 |---|---|---|---|
 | `employee.apply_effective_events` | every day | Apply `employment_events` with `status = scheduled` and `effective_date <= today`: update the employee row, set the event `applied` | date |
 | `attendance.close_day` | every day | Finalise yesterday's records (BUSINESS-RULES 2.4) | date |
-| `leave.year_end` | 1 January | Expiry and carry-forward for the previous year, then annual grants (BUSINESS-RULES 5.4). Depends on `attendance.close_day` | year |
-| `leave.accrue` | 1st of each month | Monthly and per-days-worked accrual for the previous month (BUSINESS-RULES 5.2, 5.3). Depends on `attendance.close_day` | `YYYY-MM` |
-| `leave.carry_forward_expiry` | every day, only if a policy has `carry_forward_expiry_months` and today is its expiry date | Expire unused carried-forward days | date |
-| `leave.eligibility_grants` | every day | Prorated first grants for employees who became eligible yesterday (BUSINESS-RULES 5.1) | date |
+| `leave.accrue` | 1st of each month | Monthly and per-days-worked accrual for the previous month (BUSINESS-RULES 5.2, 5.3). Depends on `attendance.close_day`. Runs before `leave.year_end`, so December accrual is in the old year's balance | `YYYY-MM` |
+| `leave.year_end` | 1 January | Expiry and carry-forward for the previous year, then annual grants (BUSINESS-RULES 5.4). Depends on `attendance.close_day` and `leave.accrue` | year |
+| `leave.carry_forward_expiry` | the 1st of February to December, only if a policy has `carry_forward_expiry_months` and today is its expiry date (1 January plus that many months, inside the leave year) | Expire unused carried-forward days | date |
+| `leave.eligibility_grants` | every day | Annual grants for employees eligible today who have no grant this leave year: prorated when they became eligible during the year, the full entitlement when eligible before 1 January (BUSINESS-RULES 5.1) | date |
 | `documents.expiry_reminders` | every day | Enqueue one digest email to HR listing documents and contracts expiring in 30, 14, 7 and 0 days (FR-DOC-006) | date |
 | `accounts.apply_access_revocation` | every day | Deactivate users of employees whose `separation_date` was yesterday and revoke their sessions | date |
 | `maintenance.prune` | every day | Retention deletes (DATABASE-CONVENTIONS section 8), leave balance consistency check, audit counts | date |

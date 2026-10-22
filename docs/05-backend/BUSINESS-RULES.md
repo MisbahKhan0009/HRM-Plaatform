@@ -363,3 +363,10 @@ Stored in `settings` (DATA-MODEL section 1). Changing a key needs `settings.<sco
 10. How late may a proposed correction check-out be? v1 accepts a check-out on the work date or the following calendar date (night after), never in the future.
 11. Document retention (X-003): may `POST /documents/{id}/delete` remove a document before its category's `documents.retention_days.<category>` period ends, and should a job delete documents automatically once that period ends? v1 lets `document.manage` delete at any time with a reason and runs no automatic deletion.
 12. Should the subject employee see their own documents in the restricted categories (`identity`, `contract`, `payslip`)? v1 shows them unless the document is flagged `isRestricted`, and audits every download in those categories.
+13. Does `max_balance` cap `monthly_accrual` postings as it caps `per_days_worked` (5.3)? v1 applies the cap to both.
+14. `carry_forward_expiry_months` allows 1 to 24, but an expiry date of 1 January or later in the next year collides with the next year end (5.4). v1 expires carried days only when the date falls inside the leave year (1 to 11 months); for 12 or more the next year end governs.
+15. When `max_balance` caps a `per_days_worked` posting, is the excess forfeited? v1 computes `earned_ytd - already` each month, so capped days are posted later once the balance has room.
+16. With `min_notice_days` 0, an employee cannot request leave that starts before today (3.1), so retroactive sick leave needs HR on behalf. Should sick leave allow a retroactive window?
+17. Who are an employee's colleagues on the team calendar when `leave.calendar.visible_to_team` is on? v1 shows employees who share the same manager.
+18. Are `optional` holidays excluded from leave days like other holidays? v1 excludes every holiday type.
+19. An employee eligible before 1 January who has no grant for the year (for example at go-live) receives the full annual entitlement from the daily `leave.eligibility_grants` step. Confirm.

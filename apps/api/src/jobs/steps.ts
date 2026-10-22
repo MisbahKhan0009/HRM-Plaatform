@@ -1,6 +1,7 @@
 import { closeDayStep } from '../modules/attendance/attendance.jobs';
 import { documentExpiryReminders } from '../modules/documents/documents.jobs';
 import { maintenancePrune } from '../modules/health/maintenance.step';
+import { LEAVE_DAILY_STEPS } from '../modules/leave/leave.jobs';
 import type { DailyStep } from './dispatcher';
 
 /**
@@ -9,6 +10,8 @@ import type { DailyStep } from './dispatcher';
  */
 export const DAILY_STEPS: readonly DailyStep[] = [
   closeDayStep,
+  // accrue, year end, carry-forward expiry, eligibility grants (after attendance is closed)
+  ...LEAVE_DAILY_STEPS,
   documentExpiryReminders,
   // Keep last: retention and audit counts run after every other step.
   maintenancePrune,

@@ -6,6 +6,7 @@ export * from './common';
 export * from './documents';
 export * from './errors';
 export * from './health';
+export * from './leave';
 export * from './organization';
 export * from './permissions';
 export * from './primitives';

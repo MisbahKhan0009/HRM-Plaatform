@@ -129,8 +129,8 @@ Users cannot change their own roles, suspend, reactivate, deactivate or reset th
 | GET | `/leave/balances/me` | `leave.request.own` | | `?year=`; per type: entitled, used, reserved, available |
 | GET | `/leave/balances` | `leave.read.all` / `.team` | | `?year&employeeId&departmentId` |
 | GET | `/leave/balances/{employeeId}/ledger` | `leave.read.all` / `.team` / own | | `?year&leaveTypeId` |
-| POST | `/leave/balances/adjustments` | `leave.balance.adjust`, Strong | key | `{ employeeId, leaveTypeId, year, amount, reason }` |
-| POST | `/leave/requests/preview` | `leave.request.own` | | Computes working days and balance effect without saving |
+| POST | `/leave/balances/adjustments` | `leave.balance.adjust`, Strong | key | `{ employeeId, leaveTypeId, year, amount, reason }`; `201` with the balance after the adjustment; a negative amount may not take `available` below zero unless the policy allows it (`422 INSUFFICIENT_BALANCE`) |
+| POST | `/leave/requests/preview` | `leave.request.own` (or `leave.request.review.all` with `employeeId`) | | Same body as create; computes working days and balance effect without saving |
 | GET | `/leave/requests` | `leave.read.all` / `.team` or own | | filters `status`, `employeeId`, `leaveTypeId`, `from`, `to` |
 | POST | `/leave/requests` | `leave.request.own` (or `leave.request.review.all` with `employeeId` = on behalf) | | Creates the request directly in `pending` and posts the reservation (DOMAIN-MODEL 5.3); `draft` is not exposed in v1 |
 | GET | `/leave/requests/{id}` | read scopes or own | | |
@@ -139,8 +139,8 @@ Users cannot change their own roles, suspend, reactivate, deactivate or reset th
 | POST | `/leave/requests/{id}/reject` | same | | `pending` → `rejected`; comment required |
 | POST | `/leave/requests/{id}/cancel` | own (or HR on behalf) | | `approved` → `cancellation_pending`; future or current leave only |
 | POST | `/leave/requests/{id}/cancel/approve` | review scopes | key | → `cancelled`; posts reversal |
-| POST | `/leave/requests/{id}/cancel/reject` | review scopes | | → `approved` |
-| GET | `/leave/calendar` | `leave.read.all` / `.team`; own team for employees (setting `leave.calendar.visible_to_team`) | | `from`, `to` (max 92 days); shows type only to readers with `leave.read.*` (FR-LEAVE-011) |
+| POST | `/leave/requests/{id}/cancel/reject` | review scopes | | → `approved`; comment required |
+| GET | `/leave/calendar` | `leave.read.all` / `.team`; own team for employees (setting `leave.calendar.visible_to_team`) | | `from`, `to` (max 92 days); shows type only to readers with `leave.read.*` and on the caller's own entries (FR-LEAVE-011); colleagues are employees with the same manager, approved leave only |
 
 ## 7. Reimbursements
 
