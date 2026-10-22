@@ -113,6 +113,7 @@ Users cannot change their own roles, suspend, reactivate, deactivate or reset th
 | GET | `/attendance/summary` | read scopes | Per-employee counts per status for `from`..`to` (FR-ATT-011) |
 | POST | `/attendance/manual-entries` | `attendance.manage` | `{ employeeId, workDate, checkInAt, checkOutAt, reason }` (FR-ATT-009) |
 | GET | `/attendance/corrections` | `attendance.correction.review.*` or own | filters `status`, `employeeId` |
+| GET | `/attendance/corrections/{id}` | `attendance.correction.review.*` or own | One correction; a correction outside the review scope and not the caller's own returns 404 |
 | POST | `/attendance/corrections` | `attendance.correction.request.own` | Creates `pending` + approval request |
 | POST | `/attendance/corrections/{id}/approve` | `attendance.correction.review.team` / `.all` | `pending` → `approved`; appends `correction` event |
 | POST | `/attendance/corrections/{id}/reject` | same | comment required |

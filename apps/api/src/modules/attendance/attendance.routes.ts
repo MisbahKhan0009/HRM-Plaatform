@@ -124,6 +124,23 @@ attendanceRoutes.openapi(
 attendanceRoutes.openapi(
   createRoute({
     method: 'get',
+    path: '/attendance/corrections/{id}',
+    operationId: 'attendanceCorrections.get',
+    tags,
+    security,
+    'x-permission': 'attendance.correction.review.all | attendance.correction.review.team | own',
+    request: { params: IdParamSchema },
+    responses: {
+      200: jsonContent(AttendanceCorrectionSchema, 'Correction'),
+      ...problemResponses(400, 401, 403, 404),
+    },
+  }),
+  async (c) => c.json(await corrections.getCorrection(c.var.deps, c.var.auth, c.req.valid('param').id), 200),
+);
+
+attendanceRoutes.openapi(
+  createRoute({
+    method: 'get',
     path: '/attendance',
     operationId: 'attendance.list',
     tags,

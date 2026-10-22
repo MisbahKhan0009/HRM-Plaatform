@@ -75,6 +75,20 @@ export async function listCorrections(deps: Deps, auth: AuthContext, q: Attendan
 }
 
 /**
+ * `GET /attendance/corrections/{id}`: the list's visibility (the review scope plus the caller's own requests);
+ * anything else is 404 (SECURITY-MODEL §4).
+ */
+export async function getCorrection(deps: Deps, auth: AuthContext, id: string) {
+  const { review, ownEmployeeId } = await policy.correctionListScope(auth);
+  const row = await repo.findCorrection(deps.db, auth.scopeAll(), id);
+  if (!row) throw notFound();
+  const employeeId = row.c.employeeId;
+  const reviewable = review !== null && (review.employees === 'all' || review.employees.includes(employeeId));
+  if (!reviewable && employeeId !== ownEmployeeId) throw notFound();
+  return toCorrection(row);
+}
+
+/**
  * `POST /attendance/corrections` (FR-ATT-006): a pending correction of the caller's own day, with an approval request
  * to the manager or, without one, to HR (D-014, BUSINESS-RULES 7.3).
  */
