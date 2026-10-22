@@ -292,3 +292,16 @@ export const useDecideProfileChange = () =>
         ...(v.comment ? { comment: v.comment } : {}),
       }),
   );
+
+/** Tabs of the employee record (route search `tab`). */
+export const recordTabValues = [
+  'overview',
+  'employment',
+  'contact',
+  'contracts',
+  'documents',
+  'attendance',
+  'leave',
+  'compensation',
+] as const;
+export type RecordTab = (typeof recordTabValues)[number];

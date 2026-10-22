@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "size": "node scripts/check-bundle-size.mjs"
   },
   "dependencies": {
     "@better-auth/passkey": "catalog:",

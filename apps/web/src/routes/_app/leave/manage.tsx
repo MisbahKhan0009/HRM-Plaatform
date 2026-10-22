@@ -2,11 +2,8 @@ import { leaveRequestStatusValues } from '@hrm/contracts';
 import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { leaveQueries } from '../../../features/leave/api';
-import {
-  LeaveManagePage,
-  manageBalanceParams,
-  manageRequestParams,
-} from '../../../features/leave/pages/manage-page';
+import { LeaveManagePage } from '../../../features/leave/pages/manage-page';
+import { manageBalanceParams, manageRequestParams } from '../../../features/leave/search';
 import { requireAny } from '../../../lib/auth/me';
 import { todayIso } from '../../../lib/format';
 

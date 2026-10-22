@@ -2,7 +2,8 @@ import { leaveRequestStatusValues } from '@hrm/contracts';
 import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { leaveQueries } from '../../../features/leave/api';
-import { MyLeavePage, myRequestParams, thisLeaveYear } from '../../../features/leave/pages/my-leave-page';
+import { MyLeavePage } from '../../../features/leave/pages/my-leave-page';
+import { myRequestParams, thisLeaveYear } from '../../../features/leave/search';
 import { requireAny } from '../../../lib/auth/me';
 
 const year = thisLeaveYear();

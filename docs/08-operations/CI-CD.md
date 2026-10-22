@@ -26,7 +26,7 @@ test         services: postgres:<Neon major version>  (health-checked)
              pnpm turbo run test --affected   (coverage gates in TESTING-STRATEGY §5)
 build        pnpm turbo run build --affected
 budgets      Worker bundle ≤ 2 MB gzip (PERFORMANCE-BUDGETS PB-03)
-             SPA initial JS ≤ 200 KB gzip (PB-06)
+             SPA initial JS ≤ 200 KB gzip (PB-06; reports only until met, D-047)
              grep: "__test_login" must not appear in the production bundle
 boundaries   dependency-cruiser on apps/ and packages/ (MONOREPO §2)
 openapi      generated spec matches committed spec; contract tests

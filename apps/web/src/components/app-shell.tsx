@@ -1,41 +1,20 @@
-import {
-  Button,
-  cn,
-  Logo,
-  MenuContent,
-  MenuItem,
-  MenuLabel,
-  MenuRoot,
-  MenuSeparator,
-  MenuTrigger,
-  Sheet,
-  Tooltip,
-} from '@hrm/ui';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Link, useNavigate, useRouterState } from '@tanstack/react-router';
-import {
-  CalendarDays,
-  Clock,
-  Inbox,
-  LayoutDashboard,
-  LogOut,
-  Menu,
-  Moon,
-  MoreHorizontal,
-  Shield,
-  SlidersHorizontal,
-  Sun,
-  User,
-  Wallet,
-} from 'lucide-react';
-import { type ReactNode, useState } from 'react';
+import { Button, cn, Logo, Tooltip } from '@hrm/ui';
+import { useQuery } from '@tanstack/react-query';
+import { Link, useRouterState } from '@tanstack/react-router';
+import { CalendarDays, Clock, Inbox, LayoutDashboard, Menu, MoreHorizontal, Wallet } from 'lucide-react';
+import { lazy, type ReactNode, Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CheckInShortcut } from '../features/attendance/widgets';
 import { api } from '../lib/api/client';
-import { authClient } from '../lib/auth/auth-client';
 import { can, useMe } from '../lib/auth/me';
+import { initials, USER_MENU_TRIGGER } from '../lib/format-name';
 import { useTheme } from '../lib/theme';
 import { visibleNav } from './nav';
+
+// Radix Dialog loads when a drawer first opens (PB-06).
+const Sheet = lazy(() => import('@hrm/ui/dialog').then((m) => ({ default: m.Sheet })));
+
+import { ThemeToggle } from './theme-toggle';
 
 const PRIVILEGED = ['system_admin', 'hr_admin', 'payroll_officer', 'director', 'auditor'];
 
@@ -50,15 +29,6 @@ function useInboxCount(enabled: boolean) {
     refetchInterval: 60_000,
     refetchIntervalInBackground: false,
   });
-}
-
-function initials(name: string) {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase())
-    .join('');
 }
 
 function SidebarNav({ onNavigate, enrolOnly }: { onNavigate?: () => void; enrolOnly?: boolean }) {
@@ -125,68 +95,36 @@ function SidebarNav({ onNavigate, enrolOnly }: { onNavigate?: () => void; enrolO
   );
 }
 
+const loadUserMenu = () => import('./user-menu');
+const UserMenuPopup = lazy(() => loadUserMenu().then((m) => ({ default: m.UserMenuPopup })));
+
+/**
+ * The account menu's trigger. The Radix menu loads on first click (prefetched on hover or focus; PB-06), then
+ * replaces this button already open.
+ */
 function UserMenu() {
   const { t } = useTranslation();
   const me = useMe();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const [opened, setOpened] = useState(false);
   if (!me) return null;
-  const signOut = async () => {
-    await authClient.signOut().catch(() => undefined);
-    queryClient.clear();
-    await navigate({ to: '/sign-in' });
-  };
-  return (
-    <MenuRoot>
-      <MenuTrigger asChild>
-        <button
-          type="button"
-          aria-label={`${initials(me.user.name)}, ${t('nav.userMenu')}`}
-          className="grid size-9 cursor-pointer place-items-center rounded-full border border-line-strong bg-ground-2 font-mono text-sm font-medium"
-        >
-          {initials(me.user.name)}
-        </button>
-      </MenuTrigger>
-      <MenuContent>
-        <MenuLabel>
-          <span className="block font-medium text-text">{me.user.name}</span>
-          <span className="block">{me.user.email}</span>
-        </MenuLabel>
-        <MenuSeparator />
-        {me.employee ? (
-          <MenuItem onSelect={() => navigate({ to: '/me' })}>
-            <User aria-hidden="true" />
-            {t('nav.profile')}
-          </MenuItem>
-        ) : null}
-        <MenuItem onSelect={() => navigate({ to: '/me/security' })}>
-          <Shield aria-hidden="true" />
-          {t('nav.security')}
-        </MenuItem>
-        <MenuItem onSelect={() => navigate({ to: '/me/preferences' })}>
-          <SlidersHorizontal aria-hidden="true" />
-          {t('nav.preferences')}
-        </MenuItem>
-        <MenuSeparator />
-        <MenuItem onSelect={() => void signOut()}>
-          <LogOut aria-hidden="true" />
-          {t('nav.signOut')}
-        </MenuItem>
-      </MenuContent>
-    </MenuRoot>
+  const trigger = (
+    <button
+      type="button"
+      aria-label={`${initials(me.user.name)}, ${t('nav.userMenu')}`}
+      aria-haspopup="menu"
+      className={USER_MENU_TRIGGER}
+      onPointerEnter={() => void loadUserMenu()}
+      onFocus={() => void loadUserMenu()}
+      onClick={() => setOpened(true)}
+    >
+      {initials(me.user.name)}
+    </button>
   );
-}
-
-export function ThemeToggle() {
-  const { t } = useTranslation();
-  const { theme, toggle } = useTheme();
-  const label = theme === 'ink' ? t('theme.toLight') : t('theme.toDark');
+  if (!opened) return trigger;
   return (
-    <Tooltip content={label}>
-      <Button variant="icon" size="icon" aria-label={label} onClick={() => void toggle()}>
-        {theme === 'ink' ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
-      </Button>
-    </Tooltip>
+    <Suspense fallback={trigger}>
+      <UserMenuPopup defaultOpen />
+    </Suspense>
   );
 }
 
@@ -242,9 +180,13 @@ function BottomNav() {
           </li>
         </ul>
       </nav>
-      <Sheet open={open} onOpenChange={setOpen} title={t('nav.main')}>
-        <SidebarNav onNavigate={() => setOpen(false)} />
-      </Sheet>
+      {open ? (
+        <Suspense fallback={null}>
+          <Sheet open onOpenChange={setOpen} title={t('nav.main')}>
+            <SidebarNav onNavigate={() => setOpen(false)} />
+          </Sheet>
+        </Suspense>
+      ) : null}
     </>
   );
 }
@@ -291,7 +233,7 @@ export function AppShell({ children, enrolOnly = false }: { children: ReactNode;
             </Link>
             <div className="flex-1" />
             {can(me, 'approval.inbox') ? (
-              <Tooltip content={t('nav.approvals')}>
+              <Tooltip content={t('nav.approvals')} align="end">
                 <Button variant="icon" size="icon" asChild>
                   <Link
                     to="/approvals"
@@ -325,12 +267,16 @@ export function AppShell({ children, enrolOnly = false }: { children: ReactNode;
           </main>
         </div>
       </div>
-      <Sheet open={drawer} onOpenChange={setDrawer} title={t('nav.main')}>
-        <div className="flex h-14 items-center border-b border-line px-5">
-          <Logo theme={theme} />
-        </div>
-        <SidebarNav onNavigate={() => setDrawer(false)} enrolOnly={enrolOnly} />
-      </Sheet>
+      {drawer ? (
+        <Suspense fallback={null}>
+          <Sheet open onOpenChange={setDrawer} title={t('nav.main')}>
+            <div className="flex h-14 items-center border-b border-line px-5">
+              <Logo theme={theme} />
+            </div>
+            <SidebarNav onNavigate={() => setDrawer(false)} enrolOnly={enrolOnly} />
+          </Sheet>
+        </Suspense>
+      ) : null}
       {employeeOnly && !enrolOnly ? <BottomNav /> : null}
     </div>
   );

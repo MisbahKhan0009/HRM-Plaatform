@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
-import { ThemeToggle } from './app-shell';
+import { ThemeToggle } from './theme-toggle';
 
 /** Auth zone brand moment (INFORMATION-ARCHITECTURE §6): dot grid and glow behind a single card. */
 export function AuthLayout({ title, children }: { title: string; children: ReactNode }) {

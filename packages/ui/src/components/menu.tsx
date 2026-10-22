@@ -1,4 +1,4 @@
-import { DropdownMenu as M, Tabs as T, Tooltip as TT } from 'radix-ui';
+import { DropdownMenu as M } from 'radix-ui';
 import type { ReactNode } from 'react';
 import { cn } from '../cn';
 
@@ -48,53 +48,3 @@ export function MenuLabel({ children }: { children: ReactNode }) {
 export function MenuSeparator() {
   return <M.Separator className="my-1 h-px bg-line" />;
 }
-
-export function Tooltip({ content, children }: { content: ReactNode; children: ReactNode }) {
-  return (
-    <TT.Root delayDuration={300}>
-      <TT.Trigger asChild>{children}</TT.Trigger>
-      <TT.Portal>
-        <TT.Content
-          sideOffset={6}
-          className="z-50 rounded-control border border-line-strong bg-surface px-2 py-1 text-sm text-text"
-        >
-          {content}
-        </TT.Content>
-      </TT.Portal>
-    </TT.Root>
-  );
-}
-
-export const TooltipProvider = TT.Provider;
-
-/** Tabs (record pages): mono labels, accent underline for the active tab. */
-export function Tabs({
-  value,
-  onValueChange,
-  tabs,
-  children,
-}: {
-  value: string;
-  onValueChange: (v: string) => void;
-  tabs: { value: string; label: ReactNode }[];
-  children: ReactNode;
-}) {
-  return (
-    <T.Root value={value} onValueChange={onValueChange} className="flex flex-col gap-6">
-      <T.List className="flex gap-1 overflow-x-auto border-b border-line" aria-label="Sections">
-        {tabs.map((t) => (
-          <T.Trigger
-            key={t.value}
-            value={t.value}
-            className="-mb-px h-10 shrink-0 cursor-pointer border-b-2 border-transparent px-3 text-[15px] text-text-2 hover:text-text data-[state=active]:border-accent data-[state=active]:text-text"
-          >
-            {t.label}
-          </T.Trigger>
-        ))}
-      </T.List>
-      {children}
-    </T.Root>
-  );
-}
-
-export const TabPanel = T.Content;

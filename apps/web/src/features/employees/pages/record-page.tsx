@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { PageHeader } from '../../../components/page-header';
 import { canAny, useMe } from '../../../lib/auth/me';
 import { DocumentsTab } from '../../documents';
-import { employeeQueries } from '../api';
+import { employeeQueries, type RecordTab, recordTabValues } from '../api';
 import { ContactCard } from '../components/contact-card';
 import { ContractsCard } from '../components/contracts-card';
 import { EmploymentEventDialog, EmploymentTab } from '../components/employment-tab';
@@ -25,18 +25,6 @@ import {
 import { EditEmployeeDialog, InviteDialog, OverviewTab } from '../components/overview-tab';
 
 const route = getRouteApi('/_app/employees/$employeeId');
-
-export const recordTabValues = [
-  'overview',
-  'employment',
-  'contact',
-  'contracts',
-  'documents',
-  'attendance',
-  'leave',
-  'compensation',
-] as const;
-export type RecordTab = (typeof recordTabValues)[number];
 
 const TAB_LABEL: Record<RecordTab, string> = {
   overview: 'Overview',

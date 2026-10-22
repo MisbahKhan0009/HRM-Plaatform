@@ -6,13 +6,13 @@ import type { ComponentType } from 'react';
 import { api } from '../../lib/api/client';
 import { formatRelative } from '../../lib/format';
 import { TeamTodayWidget, TodayAttendanceWidget } from '../attendance/widgets';
-import { ExpiringDocumentsWidget } from '../documents';
-import { PeopleOverviewWidget } from '../employees';
+import { ExpiringDocumentsWidget } from '../documents/ExpiringDocumentsWidget';
+import { PeopleOverviewWidget } from '../employees/widgets';
 import { LeaveBalancesWidget, MyLeaveRequestsWidget, WhoIsOnLeaveWidget } from '../leave/widgets';
 import { LatestPayslipWidget, PayrollStatusWidget } from '../payroll/widgets';
-import { MyClaimsWidget } from '../reimbursements';
+import { MyClaimsWidget } from '../reimbursements/MyClaimsWidget';
 import { systemQueries } from '../system/api';
-import { healthProblems, SystemHealthSummary } from '../system/components';
+import { healthProblems, SystemHealthSummary } from '../system/health-summary';
 
 export interface DashboardWidget {
   key: string;

@@ -1,12 +1,8 @@
 import { LoadingBlock } from '@hrm/ui';
 import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
-import {
-  EmployeeRecordPage,
-  employeeQueries,
-  ensureOr404,
-  recordTabValues,
-} from '../../../features/employees';
+import { employeeQueries, ensureOr404, recordTabValues } from '../../../features/employees/api';
+import { EmployeeRecordPage } from '../../../features/employees/pages/record-page';
 import { requireAny } from '../../../lib/auth/me';
 
 export const Route = createFileRoute('/_app/employees/$employeeId')({

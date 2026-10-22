@@ -2,7 +2,8 @@ import { employeeStatusValues } from '@hrm/contracts';
 import { LoadingBlock } from '@hrm/ui';
 import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
-import { DirectoryPage, directoryQuery, directorySortValues } from '../../../features/employees';
+import { directoryQuery, directorySortValues } from '../../../features/employees/api';
+import { DirectoryPage } from '../../../features/employees/pages/directory-page';
 import { requireAny } from '../../../lib/auth/me';
 
 const search = z.object({

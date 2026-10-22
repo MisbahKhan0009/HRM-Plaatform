@@ -1,4 +1,4 @@
-import { Button, Eyebrow, Toaster, TooltipProvider } from '@hrm/ui';
+import { Button, Eyebrow, Toaster } from '@hrm/ui';
 import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, type ErrorComponentProps, Link, Outlet } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
@@ -13,11 +13,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function Root() {
   return (
-    <TooltipProvider>
+    <>
       <Outlet />
       <StepUpDialog />
       <Toaster />
-    </TooltipProvider>
+    </>
   );
 }
 

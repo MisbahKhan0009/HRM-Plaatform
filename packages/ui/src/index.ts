@@ -24,12 +24,10 @@ export {
   MenuRoot,
   MenuSeparator,
   MenuTrigger,
-  TabPanel,
-  Tabs,
-  Tooltip,
-  TooltipProvider,
 } from './components/menu';
 export { Pagination, SortHeader, Table, TableContainer, TBody, TD, TH, THead, TR } from './components/table';
+export { TabPanel, Tabs } from './components/tabs';
 export { notify, Toaster } from './components/toast';
+export { Tooltip } from './components/tooltip';
 export type { Theme } from './theme';
 export { applyTheme, readStoredTheme, THEME_STORAGE_KEY } from './theme';

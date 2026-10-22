@@ -5,6 +5,8 @@ export {
   directorySortValues,
   employeeQueries,
   ensureOr404,
+  type RecordTab,
+  recordTabValues,
 } from './api';
 export { type EmployeeOption, EmployeePicker, type EmployeePickerProps } from './components/employee-picker';
 export { DirectoryPage } from './pages/directory-page';
@@ -13,5 +15,5 @@ export { MyProfileChangesPage } from './pages/my-profile-changes-page';
 export { MyProfilePage } from './pages/my-profile-page';
 export { NewEmployeePage } from './pages/new-employee-page';
 export { ProfileChangeReviewPage } from './pages/profile-change-review-page';
-export { EmployeeRecordPage, type RecordTab, recordTabValues } from './pages/record-page';
+export { EmployeeRecordPage } from './pages/record-page';
 export { PeopleOverviewWidget } from './widgets';

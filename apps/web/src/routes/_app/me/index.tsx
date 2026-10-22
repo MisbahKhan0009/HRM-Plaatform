@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { MyProfilePage } from '../../../features/employees';
+import { MyProfilePage } from '../../../features/employees/pages/my-profile-page';
 import { requireAny } from '../../../lib/auth/me';
 
 export const Route = createFileRoute('/_app/me/')({

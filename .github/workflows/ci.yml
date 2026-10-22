@@ -59,6 +59,10 @@ jobs:
           git diff --exit-code apps/api/openapi.json
       - name: Worker bundle budget
         run: node scripts/check-worker-size.mjs
+      - name: SPA initial JavaScript budget (PB-06)
+        # Reports only until both routes are within 200 KB gzip (D-047).
+        continue-on-error: true
+        run: pnpm --filter @hrm/web size
       - name: Database migrations apply cleanly
         env:
           DATABASE_URL: postgres://hrm:hrm@localhost:5432/hrm

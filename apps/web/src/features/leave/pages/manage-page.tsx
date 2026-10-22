@@ -29,27 +29,12 @@ import { LEDGER_TYPE_LABEL, leaveQueries } from '../api';
 import { AdjustBalanceDialog } from '../components/adjust-balance-dialog';
 import type { PickedEmployee } from '../components/employee-picker';
 import { RequestsTable } from '../components/requests-table';
-import { formatQty, isNegativeQty, yearRange } from '../format';
+import { formatQty, isNegativeQty } from '../format';
+import { manageBalanceParams, manageRequestParams } from '../search';
 
 const route = getRouteApi('/_app/leave/manage');
-export type ManageTab = 'requests' | 'balances' | 'ledger';
 type Search = ReturnType<typeof route.useSearch>;
-
-export const manageRequestParams = (s: Search) => ({
-  status: s.status,
-  leaveTypeId: s.leaveTypeId,
-  employeeId: s.employeeId,
-  page: s.page,
-  pageSize: s.pageSize,
-  ...yearRange(s.year),
-});
-export const manageBalanceParams = (s: Search) => ({
-  year: s.year,
-  leaveTypeId: s.leaveTypeId,
-  employeeId: s.employeeId,
-  page: s.page,
-  pageSize: s.pageSize,
-});
+export type ManageTab = 'requests' | 'balances' | 'ledger';
 
 // SCREEN-INVENTORY 4.5: Requests, Balances and Ledger tabs; Adjust balance is the Balances tab's primary.
 export function LeaveManagePage() {

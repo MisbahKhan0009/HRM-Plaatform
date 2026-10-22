@@ -1,6 +1,7 @@
 import { LoadingBlock } from '@hrm/ui';
 import { createFileRoute } from '@tanstack/react-router';
-import { employeeQueries, ensureOr404, ProfileChangeReviewPage } from '../../../../features/employees';
+import { employeeQueries, ensureOr404 } from '../../../../features/employees/api';
+import { ProfileChangeReviewPage } from '../../../../features/employees/pages/profile-change-review-page';
 import { requireAny } from '../../../../lib/auth/me';
 
 export const Route = createFileRoute('/_app/employees/profile-changes/$id')({

@@ -15,5 +15,6 @@
     "@hrm/contracts": "workspace:*",
     "typescript": "catalog:",
     "vitest": "catalog:"
-  }
+  },
+  "sideEffects": false
 }

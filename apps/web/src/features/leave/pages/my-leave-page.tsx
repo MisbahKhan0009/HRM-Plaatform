@@ -7,27 +7,12 @@ import { useTranslation } from 'react-i18next';
 import { PageHeader } from '../../../components/page-header';
 import { useErrorMessage } from '../../../lib/api/errors';
 import { useMe } from '../../../lib/auth/me';
-import { todayIso } from '../../../lib/format';
 import { leaveQueries } from '../api';
 import { BalanceCards } from '../components/balance-cards';
 import { RequestsTable } from '../components/requests-table';
-import { yearRange } from '../format';
+import { myRequestParams, thisLeaveYear } from '../search';
 
 const route = getRouteApi('/_app/leave/');
-export const thisLeaveYear = () => Number(todayIso().slice(0, 4));
-
-export function myRequestParams(
-  employeeId: string,
-  s: {
-    year: number;
-    status?: (typeof leaveRequestStatusValues)[number] | undefined;
-    page: number;
-    pageSize: number;
-  },
-) {
-  return { employeeId, status: s.status, page: s.page, pageSize: s.pageSize, ...yearRange(s.year) };
-}
-
 // SCREEN-INVENTORY 4.1, USER-FLOWS 5.1 step 1.
 export function MyLeavePage() {
   const { t } = useTranslation();

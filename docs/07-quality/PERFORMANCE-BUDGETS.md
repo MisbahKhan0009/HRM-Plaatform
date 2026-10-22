@@ -11,7 +11,7 @@ Status: **Accepted**, 2026-10-22. Budgets are enforced in CI where a free tool c
 | PB-03 | Worker bundle size | **≤ 2 MB compressed** (platform limit 3 MB on Free) | `wrangler deploy --dry-run --outdir=dist-check`, then gzip the output | **CI fails** above budget |
 | PB-04 | API latency, warm (common reads and writes) | **p95 ≤ 500 ms** (NFR-PERF-001) | Workers metrics (wall time); k6 script `scripts/perf/api.js` against staging | Release check |
 | PB-05 | API latency, first request after Neon scale-to-zero | ≤ 2.5 s, accepted (ADR-0003) | Same k6 script, after 10 min idle | Release check (informational) |
-| PB-06 | SPA initial JavaScript (sign-in and dashboard routes) | ≤ 200 KB gzipped | `vite build` + `rollup-plugin-visualizer` report; size check script | **CI fails** above budget |
+| PB-06 | SPA initial JavaScript (sign-in and dashboard routes) | ≤ 200 KB gzipped | `pnpm --filter @hrm/web size` after `vite build`: entry chunk plus every statically imported chunk of each route, from `dist/.vite/manifest.json` | CI reports; becomes **CI fails** when both routes are within budget (D-047) |
 | PB-07 | Per-route lazy chunk | ≤ 100 KB gzipped (payroll and reports may load PDF/XLSX libraries on demand, outside this budget) | Same | CI warning |
 | PB-08 | LCP on mobile 4G | ≤ 2.5 s | Lighthouse CI (free, `@lhci/cli`) with mobile throttling on staging | Nightly; release check |
 | PB-09 | INP | ≤ 200 ms | Lighthouse (lab proxy: TBT ≤ 200 ms); `web-vitals` field data sent to logs | Release check |
