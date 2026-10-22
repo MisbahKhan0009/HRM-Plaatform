@@ -1,0 +1,5 @@
+# Workflow and deploy-guard changes need the owner's review (CI-CD.md §6 rule 9).
+/.github/workflows/ @MisbahKhan0009
+/.github/deployers.txt @MisbahKhan0009
+/.github/CODEOWNERS @MisbahKhan0009
+/packages/db/migrations/ @MisbahKhan0009

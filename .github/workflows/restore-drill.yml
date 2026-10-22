@@ -1,0 +1,67 @@
+# Quarterly restore drill (BACKUP-AND-RESTORE.md §5): restores the latest backup into a throwaway Postgres and runs
+# the sanity queries. Needs BACKUP_AGE_IDENTITY only if the owner chose the automated drill (option A).
+name: restore-drill
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4 1 1,4,7,10 *"
+
+permissions:
+  contents: read
+
+jobs:
+  drill:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: backups
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: drill
+          POSTGRES_PASSWORD: drill
+          POSTGRES_DB: drill
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U drill" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - name: Install client tools
+        run: |
+          set -euo pipefail
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSo /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17 age
+      - name: Download, decrypt, verify and restore the latest backup
+        env:
+          BACKUP_AGE_IDENTITY: ${{ secrets.BACKUP_AGE_IDENTITY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_BACKUP_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_BACKUP_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+        run: |
+          set -euo pipefail
+          umask 077
+          NAME=$(aws s3 ls s3://hrm-backups/daily/ --endpoint-url "$R2_ENDPOINT" | awk '{print $4}' | grep '\.dump\.age$' | sort | tail -1)
+          BASE=${NAME%.age}
+          aws s3 cp "s3://hrm-backups/daily/$NAME" . --endpoint-url "$R2_ENDPOINT"
+          aws s3 cp "s3://hrm-backups/daily/$BASE.sha256" . --endpoint-url "$R2_ENDPOINT"
+          printf '%s\n' "$BACKUP_AGE_IDENTITY" > key.txt
+          age -d -i key.txt -o "$BASE" "$NAME"
+          rm -f key.txt
+          sha256sum -c "$BASE.sha256"
+          START=$(date +%s)
+          /usr/lib/postgresql/17/bin/pg_restore --no-owner --no-privileges --dbname postgres://drill:drill@localhost:5432/drill "$BASE"
+          echo "Restore took $(( $(date +%s) - START )) s"
+          shred -u "$BASE"
+      - name: Sanity queries
+        run: |
+          set -euo pipefail
+          psql postgres://drill:drill@localhost:5432/drill -v ON_ERROR_STOP=1 <<'SQL'
+          SELECT count(*) AS employees FROM employees;
+          SELECT max(occurred_at) AS last_audit FROM audit_logs;
+          SELECT status, count(*) FROM payroll_runs GROUP BY status;
+          SELECT count(*) AS ledger_rows FROM leave_ledger_entries;
+          SQL

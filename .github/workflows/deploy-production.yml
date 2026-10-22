@@ -1,0 +1,110 @@
+# Production deploy (CI-CD.md §4, DEPLOYMENT.md §2). Manual only, with four guards:
+# typed confirmation, tag on main with a green staging deploy, actor allow-list, and the production environment's
+# required reviewer. Migrations run before the Worker deploy, after checking the latest backup is under 26 hours old.
+name: deploy-production
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag, for example v1.4.0
+        required: true
+      confirm:
+        description: Type "deploy <tag>" to confirm
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      sha: ${{ steps.check.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: check
+        name: Check confirmation, tag, staging and deployer
+        env:
+          TAG: ${{ inputs.tag }}
+          CONFIRM: ${{ inputs.confirm }}
+          ACTOR: ${{ github.actor }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          [[ "$CONFIRM" == "deploy $TAG" ]] || { echo "Confirmation text does not match"; exit 1; }
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Tag must look like v1.2.3"; exit 1; }
+          grep -qx "$ACTOR" <(grep -v '^#' .github/deployers.txt) || { echo "$ACTOR is not in .github/deployers.txt"; exit 1; }
+          SHA=$(git rev-list -n 1 "refs/tags/$TAG")
+          git merge-base --is-ancestor "$SHA" origin/main || { echo "$TAG is not on main"; exit 1; }
+          OK=$(gh api "repos/$REPO/actions/workflows/deploy-staging.yml/runs?head_sha=$SHA&status=success" --jq '.total_count')
+          [[ "$OK" -gt 0 ]] || { echo "No successful staging deploy for $SHA"; exit 1; }
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: guard
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.guard.outputs.sha }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Latest backup is under 26 hours old
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_BACKUP_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_BACKUP_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+        run: |
+          set -euo pipefail
+          LATEST=$(aws s3 ls s3://hrm-backups/daily/ --endpoint-url "$R2_ENDPOINT" | grep '\.dump\.age$' | sort | tail -1 | awk '{print $1" "$2}')
+          [[ -n "$LATEST" ]] || { echo "No backup found; run nightly-backup first"; exit 1; }
+          AGE=$(( $(date -u +%s) - $(date -u -d "$LATEST" +%s) ))
+          [[ "$AGE" -lt $((26 * 3600)) ]] || { echo "Latest backup is older than 26 hours; run nightly-backup first"; exit 1; }
+      - name: Migrate Neon main
+        env:
+          DATABASE_URL: ${{ secrets.NEON_PROD_OWNER_URL }}
+        run: pnpm --filter @hrm/db db:migrate
+      - name: Build the SPA
+        env:
+          VITE_ENV: production
+          VITE_RELEASE: ${{ inputs.tag }}
+        run: pnpm --filter @hrm/web build
+      - name: Deploy the Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          # Source maps are never served (CI-CD.md §7).
+          find apps/web/dist -name '*.map' -delete
+          cd apps/api
+          pnpm exec wrangler deploy --env production --var "APP_VERSION:$TAG"
+      - name: Smoke test
+        env:
+          BASE: ${{ vars.PRODUCTION_URL }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          curl -fsS "$BASE/api/v1/health" | grep -q "\"version\":\"$TAG\""
+          test "$(curl -s -o /dev/null -w '%{http_code}' "$BASE/")" = 200
+          test "$(curl -s -o /dev/null -w '%{http_code}' "$BASE/api/v1/auth/me")" = 401

@@ -1,0 +1,61 @@
+# Deploys main to staging after CI passes (CI-CD.md §1, DEPLOYMENT.md §2). Migrations run before the Worker deploy.
+name: deploy-staging
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: ci
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: staging
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Migrate Neon staging
+        env:
+          DATABASE_URL: ${{ secrets.NEON_STAGING_OWNER_URL }}
+        run: |
+          set -euo pipefail
+          pnpm --filter @hrm/db db:migrate
+      - name: Build the SPA
+        env:
+          VITE_ENV: staging
+          VITE_RELEASE: ${{ github.sha }}
+        run: pnpm --filter @hrm/web build
+      - name: Deploy the Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          RELEASE: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          cd apps/api
+          pnpm exec wrangler deploy --env staging --var "APP_VERSION:${RELEASE::12}"
+      - name: Smoke test
+        env:
+          BASE: ${{ vars.STAGING_URL }}
+        run: |
+          set -euo pipefail
+          curl -fsS "$BASE/api/v1/health"
+          test "$(curl -s -o /dev/null -w '%{http_code}' "$BASE/")" = 200
+          test "$(curl -s -o /dev/null -w '%{http_code}' "$BASE/api/v1/auth/me")" = 401
