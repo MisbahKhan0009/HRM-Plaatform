@@ -62,7 +62,7 @@ function mergeCookies(cookie: string, res: Response) {
   return [...jar].map(([k, v]) => `${k}=${v}`).join('; ');
 }
 
-const tokenFrom = (text: string) => /accept-invite\?token=([A-Za-z0-9_-]{43})/.exec(text)?.[1];
+const tokenFrom = (text: string) => /accept-invite\/([A-Za-z0-9_-]{43})/.exec(text)?.[1];
 
 describe('GET /users', () => {
   it('lists users with status and text filters', async () => {

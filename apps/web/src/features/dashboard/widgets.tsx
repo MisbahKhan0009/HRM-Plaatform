@@ -6,6 +6,7 @@ import type { ComponentType } from 'react';
 import { api } from '../../lib/api/client';
 import { formatRelative } from '../../lib/format';
 import { TeamTodayWidget, TodayAttendanceWidget } from '../attendance/widgets';
+import { PeopleOverviewWidget } from '../employees';
 import { LeaveBalancesWidget, MyLeaveRequestsWidget, WhoIsOnLeaveWidget } from '../leave/widgets';
 import { systemQueries } from '../system/api';
 import { healthProblems, SystemHealthSummary } from '../system/components';
@@ -123,5 +124,6 @@ export const DASHBOARD_WIDGETS: DashboardWidget[] = [
     span: 6,
     Component: WhoIsOnLeaveWidget,
   },
+  { key: 'people-overview', any: ['report.hr'], span: 6, Component: PeopleOverviewWidget },
   { key: 'system-health', any: ['system.health.read'], span: 6, Component: SystemHealthWidget },
 ];

@@ -118,7 +118,12 @@ export function SearchInput({
         className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-3"
         aria-hidden="true"
       />
-      <input type="search" value={value} className={cn(control, 'h-10 pr-9 pl-9')} {...props} />
+      <input
+        type="search"
+        value={value}
+        className={cn(control, 'h-10 pr-9 pl-9 [&::-webkit-search-cancel-button]:appearance-none')}
+        {...props}
+      />
       {value && onClear ? (
         <button
           type="button"

@@ -14,6 +14,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as authRecoverRouteImport } from './routes/(auth)/recover'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppSettingsRouteRouteImport } from './routes/_app/settings/route'
+import { Route as authAcceptInviteIndexRouteImport } from './routes/(auth)/accept-invite.index'
 import { Route as authAcceptInviteTokenRouteImport } from './routes/(auth)/accept-invite.$token'
 import { Route as authSignInIndexRouteImport } from './routes/(auth)/sign-in/index'
 import { Route as authSignInTwoFactorRouteImport } from './routes/(auth)/sign-in/two-factor'
@@ -24,12 +25,17 @@ import { Route as AppAttendanceIndexRouteImport } from './routes/_app/attendance
 import { Route as AppAttendanceRecordsRouteImport } from './routes/_app/attendance/records'
 import { Route as AppAttendanceTeamRouteImport } from './routes/_app/attendance/team'
 import { Route as AppAuditIndexRouteImport } from './routes/_app/audit/index'
+import { Route as AppEmployeesIndexRouteImport } from './routes/_app/employees/index'
+import { Route as AppEmployeesEmployeeIdRouteImport } from './routes/_app/employees/$employeeId'
+import { Route as AppEmployeesImportRouteImport } from './routes/_app/employees/import'
+import { Route as AppEmployeesNewRouteImport } from './routes/_app/employees/new'
 import { Route as AppLeaveIndexRouteImport } from './routes/_app/leave/index'
 import { Route as AppLeaveCalendarRouteImport } from './routes/_app/leave/calendar'
 import { Route as AppLeaveManageRouteImport } from './routes/_app/leave/manage'
 import { Route as AppLeaveNewRouteImport } from './routes/_app/leave/new'
 import { Route as AppMeIndexRouteImport } from './routes/_app/me/index'
 import { Route as AppMePreferencesRouteImport } from './routes/_app/me/preferences'
+import { Route as AppMeProfileChangesRouteImport } from './routes/_app/me/profile-changes'
 import { Route as AppMeSecurityRouteImport } from './routes/_app/me/security'
 import { Route as AppSettingsCompanyRouteImport } from './routes/_app/settings/company'
 import { Route as AppSettingsDepartmentsRouteImport } from './routes/_app/settings/departments'
@@ -44,6 +50,7 @@ import { Route as AppSettingsUsersRouteImport } from './routes/_app/settings/use
 import { Route as AppSettingsWorkSchedulesRouteImport } from './routes/_app/settings/work-schedules'
 import { Route as AppAttendanceEmployeeIdWorkDateRouteImport } from './routes/_app/attendance/$employeeId/$workDate'
 import { Route as AppAttendanceCorrectionsCorrectionIdRouteImport } from './routes/_app/attendance/corrections/$correctionId'
+import { Route as AppEmployeesProfileChangesIdRouteImport } from './routes/_app/employees/profile-changes/$id'
 import { Route as AppLeaveRequestsRequestIdRouteImport } from './routes/_app/leave/requests/$requestId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -69,6 +76,11 @@ const AppSettingsRouteRoute = AppSettingsRouteRouteImport.update({
   id: '/settings',
   path: '/settings',
   getParentRoute: () => AppRoute,
+} as any)
+const authAcceptInviteIndexRoute = authAcceptInviteIndexRouteImport.update({
+  id: '/(auth)/accept-invite/',
+  path: '/accept-invite/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const authAcceptInviteTokenRoute = authAcceptInviteTokenRouteImport.update({
   id: '/(auth)/accept-invite/$token',
@@ -120,6 +132,26 @@ const AppAuditIndexRoute = AppAuditIndexRouteImport.update({
   path: '/audit/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppEmployeesIndexRoute = AppEmployeesIndexRouteImport.update({
+  id: '/employees/',
+  path: '/employees/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEmployeesEmployeeIdRoute = AppEmployeesEmployeeIdRouteImport.update({
+  id: '/employees/$employeeId',
+  path: '/employees/$employeeId',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEmployeesImportRoute = AppEmployeesImportRouteImport.update({
+  id: '/employees/import',
+  path: '/employees/import',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEmployeesNewRoute = AppEmployeesNewRouteImport.update({
+  id: '/employees/new',
+  path: '/employees/new',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppLeaveIndexRoute = AppLeaveIndexRouteImport.update({
   id: '/leave/',
   path: '/leave/',
@@ -148,6 +180,11 @@ const AppMeIndexRoute = AppMeIndexRouteImport.update({
 const AppMePreferencesRoute = AppMePreferencesRouteImport.update({
   id: '/me/preferences',
   path: '/me/preferences',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMeProfileChangesRoute = AppMeProfileChangesRouteImport.update({
+  id: '/me/profile-changes',
+  path: '/me/profile-changes',
   getParentRoute: () => AppRoute,
 } as any)
 const AppMeSecurityRoute = AppMeSecurityRouteImport.update({
@@ -223,6 +260,12 @@ const AppAttendanceCorrectionsCorrectionIdRoute =
     path: '/attendance/corrections/$correctionId',
     getParentRoute: () => AppRoute,
   } as any)
+const AppEmployeesProfileChangesIdRoute =
+  AppEmployeesProfileChangesIdRouteImport.update({
+    id: '/employees/profile-changes/$id',
+    path: '/employees/profile-changes/$id',
+    getParentRoute: () => AppRoute,
+  } as any)
 const AppLeaveRequestsRequestIdRoute =
   AppLeaveRequestsRequestIdRouteImport.update({
     id: '/leave/requests/$requestId',
@@ -241,10 +284,14 @@ export interface FileRoutesByFullPath {
   '/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
   '/attendance/records': typeof AppAttendanceRecordsRoute
   '/attendance/team': typeof AppAttendanceTeamRoute
+  '/employees/$employeeId': typeof AppEmployeesEmployeeIdRoute
+  '/employees/import': typeof AppEmployeesImportRoute
+  '/employees/new': typeof AppEmployeesNewRoute
   '/leave/calendar': typeof AppLeaveCalendarRoute
   '/leave/manage': typeof AppLeaveManageRoute
   '/leave/new': typeof AppLeaveNewRoute
   '/me/preferences': typeof AppMePreferencesRoute
+  '/me/profile-changes': typeof AppMeProfileChangesRoute
   '/me/security': typeof AppMeSecurityRoute
   '/settings/company': typeof AppSettingsCompanyRoute
   '/settings/departments': typeof AppSettingsDepartmentsRoute
@@ -257,14 +304,17 @@ export interface FileRoutesByFullPath {
   '/settings/system': typeof AppSettingsSystemRoute
   '/settings/users': typeof AppSettingsUsersRoute
   '/settings/work-schedules': typeof AppSettingsWorkSchedulesRoute
+  '/accept-invite/': typeof authAcceptInviteIndexRoute
   '/sign-in/': typeof authSignInIndexRoute
   '/approvals/': typeof AppApprovalsIndexRoute
   '/attendance/': typeof AppAttendanceIndexRoute
   '/audit/': typeof AppAuditIndexRoute
+  '/employees/': typeof AppEmployeesIndexRoute
   '/leave/': typeof AppLeaveIndexRoute
   '/me/': typeof AppMeIndexRoute
   '/attendance/$employeeId/$workDate': typeof AppAttendanceEmployeeIdWorkDateRoute
   '/attendance/corrections/$correctionId': typeof AppAttendanceCorrectionsCorrectionIdRoute
+  '/employees/profile-changes/$id': typeof AppEmployeesProfileChangesIdRoute
   '/leave/requests/$requestId': typeof AppLeaveRequestsRequestIdRoute
 }
 export interface FileRoutesByTo {
@@ -278,10 +328,14 @@ export interface FileRoutesByTo {
   '/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
   '/attendance/records': typeof AppAttendanceRecordsRoute
   '/attendance/team': typeof AppAttendanceTeamRoute
+  '/employees/$employeeId': typeof AppEmployeesEmployeeIdRoute
+  '/employees/import': typeof AppEmployeesImportRoute
+  '/employees/new': typeof AppEmployeesNewRoute
   '/leave/calendar': typeof AppLeaveCalendarRoute
   '/leave/manage': typeof AppLeaveManageRoute
   '/leave/new': typeof AppLeaveNewRoute
   '/me/preferences': typeof AppMePreferencesRoute
+  '/me/profile-changes': typeof AppMeProfileChangesRoute
   '/me/security': typeof AppMeSecurityRoute
   '/settings/company': typeof AppSettingsCompanyRoute
   '/settings/departments': typeof AppSettingsDepartmentsRoute
@@ -294,14 +348,17 @@ export interface FileRoutesByTo {
   '/settings/system': typeof AppSettingsSystemRoute
   '/settings/users': typeof AppSettingsUsersRoute
   '/settings/work-schedules': typeof AppSettingsWorkSchedulesRoute
+  '/accept-invite': typeof authAcceptInviteIndexRoute
   '/sign-in': typeof authSignInIndexRoute
   '/approvals': typeof AppApprovalsIndexRoute
   '/attendance': typeof AppAttendanceIndexRoute
   '/audit': typeof AppAuditIndexRoute
+  '/employees': typeof AppEmployeesIndexRoute
   '/leave': typeof AppLeaveIndexRoute
   '/me': typeof AppMeIndexRoute
   '/attendance/$employeeId/$workDate': typeof AppAttendanceEmployeeIdWorkDateRoute
   '/attendance/corrections/$correctionId': typeof AppAttendanceCorrectionsCorrectionIdRoute
+  '/employees/profile-changes/$id': typeof AppEmployeesProfileChangesIdRoute
   '/leave/requests/$requestId': typeof AppLeaveRequestsRequestIdRoute
 }
 export interface FileRoutesById {
@@ -317,10 +374,14 @@ export interface FileRoutesById {
   '/_app/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
   '/_app/attendance/records': typeof AppAttendanceRecordsRoute
   '/_app/attendance/team': typeof AppAttendanceTeamRoute
+  '/_app/employees/$employeeId': typeof AppEmployeesEmployeeIdRoute
+  '/_app/employees/import': typeof AppEmployeesImportRoute
+  '/_app/employees/new': typeof AppEmployeesNewRoute
   '/_app/leave/calendar': typeof AppLeaveCalendarRoute
   '/_app/leave/manage': typeof AppLeaveManageRoute
   '/_app/leave/new': typeof AppLeaveNewRoute
   '/_app/me/preferences': typeof AppMePreferencesRoute
+  '/_app/me/profile-changes': typeof AppMeProfileChangesRoute
   '/_app/me/security': typeof AppMeSecurityRoute
   '/_app/settings/company': typeof AppSettingsCompanyRoute
   '/_app/settings/departments': typeof AppSettingsDepartmentsRoute
@@ -333,14 +394,17 @@ export interface FileRoutesById {
   '/_app/settings/system': typeof AppSettingsSystemRoute
   '/_app/settings/users': typeof AppSettingsUsersRoute
   '/_app/settings/work-schedules': typeof AppSettingsWorkSchedulesRoute
+  '/(auth)/accept-invite/': typeof authAcceptInviteIndexRoute
   '/(auth)/sign-in/': typeof authSignInIndexRoute
   '/_app/approvals/': typeof AppApprovalsIndexRoute
   '/_app/attendance/': typeof AppAttendanceIndexRoute
   '/_app/audit/': typeof AppAuditIndexRoute
+  '/_app/employees/': typeof AppEmployeesIndexRoute
   '/_app/leave/': typeof AppLeaveIndexRoute
   '/_app/me/': typeof AppMeIndexRoute
   '/_app/attendance/$employeeId/$workDate': typeof AppAttendanceEmployeeIdWorkDateRoute
   '/_app/attendance/corrections/$correctionId': typeof AppAttendanceCorrectionsCorrectionIdRoute
+  '/_app/employees/profile-changes/$id': typeof AppEmployeesProfileChangesIdRoute
   '/_app/leave/requests/$requestId': typeof AppLeaveRequestsRequestIdRoute
 }
 export interface FileRouteTypes {
@@ -356,10 +420,14 @@ export interface FileRouteTypes {
     | '/approvals/$approvalId'
     | '/attendance/records'
     | '/attendance/team'
+    | '/employees/$employeeId'
+    | '/employees/import'
+    | '/employees/new'
     | '/leave/calendar'
     | '/leave/manage'
     | '/leave/new'
     | '/me/preferences'
+    | '/me/profile-changes'
     | '/me/security'
     | '/settings/company'
     | '/settings/departments'
@@ -372,14 +440,17 @@ export interface FileRouteTypes {
     | '/settings/system'
     | '/settings/users'
     | '/settings/work-schedules'
+    | '/accept-invite/'
     | '/sign-in/'
     | '/approvals/'
     | '/attendance/'
     | '/audit/'
+    | '/employees/'
     | '/leave/'
     | '/me/'
     | '/attendance/$employeeId/$workDate'
     | '/attendance/corrections/$correctionId'
+    | '/employees/profile-changes/$id'
     | '/leave/requests/$requestId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -393,10 +464,14 @@ export interface FileRouteTypes {
     | '/approvals/$approvalId'
     | '/attendance/records'
     | '/attendance/team'
+    | '/employees/$employeeId'
+    | '/employees/import'
+    | '/employees/new'
     | '/leave/calendar'
     | '/leave/manage'
     | '/leave/new'
     | '/me/preferences'
+    | '/me/profile-changes'
     | '/me/security'
     | '/settings/company'
     | '/settings/departments'
@@ -409,14 +484,17 @@ export interface FileRouteTypes {
     | '/settings/system'
     | '/settings/users'
     | '/settings/work-schedules'
+    | '/accept-invite'
     | '/sign-in'
     | '/approvals'
     | '/attendance'
     | '/audit'
+    | '/employees'
     | '/leave'
     | '/me'
     | '/attendance/$employeeId/$workDate'
     | '/attendance/corrections/$correctionId'
+    | '/employees/profile-changes/$id'
     | '/leave/requests/$requestId'
   id:
     | '__root__'
@@ -431,10 +509,14 @@ export interface FileRouteTypes {
     | '/_app/approvals/$approvalId'
     | '/_app/attendance/records'
     | '/_app/attendance/team'
+    | '/_app/employees/$employeeId'
+    | '/_app/employees/import'
+    | '/_app/employees/new'
     | '/_app/leave/calendar'
     | '/_app/leave/manage'
     | '/_app/leave/new'
     | '/_app/me/preferences'
+    | '/_app/me/profile-changes'
     | '/_app/me/security'
     | '/_app/settings/company'
     | '/_app/settings/departments'
@@ -447,14 +529,17 @@ export interface FileRouteTypes {
     | '/_app/settings/system'
     | '/_app/settings/users'
     | '/_app/settings/work-schedules'
+    | '/(auth)/accept-invite/'
     | '/(auth)/sign-in/'
     | '/_app/approvals/'
     | '/_app/attendance/'
     | '/_app/audit/'
+    | '/_app/employees/'
     | '/_app/leave/'
     | '/_app/me/'
     | '/_app/attendance/$employeeId/$workDate'
     | '/_app/attendance/corrections/$correctionId'
+    | '/_app/employees/profile-changes/$id'
     | '/_app/leave/requests/$requestId'
   fileRoutesById: FileRoutesById
 }
@@ -465,6 +550,7 @@ export interface RootRouteChildren {
   authAcceptInviteTokenRoute: typeof authAcceptInviteTokenRoute
   authSignInTwoFactorRoute: typeof authSignInTwoFactorRoute
   authSignInVerifyRoute: typeof authSignInVerifyRoute
+  authAcceptInviteIndexRoute: typeof authAcceptInviteIndexRoute
   authSignInIndexRoute: typeof authSignInIndexRoute
 }
 
@@ -504,6 +590,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/settings'
       preLoaderRoute: typeof AppSettingsRouteRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/(auth)/accept-invite/': {
+      id: '/(auth)/accept-invite/'
+      path: '/accept-invite'
+      fullPath: '/accept-invite/'
+      preLoaderRoute: typeof authAcceptInviteIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/(auth)/accept-invite/$token': {
       id: '/(auth)/accept-invite/$token'
@@ -575,6 +668,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAuditIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/employees/': {
+      id: '/_app/employees/'
+      path: '/employees'
+      fullPath: '/employees/'
+      preLoaderRoute: typeof AppEmployeesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/employees/$employeeId': {
+      id: '/_app/employees/$employeeId'
+      path: '/employees/$employeeId'
+      fullPath: '/employees/$employeeId'
+      preLoaderRoute: typeof AppEmployeesEmployeeIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/employees/import': {
+      id: '/_app/employees/import'
+      path: '/employees/import'
+      fullPath: '/employees/import'
+      preLoaderRoute: typeof AppEmployeesImportRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/employees/new': {
+      id: '/_app/employees/new'
+      path: '/employees/new'
+      fullPath: '/employees/new'
+      preLoaderRoute: typeof AppEmployeesNewRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/leave/': {
       id: '/_app/leave/'
       path: '/leave'
@@ -615,6 +736,13 @@ declare module '@tanstack/react-router' {
       path: '/me/preferences'
       fullPath: '/me/preferences'
       preLoaderRoute: typeof AppMePreferencesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/me/profile-changes': {
+      id: '/_app/me/profile-changes'
+      path: '/me/profile-changes'
+      fullPath: '/me/profile-changes'
+      preLoaderRoute: typeof AppMeProfileChangesRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/me/security': {
@@ -715,6 +843,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAttendanceCorrectionsCorrectionIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/employees/profile-changes/$id': {
+      id: '/_app/employees/profile-changes/$id'
+      path: '/employees/profile-changes/$id'
+      fullPath: '/employees/profile-changes/$id'
+      preLoaderRoute: typeof AppEmployeesProfileChangesIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/leave/requests/$requestId': {
       id: '/_app/leave/requests/$requestId'
       path: '/leave/requests/$requestId'
@@ -762,18 +897,24 @@ interface AppRouteChildren {
   AppApprovalsApprovalIdRoute: typeof AppApprovalsApprovalIdRoute
   AppAttendanceRecordsRoute: typeof AppAttendanceRecordsRoute
   AppAttendanceTeamRoute: typeof AppAttendanceTeamRoute
+  AppEmployeesEmployeeIdRoute: typeof AppEmployeesEmployeeIdRoute
+  AppEmployeesImportRoute: typeof AppEmployeesImportRoute
+  AppEmployeesNewRoute: typeof AppEmployeesNewRoute
   AppLeaveCalendarRoute: typeof AppLeaveCalendarRoute
   AppLeaveManageRoute: typeof AppLeaveManageRoute
   AppLeaveNewRoute: typeof AppLeaveNewRoute
   AppMePreferencesRoute: typeof AppMePreferencesRoute
+  AppMeProfileChangesRoute: typeof AppMeProfileChangesRoute
   AppMeSecurityRoute: typeof AppMeSecurityRoute
   AppApprovalsIndexRoute: typeof AppApprovalsIndexRoute
   AppAttendanceIndexRoute: typeof AppAttendanceIndexRoute
   AppAuditIndexRoute: typeof AppAuditIndexRoute
+  AppEmployeesIndexRoute: typeof AppEmployeesIndexRoute
   AppLeaveIndexRoute: typeof AppLeaveIndexRoute
   AppMeIndexRoute: typeof AppMeIndexRoute
   AppAttendanceEmployeeIdWorkDateRoute: typeof AppAttendanceEmployeeIdWorkDateRoute
   AppAttendanceCorrectionsCorrectionIdRoute: typeof AppAttendanceCorrectionsCorrectionIdRoute
+  AppEmployeesProfileChangesIdRoute: typeof AppEmployeesProfileChangesIdRoute
   AppLeaveRequestsRequestIdRoute: typeof AppLeaveRequestsRequestIdRoute
 }
 
@@ -783,19 +924,25 @@ const AppRouteChildren: AppRouteChildren = {
   AppApprovalsApprovalIdRoute: AppApprovalsApprovalIdRoute,
   AppAttendanceRecordsRoute: AppAttendanceRecordsRoute,
   AppAttendanceTeamRoute: AppAttendanceTeamRoute,
+  AppEmployeesEmployeeIdRoute: AppEmployeesEmployeeIdRoute,
+  AppEmployeesImportRoute: AppEmployeesImportRoute,
+  AppEmployeesNewRoute: AppEmployeesNewRoute,
   AppLeaveCalendarRoute: AppLeaveCalendarRoute,
   AppLeaveManageRoute: AppLeaveManageRoute,
   AppLeaveNewRoute: AppLeaveNewRoute,
   AppMePreferencesRoute: AppMePreferencesRoute,
+  AppMeProfileChangesRoute: AppMeProfileChangesRoute,
   AppMeSecurityRoute: AppMeSecurityRoute,
   AppApprovalsIndexRoute: AppApprovalsIndexRoute,
   AppAttendanceIndexRoute: AppAttendanceIndexRoute,
   AppAuditIndexRoute: AppAuditIndexRoute,
+  AppEmployeesIndexRoute: AppEmployeesIndexRoute,
   AppLeaveIndexRoute: AppLeaveIndexRoute,
   AppMeIndexRoute: AppMeIndexRoute,
   AppAttendanceEmployeeIdWorkDateRoute: AppAttendanceEmployeeIdWorkDateRoute,
   AppAttendanceCorrectionsCorrectionIdRoute:
     AppAttendanceCorrectionsCorrectionIdRoute,
+  AppEmployeesProfileChangesIdRoute: AppEmployeesProfileChangesIdRoute,
   AppLeaveRequestsRequestIdRoute: AppLeaveRequestsRequestIdRoute,
 }
 
@@ -808,6 +955,7 @@ const rootRouteChildren: RootRouteChildren = {
   authAcceptInviteTokenRoute: authAcceptInviteTokenRoute,
   authSignInTwoFactorRoute: authSignInTwoFactorRoute,
   authSignInVerifyRoute: authSignInVerifyRoute,
+  authAcceptInviteIndexRoute: authAcceptInviteIndexRoute,
   authSignInIndexRoute: authSignInIndexRoute,
 }
 export const routeTree = rootRouteImport

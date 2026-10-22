@@ -95,7 +95,7 @@ export async function buildEmail<T extends EmailTopic>(
       return render(to.email, 'invitation', {
         companyName: company?.name ?? 'Big-Matrix',
         inviterName: inviter?.name ?? 'HR',
-        acceptUrl: `${origin}/accept-invite?token=${token}`,
+        acceptUrl: `${origin}/accept-invite/${token}`,
       });
     }
     case 'email.auth_reset': {
