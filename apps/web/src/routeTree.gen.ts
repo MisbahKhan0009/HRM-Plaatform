@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as authRecoverRouteImport } from './routes/(auth)/recover'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
+import { Route as AppDocumentsRouteImport } from './routes/_app/documents'
 import { Route as AppSettingsRouteRouteImport } from './routes/_app/settings/route'
 import { Route as authAcceptInviteTokenRouteImport } from './routes/(auth)/accept-invite.$token'
 import { Route as authSignInIndexRouteImport } from './routes/(auth)/sign-in/index'
@@ -23,6 +24,16 @@ import { Route as AppApprovalsApprovalIdRouteImport } from './routes/_app/approv
 import { Route as AppMeIndexRouteImport } from './routes/_app/me/index'
 import { Route as AppMePreferencesRouteImport } from './routes/_app/me/preferences'
 import { Route as AppMeSecurityRouteImport } from './routes/_app/me/security'
+import { Route as AppReimbursementsIndexRouteImport } from './routes/_app/reimbursements/index'
+import { Route as AppReimbursementsClaimIdRouteImport } from './routes/_app/reimbursements/$claimId'
+import { Route as AppReimbursementsManageRouteImport } from './routes/_app/reimbursements/manage'
+import { Route as AppReimbursementsNewRouteImport } from './routes/_app/reimbursements/new'
+import { Route as AppReportsIndexRouteImport } from './routes/_app/reports/index'
+import { Route as AppReportsAttendanceRouteImport } from './routes/_app/reports/attendance'
+import { Route as AppReportsHeadcountRouteImport } from './routes/_app/reports/headcount'
+import { Route as AppReportsLeaveRouteImport } from './routes/_app/reports/leave'
+import { Route as AppReportsPayrollRouteImport } from './routes/_app/reports/payroll'
+import { Route as AppReportsReimbursementsRouteImport } from './routes/_app/reports/reimbursements'
 import { Route as AppSettingsCompanyRouteImport } from './routes/_app/settings/company'
 import { Route as AppSettingsDepartmentsRouteImport } from './routes/_app/settings/departments'
 import { Route as AppSettingsHolidaysRouteImport } from './routes/_app/settings/holidays'
@@ -46,6 +57,11 @@ const authRecoverRoute = authRecoverRouteImport.update({
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDocumentsRoute = AppDocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
   getParentRoute: () => AppRoute,
 } as any)
 const AppSettingsRouteRoute = AppSettingsRouteRouteImport.update({
@@ -98,6 +114,58 @@ const AppMeSecurityRoute = AppMeSecurityRouteImport.update({
   path: '/me/security',
   getParentRoute: () => AppRoute,
 } as any)
+const AppReimbursementsIndexRoute = AppReimbursementsIndexRouteImport.update({
+  id: '/reimbursements/',
+  path: '/reimbursements/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReimbursementsClaimIdRoute =
+  AppReimbursementsClaimIdRouteImport.update({
+    id: '/reimbursements/$claimId',
+    path: '/reimbursements/$claimId',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppReimbursementsManageRoute = AppReimbursementsManageRouteImport.update({
+  id: '/reimbursements/manage',
+  path: '/reimbursements/manage',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReimbursementsNewRoute = AppReimbursementsNewRouteImport.update({
+  id: '/reimbursements/new',
+  path: '/reimbursements/new',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReportsIndexRoute = AppReportsIndexRouteImport.update({
+  id: '/reports/',
+  path: '/reports/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReportsAttendanceRoute = AppReportsAttendanceRouteImport.update({
+  id: '/reports/attendance',
+  path: '/reports/attendance',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReportsHeadcountRoute = AppReportsHeadcountRouteImport.update({
+  id: '/reports/headcount',
+  path: '/reports/headcount',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReportsLeaveRoute = AppReportsLeaveRouteImport.update({
+  id: '/reports/leave',
+  path: '/reports/leave',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReportsPayrollRoute = AppReportsPayrollRouteImport.update({
+  id: '/reports/payroll',
+  path: '/reports/payroll',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReportsReimbursementsRoute =
+  AppReportsReimbursementsRouteImport.update({
+    id: '/reports/reimbursements',
+    path: '/reports/reimbursements',
+    getParentRoute: () => AppRoute,
+  } as any)
 const AppSettingsCompanyRoute = AppSettingsCompanyRouteImport.update({
   id: '/company',
   path: '/company',
@@ -130,12 +198,21 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AppSettingsRouteRouteWithChildren
   '/recover': typeof authRecoverRoute
   '/dashboard': typeof AppDashboardRoute
+  '/documents': typeof AppDocumentsRoute
   '/accept-invite/$token': typeof authAcceptInviteTokenRoute
   '/sign-in/two-factor': typeof authSignInTwoFactorRoute
   '/sign-in/verify': typeof authSignInVerifyRoute
   '/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
   '/me/preferences': typeof AppMePreferencesRoute
   '/me/security': typeof AppMeSecurityRoute
+  '/reimbursements/$claimId': typeof AppReimbursementsClaimIdRoute
+  '/reimbursements/manage': typeof AppReimbursementsManageRoute
+  '/reimbursements/new': typeof AppReimbursementsNewRoute
+  '/reports/attendance': typeof AppReportsAttendanceRoute
+  '/reports/headcount': typeof AppReportsHeadcountRoute
+  '/reports/leave': typeof AppReportsLeaveRoute
+  '/reports/payroll': typeof AppReportsPayrollRoute
+  '/reports/reimbursements': typeof AppReportsReimbursementsRoute
   '/settings/company': typeof AppSettingsCompanyRoute
   '/settings/departments': typeof AppSettingsDepartmentsRoute
   '/settings/holidays': typeof AppSettingsHolidaysRoute
@@ -144,18 +221,29 @@ export interface FileRoutesByFullPath {
   '/sign-in/': typeof authSignInIndexRoute
   '/approvals/': typeof AppApprovalsIndexRoute
   '/me/': typeof AppMeIndexRoute
+  '/reimbursements/': typeof AppReimbursementsIndexRoute
+  '/reports/': typeof AppReportsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/settings': typeof AppSettingsRouteRouteWithChildren
   '/recover': typeof authRecoverRoute
   '/dashboard': typeof AppDashboardRoute
+  '/documents': typeof AppDocumentsRoute
   '/accept-invite/$token': typeof authAcceptInviteTokenRoute
   '/sign-in/two-factor': typeof authSignInTwoFactorRoute
   '/sign-in/verify': typeof authSignInVerifyRoute
   '/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
   '/me/preferences': typeof AppMePreferencesRoute
   '/me/security': typeof AppMeSecurityRoute
+  '/reimbursements/$claimId': typeof AppReimbursementsClaimIdRoute
+  '/reimbursements/manage': typeof AppReimbursementsManageRoute
+  '/reimbursements/new': typeof AppReimbursementsNewRoute
+  '/reports/attendance': typeof AppReportsAttendanceRoute
+  '/reports/headcount': typeof AppReportsHeadcountRoute
+  '/reports/leave': typeof AppReportsLeaveRoute
+  '/reports/payroll': typeof AppReportsPayrollRoute
+  '/reports/reimbursements': typeof AppReportsReimbursementsRoute
   '/settings/company': typeof AppSettingsCompanyRoute
   '/settings/departments': typeof AppSettingsDepartmentsRoute
   '/settings/holidays': typeof AppSettingsHolidaysRoute
@@ -164,6 +252,8 @@ export interface FileRoutesByTo {
   '/sign-in': typeof authSignInIndexRoute
   '/approvals': typeof AppApprovalsIndexRoute
   '/me': typeof AppMeIndexRoute
+  '/reimbursements': typeof AppReimbursementsIndexRoute
+  '/reports': typeof AppReportsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -172,12 +262,21 @@ export interface FileRoutesById {
   '/_app/settings': typeof AppSettingsRouteRouteWithChildren
   '/(auth)/recover': typeof authRecoverRoute
   '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/documents': typeof AppDocumentsRoute
   '/(auth)/accept-invite/$token': typeof authAcceptInviteTokenRoute
   '/(auth)/sign-in/two-factor': typeof authSignInTwoFactorRoute
   '/(auth)/sign-in/verify': typeof authSignInVerifyRoute
   '/_app/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
   '/_app/me/preferences': typeof AppMePreferencesRoute
   '/_app/me/security': typeof AppMeSecurityRoute
+  '/_app/reimbursements/$claimId': typeof AppReimbursementsClaimIdRoute
+  '/_app/reimbursements/manage': typeof AppReimbursementsManageRoute
+  '/_app/reimbursements/new': typeof AppReimbursementsNewRoute
+  '/_app/reports/attendance': typeof AppReportsAttendanceRoute
+  '/_app/reports/headcount': typeof AppReportsHeadcountRoute
+  '/_app/reports/leave': typeof AppReportsLeaveRoute
+  '/_app/reports/payroll': typeof AppReportsPayrollRoute
+  '/_app/reports/reimbursements': typeof AppReportsReimbursementsRoute
   '/_app/settings/company': typeof AppSettingsCompanyRoute
   '/_app/settings/departments': typeof AppSettingsDepartmentsRoute
   '/_app/settings/holidays': typeof AppSettingsHolidaysRoute
@@ -186,6 +285,8 @@ export interface FileRoutesById {
   '/(auth)/sign-in/': typeof authSignInIndexRoute
   '/_app/approvals/': typeof AppApprovalsIndexRoute
   '/_app/me/': typeof AppMeIndexRoute
+  '/_app/reimbursements/': typeof AppReimbursementsIndexRoute
+  '/_app/reports/': typeof AppReportsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -194,12 +295,21 @@ export interface FileRouteTypes {
     | '/settings'
     | '/recover'
     | '/dashboard'
+    | '/documents'
     | '/accept-invite/$token'
     | '/sign-in/two-factor'
     | '/sign-in/verify'
     | '/approvals/$approvalId'
     | '/me/preferences'
     | '/me/security'
+    | '/reimbursements/$claimId'
+    | '/reimbursements/manage'
+    | '/reimbursements/new'
+    | '/reports/attendance'
+    | '/reports/headcount'
+    | '/reports/leave'
+    | '/reports/payroll'
+    | '/reports/reimbursements'
     | '/settings/company'
     | '/settings/departments'
     | '/settings/holidays'
@@ -208,18 +318,29 @@ export interface FileRouteTypes {
     | '/sign-in/'
     | '/approvals/'
     | '/me/'
+    | '/reimbursements/'
+    | '/reports/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/settings'
     | '/recover'
     | '/dashboard'
+    | '/documents'
     | '/accept-invite/$token'
     | '/sign-in/two-factor'
     | '/sign-in/verify'
     | '/approvals/$approvalId'
     | '/me/preferences'
     | '/me/security'
+    | '/reimbursements/$claimId'
+    | '/reimbursements/manage'
+    | '/reimbursements/new'
+    | '/reports/attendance'
+    | '/reports/headcount'
+    | '/reports/leave'
+    | '/reports/payroll'
+    | '/reports/reimbursements'
     | '/settings/company'
     | '/settings/departments'
     | '/settings/holidays'
@@ -228,6 +349,8 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/approvals'
     | '/me'
+    | '/reimbursements'
+    | '/reports'
   id:
     | '__root__'
     | '/'
@@ -235,12 +358,21 @@ export interface FileRouteTypes {
     | '/_app/settings'
     | '/(auth)/recover'
     | '/_app/dashboard'
+    | '/_app/documents'
     | '/(auth)/accept-invite/$token'
     | '/(auth)/sign-in/two-factor'
     | '/(auth)/sign-in/verify'
     | '/_app/approvals/$approvalId'
     | '/_app/me/preferences'
     | '/_app/me/security'
+    | '/_app/reimbursements/$claimId'
+    | '/_app/reimbursements/manage'
+    | '/_app/reimbursements/new'
+    | '/_app/reports/attendance'
+    | '/_app/reports/headcount'
+    | '/_app/reports/leave'
+    | '/_app/reports/payroll'
+    | '/_app/reports/reimbursements'
     | '/_app/settings/company'
     | '/_app/settings/departments'
     | '/_app/settings/holidays'
@@ -249,6 +381,8 @@ export interface FileRouteTypes {
     | '/(auth)/sign-in/'
     | '/_app/approvals/'
     | '/_app/me/'
+    | '/_app/reimbursements/'
+    | '/_app/reports/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -289,6 +423,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/documents': {
+      id: '/_app/documents'
+      path: '/documents'
+      fullPath: '/documents'
+      preLoaderRoute: typeof AppDocumentsRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/settings': {
@@ -361,6 +502,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMeSecurityRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/reimbursements/': {
+      id: '/_app/reimbursements/'
+      path: '/reimbursements'
+      fullPath: '/reimbursements/'
+      preLoaderRoute: typeof AppReimbursementsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/reimbursements/$claimId': {
+      id: '/_app/reimbursements/$claimId'
+      path: '/reimbursements/$claimId'
+      fullPath: '/reimbursements/$claimId'
+      preLoaderRoute: typeof AppReimbursementsClaimIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/reimbursements/manage': {
+      id: '/_app/reimbursements/manage'
+      path: '/reimbursements/manage'
+      fullPath: '/reimbursements/manage'
+      preLoaderRoute: typeof AppReimbursementsManageRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/reimbursements/new': {
+      id: '/_app/reimbursements/new'
+      path: '/reimbursements/new'
+      fullPath: '/reimbursements/new'
+      preLoaderRoute: typeof AppReimbursementsNewRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/reports/': {
+      id: '/_app/reports/'
+      path: '/reports'
+      fullPath: '/reports/'
+      preLoaderRoute: typeof AppReportsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/reports/attendance': {
+      id: '/_app/reports/attendance'
+      path: '/reports/attendance'
+      fullPath: '/reports/attendance'
+      preLoaderRoute: typeof AppReportsAttendanceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/reports/headcount': {
+      id: '/_app/reports/headcount'
+      path: '/reports/headcount'
+      fullPath: '/reports/headcount'
+      preLoaderRoute: typeof AppReportsHeadcountRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/reports/leave': {
+      id: '/_app/reports/leave'
+      path: '/reports/leave'
+      fullPath: '/reports/leave'
+      preLoaderRoute: typeof AppReportsLeaveRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/reports/payroll': {
+      id: '/_app/reports/payroll'
+      path: '/reports/payroll'
+      fullPath: '/reports/payroll'
+      preLoaderRoute: typeof AppReportsPayrollRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/reports/reimbursements': {
+      id: '/_app/reports/reimbursements'
+      path: '/reports/reimbursements'
+      fullPath: '/reports/reimbursements'
+      preLoaderRoute: typeof AppReportsReimbursementsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/settings/company': {
       id: '/_app/settings/company'
       path: '/company'
@@ -421,21 +632,43 @@ const AppSettingsRouteRouteWithChildren =
 interface AppRouteChildren {
   AppSettingsRouteRoute: typeof AppSettingsRouteRouteWithChildren
   AppDashboardRoute: typeof AppDashboardRoute
+  AppDocumentsRoute: typeof AppDocumentsRoute
   AppApprovalsApprovalIdRoute: typeof AppApprovalsApprovalIdRoute
   AppMePreferencesRoute: typeof AppMePreferencesRoute
   AppMeSecurityRoute: typeof AppMeSecurityRoute
+  AppReimbursementsClaimIdRoute: typeof AppReimbursementsClaimIdRoute
+  AppReimbursementsManageRoute: typeof AppReimbursementsManageRoute
+  AppReimbursementsNewRoute: typeof AppReimbursementsNewRoute
+  AppReportsAttendanceRoute: typeof AppReportsAttendanceRoute
+  AppReportsHeadcountRoute: typeof AppReportsHeadcountRoute
+  AppReportsLeaveRoute: typeof AppReportsLeaveRoute
+  AppReportsPayrollRoute: typeof AppReportsPayrollRoute
+  AppReportsReimbursementsRoute: typeof AppReportsReimbursementsRoute
   AppApprovalsIndexRoute: typeof AppApprovalsIndexRoute
   AppMeIndexRoute: typeof AppMeIndexRoute
+  AppReimbursementsIndexRoute: typeof AppReimbursementsIndexRoute
+  AppReportsIndexRoute: typeof AppReportsIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppSettingsRouteRoute: AppSettingsRouteRouteWithChildren,
   AppDashboardRoute: AppDashboardRoute,
+  AppDocumentsRoute: AppDocumentsRoute,
   AppApprovalsApprovalIdRoute: AppApprovalsApprovalIdRoute,
   AppMePreferencesRoute: AppMePreferencesRoute,
   AppMeSecurityRoute: AppMeSecurityRoute,
+  AppReimbursementsClaimIdRoute: AppReimbursementsClaimIdRoute,
+  AppReimbursementsManageRoute: AppReimbursementsManageRoute,
+  AppReimbursementsNewRoute: AppReimbursementsNewRoute,
+  AppReportsAttendanceRoute: AppReportsAttendanceRoute,
+  AppReportsHeadcountRoute: AppReportsHeadcountRoute,
+  AppReportsLeaveRoute: AppReportsLeaveRoute,
+  AppReportsPayrollRoute: AppReportsPayrollRoute,
+  AppReportsReimbursementsRoute: AppReportsReimbursementsRoute,
   AppApprovalsIndexRoute: AppApprovalsIndexRoute,
   AppMeIndexRoute: AppMeIndexRoute,
+  AppReimbursementsIndexRoute: AppReimbursementsIndexRoute,
+  AppReportsIndexRoute: AppReportsIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

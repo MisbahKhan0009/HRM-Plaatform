@@ -5,6 +5,8 @@ import { Link } from '@tanstack/react-router';
 import type { ComponentType } from 'react';
 import { api } from '../../lib/api/client';
 import { formatRelative } from '../../lib/format';
+import { ExpiringDocumentsWidget } from '../documents';
+import { MyClaimsWidget } from '../reimbursements';
 
 export interface DashboardWidget {
   key: string;
@@ -73,4 +75,6 @@ function ApprovalsWidget({ primary }: { me: CurrentUser; primary: boolean }) {
  */
 export const DASHBOARD_WIDGETS: DashboardWidget[] = [
   { key: 'approvals', any: ['approval.inbox'], span: 6, Component: ApprovalsWidget },
+  { key: 'my-claims', any: ['reimbursement.request.own'], span: 6, Component: MyClaimsWidget },
+  { key: 'expiring-documents', any: ['document.read.all'], span: 6, Component: ExpiringDocumentsWidget },
 ];
