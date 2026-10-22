@@ -10,7 +10,7 @@ in ADRs, docs and code comments (e.g. `see D-001`).
 | D-003 | Language | English v1, **Bangla-ready** | All UI strings via i18n from day one; backend messages translatable; dates/numbers via locale formatters | 2026-10-22 |
 | D-004 | Mobile | Responsive web v1; **native apps later (P2)** | API must be client-agnostic: token-capable auth alongside browser sessions, no web-only assumptions in API responses | 2026-10-22 |
 | D-005 | Work week | **Sun–Thu** working, Fri + Sat weekend; working days configurable per schedule | Default schedule seed; holiday/working-day calc uses schedule | 2026-10-22 |
-| D-006 | Authentication | Email + password; **TOTP MFA mandatory** for System Admin, HR Admin, Payroll/Finance and Director roles, optional for others | Auth module needs TOTP enrolment, recovery codes, MFA-required enforcement by role | 2026-10-22 |
+| D-006 | Authentication | ~~Email + password~~ → superseded by **D-033 (passwordless)**. Strong second factor still **mandatory** for System Admin, HR Admin, Payroll/Finance and Director roles | MFA-required enforcement by role | 2026-10-22 |
 | D-007 | Payroll separation of duties | Same person **may** prepare and approve, but the system flags it, requires a justification note, and audits it (FR-PAY-020) | Approval step stores `self_approved` flag + note | 2026-10-22 |
 | D-008 | Compensation visibility | Payroll/Finance: manage. HR Admin: read. **New role "Director"**: read all compensation. Employee: read **own** salary structure (not only payslips). System Admin: none | Adds a 7th user class (Director); field-level permission `compensation.read` separate from `employee.read` | 2026-10-22 |
 | D-009 | Check-in location | Web check-in from **anywhere, no restriction**. IP and user-agent captured as evidence metadata only | No geofence/IP allow-list in v1 | 2026-10-22 |
@@ -52,6 +52,17 @@ in ADRs, docs and code comments (e.g. `see D-001`).
 | D-026 | Backend: TypeScript + Hono + Zod/OpenAPI on Workers | ADR-0001 |
 | D-027 | Database: PostgreSQL on Neon via Hyperdrive, Drizzle ORM | ADR-0003 |
 | D-028 | Frontend: React SPA (Vite) + TanStack + shadcn/ui | ADR-0005 |
-| D-029 | Auth: Better Auth | ADR-0004 |
-| D-030 | Email: Cloudflare Email Service | ADR-0007 |
+| D-029 | Auth: Better Auth (passwordless config, see D-033) | ADR-0004 |
+| D-030 | ~~Email: Cloudflare Email Service~~ → superseded by D-035 (requires Workers Paid) | ADR-0007 |
 | D-031 | Monitoring: Sentry + Workers Logs | ADR-0008 |
+
+## Stage 2b — zero-cost constraint
+
+| ID | Decision | Record |
+|---|---|---|
+| D-032 | **Everything must run on free tiers — no paid plans, ever.** Every service choice must have a free tier that covers <50 employees with headroom | ADR-0009 |
+| D-033 | **Passwordless login**: passkeys (preferred) or email one-time code. Privileged roles must hold a strong factor: passkey, or email code + TOTP authenticator. No passwords stored (avoids 10 ms CPU limit and password leaks). SRS FR-AUTH-002 (password reset) becomes "account recovery" | ADR-0004 |
+| D-034 | Files in **Cloudflare R2** free tier (10 GB). A card is kept on file for verification only; usage must stay within free limits | ADR-0009 |
+| D-035 | **No company domain.** App served at a free `*.workers.dev` address; email sent through a dedicated company **Gmail account via the Gmail API** (free, ~500/day) | ADR-0007 |
+| D-036 | No Cloudflare Queues; async work uses a **Postgres outbox table + Cron Trigger** (every minute) | ADR-0002 |
+| D-037 | PDF payslips and XLSX/CSV exports are **generated in the browser** from immutable server data, keeping Worker CPU under the free limit | ADR-0006 |

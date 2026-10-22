@@ -13,5 +13,7 @@ SRS requires atomic leave approval + ledger posting (FR-LEAVE-009), concurrency-
 - `citext` (or `lower()` unique index) for emails; `ON DELETE RESTRICT` for financial/audit FKs.
 
 ## Consequences
-+ Full relational integrity; PITR covers RPO ≤ 24h requirement (NFR-OPS-005) with large margin.
-− External dependency outside Cloudflare; Neon outage = app outage. Backups additionally exported nightly to R2 (`pg_dump`) via scheduled GitHub Action.
++ Full relational integrity on the Neon **Free** plan (0.5 GB, 100 CU-hours/month — ample for <50 employees).
+− Free restore window is only 6 hours, so **nightly `pg_dump`** (GitHub Actions) encrypted with `age` and stored in R2 is the real backup and meets RPO ≤ 24 h (NFR-OPS-005). Restore drill documented and tested.
+− Compute scales to zero after 5 min idle: first request after idle has a cold start (~0.5–1 s).
+− External dependency outside Cloudflare; Neon outage = app outage.

@@ -1,9 +1,12 @@
-# ADR-0007: Cloudflare Email Service for transactional email
+# ADR-0007: Email via Gmail API (no custom domain)
 
-- Status: Accepted (2026-10-22)
+- Status: Accepted (2026-10-22, revised — supersedes the Cloudflare Email Service choice, which requires Workers Paid)
 
 ## Decision
-Send invitations, password resets and approval/decision emails through **Cloudflare Email Service (Email Sending)** using the Worker `send_email` binding. Email is the only notification channel in v1 (D-025). Emails are enqueued (Queues) after the business transaction commits; failures are retried and surfaced to admins, never rolling back state (FR-WF-008).
+No company domain exists (D-035). Send transactional email (sign-in codes, invitations, approval requests/decisions, reminders) through a **dedicated company Gmail account** using the **Gmail API** over HTTPS (OAuth2 refresh token stored as a Worker secret). Free, ~500 messages/day — far above need for <50 employees.
+
+All sending goes through a `Mailer` interface (`packages/`) so a provider such as Resend can replace it when a domain is bought. Emails are written to the outbox and sent by the cron processor (ADR-0002); failures are retried and never roll back business state (FR-WF-008).
 
 ## Risks
-Email Sending is in **public beta** (since 2026-04) with account-level daily quotas. Mitigation: all sending goes through a `Mailer` interface in `packages/` so a fallback provider (e.g. Resend) can be swapped in by config. Domain must have SPF/DKIM/DMARC configured.
+- Gmail may rate-limit or flag automated mail; volumes are low. Monitor send failures in Sentry.
+- Sign-in OTP delivery depends on this account: protect it with 2FA, restrict access to the owner + one backup admin.

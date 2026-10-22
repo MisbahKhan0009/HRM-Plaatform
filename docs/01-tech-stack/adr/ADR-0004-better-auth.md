@@ -1,17 +1,24 @@
-# ADR-0004: Better Auth for authentication and MFA
+# ADR-0004: Better Auth, passwordless (passkeys + email OTP) with MFA for privileged roles
 
-- Status: Accepted (2026-10-22)
+- Status: Accepted (2026-10-22, revised for D-032/D-033)
+
+## Context
+Workers Free allows 10 ms CPU per request. Secure password hashing (scrypt/Argon2/PBKDF2 at recommended strength) exceeds that. Stored passwords are also the main leak risk for an HR system.
 
 ## Decision
-Use **Better Auth** with the Drizzle adapter: email/password (framework hashing), password reset, session revocation on logout, TOTP two-factor with recovery codes, rate limiting on auth routes. Sessions stored in Postgres; cookies HttpOnly, Secure, SameSite=Lax.
+**Better Auth** with the Drizzle adapter, configured **without passwords**:
+- **Passkeys (WebAuthn)** — preferred sign-in; phishing-resistant; verification is a cheap signature check.
+- **Email one-time code** (OTP) — fallback and first-time sign-in; codes stored hashed (SHA-256), short expiry, attempt limits.
+- **TOTP authenticator + recovery codes** for privileged roles.
+- Sessions in Postgres; cookies HttpOnly, Secure, SameSite=Lax; logout revokes session.
 
-Application-level rules on top:
-- MFA **required** for System Admin, HR Admin, Payroll/Finance and Director roles (D-006); access is blocked until enrolled.
-- Suspended/deactivated users cannot authenticate and their sessions are revoked (FR-AUTH-006).
-- Invite-only: no public sign-up (FR-AUTH-005).
-- **Authorization (RBAC + record scope) is our own code**, not Better Auth: roles → permissions → policy functions checked on every request (SRS §6).
-- Bearer/token support reserved for future native apps (D-004).
+Application rules on top:
+- Privileged roles (System Admin, HR Admin, Payroll/Finance, Director) must authenticate with a **passkey**, or **email OTP + TOTP**; otherwise access to privileged routes is blocked (D-006). Enforced in our middleware with a `strong_auth` flag on the session; plugin interplay verified in the Stage 7 spike.
+- Invite-only (FR-AUTH-005); suspended/deactivated users cannot sign in and sessions are revoked (FR-AUTH-006).
+- FR-AUTH-002 "password reset" becomes **account recovery**: email OTP + (for privileged roles) recovery code or HR-assisted reset, audited.
+- **Authorization (RBAC + record scope) is our own code** (SRS §6).
+- Passkeys are bound to the hostname (`*.workers.dev`). Moving to a custom domain later requires re-registering passkeys (email OTP keeps users unblocked).
 
 ## Consequences
-+ Security-critical crypto/session code is maintained upstream; data stays in our DB.
-− Must track Better Auth releases and pin versions.
++ No password storage; fits the free CPU budget.
+− Sign-in depends on email delivery when no passkey is registered (ADR-0007). Users are prompted to add a passkey after first login.
