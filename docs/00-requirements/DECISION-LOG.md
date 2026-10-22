@@ -63,7 +63,7 @@ in ADRs, docs and code comments (e.g. `see D-001`).
 | D-033 | **Passwordless login**: passkeys (preferred) or email one-time code. Privileged roles must hold a strong factor: passkey, or email code + TOTP authenticator. No passwords stored (avoids 10 ms CPU limit and password leaks). SRS FR-AUTH-002 (password reset) becomes "account recovery" | ADR-0004 |
 | D-034 | Files in **Cloudflare R2** free tier (10 GB). A card is kept on file for verification only; usage must stay within free limits | ADR-0009 |
 | D-035 | **No company domain.** App served at a free `*.workers.dev` address; email sent through a dedicated company **Gmail account via the Gmail API** (free, ~500/day) | ADR-0007 |
-| D-036 | No Cloudflare Queues; async work uses a **Postgres outbox table + Cron Trigger** (every minute) | ADR-0002 |
+| D-036 | No Cloudflare Queues; async work uses a **Postgres outbox table**, sent right after commit via `ctx.waitUntil`, retried by a Cron every 15 min in Dhaka working hours, plus one daily dispatcher Cron. *(Revised 2026-10-22: a per-minute cron would exhaust Neon's free compute.)* | ADR-0002 |
 | D-037 | PDF payslips and XLSX/CSV exports are **generated in the browser** from immutable server data, keeping Worker CPU under the free limit | ADR-0006 |
 | D-038 | Company & brand: **Big-Matrix Solutions** design system (owner's design-system artifact), snapshot in `docs/02-brand/source/` | docs/02-brand |
 | D-039 | AI skills: only free third-party skills from GitHub / skills.sh, reviewed before commit; no self-made skills | docs/SKILLS.md |

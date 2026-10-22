@@ -18,7 +18,7 @@ Hard constraints: D-024 (everything on Cloudflare Workers), **D-032 (free tiers 
 | Forms / i18n | React Hook Form + Zod; `react-i18next` | OSS | 0005 |
 | Money / dates | `NUMERIC(14,2)` + `decimal.js`; `date-fns` + `@date-fns/tz` | OSS | 0006 |
 | File storage | **Cloudflare R2** private bucket | 10 GB, 1M writes, 10M reads / month | 0009 |
-| Background jobs | **Postgres outbox + Cron Trigger** (every minute) | Cron triggers free | 0002 |
+| Background jobs | **Postgres outbox** sent via `ctx.waitUntil` + retry Cron (15 min, work hours) + daily Cron | Cron triggers free | 0002 |
 | Email | **Gmail API** from a dedicated company Gmail account | ~500 emails/day | 0007 |
 | PDF / exports | Generated **client-side**: `pdf-lib` (payslips), `exceljs`/CSV (reports) | OSS | 0006 |
 | Observability | **Sentry Developer (free)** + Workers Logs | 5k errors/month, 1 seat | 0008 |

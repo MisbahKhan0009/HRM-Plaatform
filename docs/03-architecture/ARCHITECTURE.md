@@ -12,7 +12,7 @@ Status: **Accepted** — 2026-10-22. A modular monolith on Cloudflare Workers Fr
  │  Worker  hrm.<account>.workers.dev                                        │
  │   ├─ Static assets: React SPA (apps/web/dist)  ← free, not counted        │
  │   ├─ /api/v1/*  Hono API (apps/api)                                       │
- │   └─ scheduled()  Cron Trigger every minute → job dispatcher              │
+ │   └─ scheduled()  2 Cron Triggers: outbox retry + daily dispatcher        │
  │        bindings: HYPERDRIVE ─────────────┐   R2 (private bucket)          │
  └──────────────────────────────────────────┼───────────────────────────────┘
                                             ▼
@@ -47,21 +47,26 @@ request → request-id → secure headers → error handler
 | Repository | `*.repository.ts`, `packages/db` | Drizzle, SQL | contain business rules |
 | UI | `apps/web` | contracts, ui | contain authoritative rules |
 
-## 4. Background work (ADR-0002, D-036)
+## 4. Background work (ADR-0002, D-036 rev.)
 
-A single Cron Trigger (`* * * * *`) runs `scheduled()`, which dispatches:
+**No per-minute cron.** A query every minute would keep Neon compute awake around the clock (≈ 180 CU-hours/month, against the free 100) and the database would be suspended mid-month. Neon must be able to scale to zero outside working hours.
 
-| Job | Frequency | What |
+- **Email delivery:** the outbox row is written in the business transaction. After commit, the request calls `ctx.waitUntil(processOutbox(ids))`, so most emails go out within seconds.
+- **Retry cron** `*/15 2-14 * * SUN-THU` (UTC, which is 08:00–20:59 Asia/Dhaka on working days) retries `pending`/`failed` outbox rows with backoff. Rows are marked `dead` after 8 attempts and an alert is raised.
+- **Daily dispatcher** `5 18 * * *` (UTC, which is 00:05 Asia/Dhaka) runs the jobs below in order. Monthly and yearly jobs run inside it when the date matches.
+- Staging runs only the daily dispatcher. The total stays within the free account limit of 5 cron triggers.
+
+| Job | When (Asia/Dhaka) | What |
 |---|---|---|
-| `outbox.process` | every minute | Sends up to N pending messages (emails); retries with exponential backoff; marks `dead` after 8 failures and alerts |
-| `employee.apply_effective_events` | daily 00:05 Asia/Dhaka | Applies effective-dated status/position/manager changes |
-| `attendance.close_day` | daily 00:15 | Finalises yesterday's attendance records (absent, missing punch) |
-| `leave.accrue` | monthly, 1st 01:00 | Posts accrual entries per policy |
-| `leave.year_end` | 1 Jan 01:30 | Carry-forward and expiry entries |
-| `documents.expiry_reminders` | daily 09:00 | Emails HR about documents and contracts that are expiring |
-| `maintenance.prune` | daily 03:00 | Prunes old sessions, sent outbox rows, expired idempotency records |
+| `outbox.process` | after commit + retry cron | Sends pending emails; retries; dead-letters |
+| `employee.apply_effective_events` | daily dispatcher | Applies effective-dated status/position/manager changes |
+| `attendance.close_day` | daily dispatcher | Finalises yesterday's attendance records (absent, missing punch) |
+| `documents.expiry_reminders` | daily dispatcher | Emails HR about documents and contracts that are expiring |
+| `leave.accrue` | daily dispatcher, on day 1 | Posts monthly accrual entries per policy |
+| `leave.year_end` | daily dispatcher, on 1 Jan | Carry-forward and expiry entries |
+| `maintenance.prune` | daily dispatcher | Prunes old sessions, sent outbox rows, expired idempotency records |
 
-Every job is idempotent (safe to re-run) and keeps its CPU low by doing set-based SQL, within the 10 ms free CPU limit (ADR-0009). Jobs record runs in `job_runs` for the health page (FR-SET-004).
+Every job is idempotent (safe to re-run), records itself in `job_runs` (FR-SET-004), and does set-based SQL to stay within the 10 ms CPU limit (ADR-0009).
 
 ## 5. Files
 

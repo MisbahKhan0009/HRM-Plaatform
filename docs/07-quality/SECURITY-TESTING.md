@@ -57,7 +57,7 @@ Endpoint groups and their gate (the authoritative list is `docs/05-backend/API-C
 | `/attendance/corrections/{id}/approve` | `attendance.correction.review.{team,all}` | `mgr2` gets 404 for `emp1`'s correction; `emp1` cannot approve own |
 | `/leave/requests/{id}/approve` | `leave.request.review.{team,all}` | `mgr` approves `emp1`; `hr` approves when no manager |
 | `/leave/policies`, `/leave/types` writes | `leave.policy.manage` | Only `hr` |
-| `/reimbursements/*` | `reimbursement.request.own`, `reimbursement.review.{team,all}`, `reimbursement.read.all` | Same pattern as leave |
+| `/reimbursements/*` | `reimbursement.request.own`, `reimbursement.review.{team,all}`, `reimbursement.read.all` | Same pattern as leave; claim can't be edited after submission (FR-REIM-004) |
 | `/documents/{id}/download` | `document.read.{own,all}`, `document.payroll.read` | Restricted categories need `all`; payroll category for `payroll`; download is audited |
 | `/approvals/inbox` | `approval.inbox` | Each approver sees only items assigned to them |
 | `/reports/*` and their exports | `report.{hr,payroll,team}` | Export returns the same rows as the view for each persona (FR-REP-006) |

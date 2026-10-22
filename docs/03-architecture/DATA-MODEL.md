@@ -719,8 +719,8 @@ CREATE TABLE leave_requests (
   requested_units numeric(6,2) NOT NULL CHECK (requested_units > 0),  -- computed working days
   reason          text NULL,
   attachment_document_id uuid NULL REFERENCES documents(id) ON DELETE RESTRICT,
-  status          text NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'pending', 'approved', 'rejected',
-                    'withdrawn', 'cancellation_pending', 'cancelled')),
+  status          text NOT NULL DEFAULT 'pending' CHECK (status IN ('draft', 'pending', 'approved', 'rejected',
+                    'withdrawn', 'cancellation_pending', 'cancelled')),   -- 'draft' reserved, not used in v1
   submitted_at    timestamptz NULL,
   decided_at      timestamptz NULL,
   decided_by      uuid NULL REFERENCES users(id) ON DELETE RESTRICT,
@@ -981,7 +981,7 @@ CREATE TABLE reimbursement_claims (
   company_id       uuid NOT NULL REFERENCES companies(id) ON DELETE RESTRICT,
   claim_number     text NOT NULL,                    -- RC-000045
   employee_id      uuid NOT NULL REFERENCES employees(id) ON DELETE RESTRICT,
-  category         text NOT NULL DEFAULT 'transport' CHECK (category IN ('transport')),  -- D-020
+  category         text NOT NULL DEFAULT 'transport' CHECK (category IN ('transport')),  -- D-020, FR-REIM-001
   expense_date     date NOT NULL,
   amount           numeric(14,2) NOT NULL CHECK (amount > 0),
   currency         char(3) NOT NULL DEFAULT 'BDT',

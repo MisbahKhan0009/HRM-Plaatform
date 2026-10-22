@@ -54,11 +54,11 @@ All auth screens are brand moments: Ink ground with DotGrid + Glow (Paper if the
 - **Primary**: Continue.
 - **States**: expired or revoked token: error panel, no actions except Back to sign in.
 
-### 1.5 Recover account `/recover`
-- **Purpose**: regain access when no passkey or authenticator is available.
-- **Data**: explanation; email field.
-- **Primary**: Send code. After the code: privileged users enter a recovery code; others continue.
-- **Secondary**: Contact HR (shows text, not a link, since there is no support inbox in v1).
+### 1.5 Can't sign in `/recover`
+- **Purpose**: explain recovery options (USER-FLOWS.md 1.5a). There is no public recovery endpoint.
+- **Data**: three short options: sign in with an email code; use a recovery code at the two-factor step; ask HR or the system administrator to reset sign-in methods.
+- **Primary**: Back to sign in.
+- **Secondary**: none.
 
 ## 2. Dashboard and me
 
@@ -88,6 +88,7 @@ All auth screens are brand moments: Ink ground with DotGrid + Glow (Paper if the
 - **Data**: list of requests: section, submitted date, status badge, decision comment.
 - **Primary**: Request a change.
 - **Secondary**: Withdraw (row, `pending` only).
+- **API**: `GET/POST /profile-change-requests`, `POST /profile-change-requests/{id}/withdraw`.
 
 ### 2.5 Security `/me/security`
 - **Access**: signed in. Also used as the restricted enrolment gate (USER-FLOWS.md 1.3).
@@ -245,7 +246,7 @@ All auth screens are brand moments: Ink ground with DotGrid + Glow (Paper if the
   - Compensation (`compensation.read.all`): salary structures.
   - History: audit-style timeline of changes.
 - **Primary**: Edit (Overview tab, `employee.manage`); Upload document (Documents tab); Add salary structure (Compensation tab, `compensation.manage`). One per tab.
-- **Secondary**: More menu: Invite to sign in, Record employment event, Start separation, Archive.
+- **Secondary**: More menu: Invite to sign in, Reset sign-in methods, Record employment event, Start separation, Archive.
 - **Mobile**: tabs become a select; header compresses.
 
 ## 9. Payroll
@@ -312,6 +313,7 @@ All settings pages share a layout: settings sub-navigation on the left (top sele
 Effective-dated settings (schedules, leave policies) never edit history: saving creates a new version with an effective-from date, shown in a version list.
 
 ## Open questions (owner)
+
 
 - Payslip content beyond the snapshot fields (company address, employee bank details are not collected in v1 since payment is cash or cheque). Confirm the payslip header fields.
 - Whether managers see the worked-time numbers of their reports or only the status.

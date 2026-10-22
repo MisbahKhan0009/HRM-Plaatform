@@ -1,6 +1,6 @@
 # User flows
 
-Step-by-step flows for every multi-step task in v1. Each flow names the actor, the screens (routes from INFORMATION-ARCHITECTURE.md), the API calls, the state transitions (from `docs/03-architecture/DOMAIN-MODEL.md` section 5) and the failure paths. Endpoint paths follow SRS section 8; `docs/05-backend/API-CATALOGUE.md` is the owner of exact paths and payloads, and wins on any difference.
+Step-by-step flows for every multi-step task in v1. Each flow names the actor, the screens (routes from INFORMATION-ARCHITECTURE.md), the API calls, the state transitions (from `docs/03-architecture/DOMAIN-MODEL.md` section 5) and the failure paths. Endpoint paths are from `docs/05-backend/API-CATALOGUE.md` (relative to `/api/v1`), which owns exact paths and payloads and wins on any difference. Requirement IDs (FR-*) are from SRS v1.0 and `docs/00-requirements/SRS-v1.1-CHANGES.md`; user stories are in `docs/00-requirements/USER-STORIES.md`.
 
 Conventions used below:
 
@@ -11,6 +11,8 @@ Conventions used below:
 
 ## 1. Sign-in (passwordless, D-033)
 
+Stories: US-AUTH-003, US-AUTH-004, US-AUTH-005, US-AUTH-006, US-AUTH-007.
+
 ### 1.1 Sign in with a passkey
 
 Actor: any user with a registered passkey.
@@ -20,7 +22,7 @@ Actor: any user with a registered passkey.
 3. API verifies the assertion and creates a **strong** session (a passkey satisfies MFA, SECURITY-MODEL section 2).
 4. Redirect to the `redirect` search parameter if it is a same-origin app path, else `/dashboard`.
 
-Failures: user cancels the browser prompt, so stay on `/sign-in` with no error; unknown passkey, so show "We couldn't sign you in with that passkey. Use your email instead."; account `suspended` or `deactivated`, so show the generic message in section 1.5.
+Failures: user cancels the browser prompt, so stay on `/sign-in` with no error; unknown passkey, so show "We couldn't sign you in with that passkey. Use your email instead."; `ACCOUNT_SUSPENDED`, so show the generic message in section 1.5.
 
 ### 1.2 Sign in with an email code
 
@@ -30,7 +32,7 @@ Failures: user cancels the browser prompt, so stay on `/sign-in` with no error; 
 4. On success the session is **weak**. If the user holds a role that requires MFA (`system_admin`, `hr_admin`, `payroll_officer`, `director`, `auditor`), go to 1.3. Otherwise go to the redirect target.
 5. After the first successful sign-in on a device without a passkey, show the **Add a passkey** prompt (1.6) once per device.
 
-Failures: wrong code shows field error "That code isn't right. Check the email and try again."; expired code shows "That code has expired. Send a new code."; too many attempts (`RATE_LIMITED`) shows "Too many attempts. Try again in N minutes." with the server's retry time.
+Failures: `OTP_INVALID` (wrong or expired code) shows the field error "That code isn't right or has expired. Check the email or send a new code."; too many attempts (`RATE_LIMITED`) shows "Too many attempts. Try again in N minutes." with the server's retry time.
 
 ### 1.3 Step-up with an authenticator app (TOTP)
 
@@ -58,13 +60,19 @@ Triggered when an API call returns `MFA_REQUIRED` (weak session hitting a privil
 
 ### 1.5 Suspended or deactivated account
 
-The API returns the same response as an unknown account. The UI shows: "We couldn't sign you in. If you think this is wrong, contact HR." No hint that the account exists.
+The API returns `ACCOUNT_SUSPENDED` only after a valid code or passkey, so the account's existence is never revealed to someone who doesn't control it. The UI shows: "We couldn't sign you in. If you think this is wrong, contact HR."
+
+### 1.5a Lost passkey and authenticator
+
+There is no public self-service recovery (`docs/05-backend/AUTH-IMPLEMENTATION.md` section 6). `/recover` explains the options: non-privileged users sign in with an email code; privileged users use a recovery code at the two-factor step; anyone else asks HR or the system administrator, who uses **Reset sign-in methods** (flow 2, `POST /users/{id}/reset-auth`). That removes passkeys and the authenticator, signs the user out everywhere and emails a sign-in link; the user then enrols again (1.3 step 3).
 
 ### 1.6 Add a passkey
 
 From the post-sign-in prompt or `/me/security`: primary **Add a passkey**, browser registers a credential, the user names it (default "This device, <browser>"), the list refreshes. Removing a passkey asks for confirmation and, for privileged users, is blocked if it would leave no strong factor.
 
 ## 2. Invitation and first sign-in
+
+Stories: US-AUTH-001, US-AUTH-002, US-AUTH-008.
 
 Actor: `hr_admin` or `system_admin` (`user.manage`), then the invited person.
 
@@ -74,27 +82,31 @@ Actor: `hr_admin` or `system_admin` (`user.manage`), then the invited person.
 4. First sign-in: show the passkey prompt (1.6). Privileged roles go through the enrolment gate (1.3 step 3).
 5. Expired or revoked token: "This invitation has expired. Ask HR to send a new one."
 
-Admin follow-ups on `/settings/users`: **Resend invitation**, **Revoke invitation** (moves to `deactivated`), **Suspend**, **Reactivate**, **Deactivate**. Suspend and deactivate use a confirm dialog that states: "<Name> will be signed out on all devices."
+Admin follow-ups on `/settings/users`: **Resend invitation** (`POST /users/{id}/invitations/resend`), **Revoke invitation** (deactivates the invited user), **Suspend**, **Reactivate**, **Deactivate**, **Reset sign-in methods** (level 4 confirmation, re-auth). Suspend and deactivate use a confirm dialog that states: "<Name> will be signed out on all devices."
 
 ## 3. Attendance check-in and check-out
+
+Stories: US-ATT-001, US-ATT-002, US-ATT-003.
 
 Actor: employee with `attendance.check_in.own`.
 
 1. Dashboard widget, `/attendance` or the top-bar shortcut shows the current state: "Not checked in", "Checked in at 09:12", "Checked out at 18:05".
-2. Primary **Check in**: `POST /attendance/check-in/` with no employee id (FR-ATT-012). The client sends an `Idempotency-Key` so a double tap creates one event.
+2. Primary **Check in**: `POST /attendance/check-in` with an empty body; the server takes the employee from the session (FR-ATT-012). The client sends an `Idempotency-Key` so a double tap creates one event.
 3. Success: the panel switches to "Checked in at hh:mm" and starts a worked-time counter (client-side display only; the server computes the record).
-4. Primary **Check out** later: `POST /attendance/check-out/`.
+4. Primary **Check out** later: `POST /attendance/check-out`.
 5. The day's status (`present`, `short_hours`, `missed_core`, `missing_punch` ...) appears after the server evaluates it; the UI shows the server value, never its own calculation.
 
-Failures: already checked in (`INVALID_TRANSITION`) refreshes the panel and shows "You're already checked in."; network failure keeps the button enabled and shows "We couldn't reach the server. Try again."; a non-working day still allows check-in and shows a neutral note "Today is a non-working day in your schedule."
+Failures: `ALREADY_CHECKED_IN` or `NOT_CHECKED_IN` refreshes the panel and shows "You're already checked in."; network failure keeps the button enabled and shows "We couldn't reach the server. Try again."; a non-working day still allows check-in and shows a neutral note "Today is a non-working day in your schedule."
 
 ## 4. Attendance correction
+
+Stories: US-ATT-004, US-ATT-005.
 
 Actor: employee; reviewer is the direct manager, or `hr_admin` when there is no manager (SECURITY-MODEL section 6).
 
 1. `/attendance`, month view: select a day with status `missing_punch`, `absent`, `short_hours` or any past day; secondary **Request correction**.
 2. Drawer form: work date (read-only), proposed check-in time, proposed check-out time, reason (required, 10 to 500 characters). Show the original events read-only above the form.
-3. Primary **Submit request** creates the correction as `pending`; the approval appears in the reviewer's inbox and the reviewer is emailed.
+3. Primary **Submit request** (`POST /attendance/corrections`) creates the correction as `pending`; the approval appears in the reviewer's inbox and the reviewer is emailed.
 4. Reviewer opens `/approvals/$approvalId`: sees original events, proposed times, reason, the employee's schedule for the day. Primary **Approve**; secondary **Reject** (comment required on reject).
 5. Approved: a `correction` event is appended, the record is recalculated, the employee is emailed. Rejected: the employee sees the decision and comment on the request.
 6. Employee may **Withdraw** while `pending`.
@@ -109,15 +121,17 @@ stateDiagram-v2
 
 ## 5. Leave request, approval and cancellation
 
+Stories: US-LEAVE-002, US-LEAVE-003, US-LEAVE-004, US-LEAVE-005, US-WF-001.
+
 Actor: employee with `leave.request.own`; approver as in section 4.
 
 ### 5.1 Request
 
 1. `/leave` shows balances (StatBar) and the request list. Primary **Request leave** opens `/leave/new`.
 2. Form: leave type (only types the employee is eligible for), start date, end date, unit (`day` or `half_day`; for half day a single date and `first_half` or `second_half`), reason (required when the leave type requires it).
-3. As dates change the form calls the server preview endpoint and shows "N working days" and "Balance after this request: M days". Holidays and weekends inside the range are listed. The preview is advisory; the submit response is authoritative.
-4. Primary **Submit request**. The request goes to `pending`, the balance is reserved (D-016), the approver is emailed. Redirect to `/leave/requests/$requestId`.
-5. Failure `INSUFFICIENT_LEAVE_BALANCE`: field error on dates "You have N days of <type> available." Failure `LEAVE_OVERLAP`: "You already have leave on <dates>."
+3. As dates change the form calls `POST /leave/requests/preview` and shows "N working days" and "Balance after this request: M days". Holidays and weekends inside the range are listed. The preview is advisory; the submit response is authoritative.
+4. Primary **Submit request**. The request is created directly in `pending` (v1 exposes no leave drafts), the balance is reserved (D-016), the approver is emailed. Redirect to `/leave/requests/$requestId`.
+5. Failures on the date fields: `LEAVE_INSUFFICIENT_BALANCE` "You have N days of <type> available."; `LEAVE_OVERLAP` "You already have leave on <dates>."; `LEAVE_NO_WORKING_DAYS` "These dates are all weekends or holidays."; `LEAVE_NOT_ELIGIBLE` "You aren't eligible for <type> yet."
 
 ### 5.2 Approve or reject
 
@@ -133,8 +147,7 @@ Actor: employee with `leave.request.own`; approver as in section 4.
 
 ```mermaid
 stateDiagram-v2
-  [*] --> draft
-  draft --> pending: Submit
+  [*] --> pending: Submit
   pending --> approved: Approve
   pending --> rejected: Reject
   pending --> withdrawn: Withdraw
@@ -143,20 +156,24 @@ stateDiagram-v2
   cancellation_pending --> approved: Reject cancellation
 ```
 
-Drafts: v1 saves drafts only if the user leaves the form with unsaved input and chooses **Save draft** in the leave-page guard dialog.
+Leaving the form with unsaved input shows the discard guard (FORMS-AND-VALIDATION.md); there is no leave draft in v1.
 
-## 6. Transport reimbursement claim (D-020)
+## 6. Transport reimbursement claim (D-020, FR-REIM-001 to FR-REIM-004)
+
+Stories: US-REIM-001 to US-REIM-004.
 
 Actor: employee with `reimbursement.request.own`; approver as in section 4; payroll officer includes it in pay.
 
 1. `/reimbursements`, primary **New claim** opens `/reimbursements/new`.
 2. Form: category (`transport`, fixed in v1), date of travel, amount in BDT (2 decimals), description (required), receipt (optional upload: JPG, PNG or PDF, up to 10 MB; images are compressed in the browser before upload).
-3. Primary **Submit claim** moves `draft` to `submitted`. The approver is emailed.
+3. Primary **Submit claim** creates the claim (`POST /reimbursement-claims`, status `draft`) and submits it (`POST /reimbursement-claims/{id}/submit`) in one user step. **Save draft** only creates it; a draft can be edited or deleted. After submission the claim can't be edited, only withdrawn while `submitted` (FR-REIM-004). The approver is emailed.
 4. Approver: **Approve** or **Reject** (comment required).
 5. Approved claims are picked up by the next payroll run (status `included`), then `paid` when that run is paid. The claim page shows which run and period it belongs to.
 6. If the run is returned to draft, the claim shows `approved` again; the UI explains "Waiting for the next payroll run."
 
 ## 7. Payroll run end to end
+
+Stories: US-PAY-002 to US-PAY-010.
 
 Actor: `payroll_officer` (`payroll.prepare`, `payroll.lock`, `payroll.pay`); approver holds `payroll.approve` (payroll officer or director). All money is shown as `৳` with two decimals in mono tabular figures.
 
@@ -184,12 +201,14 @@ stateDiagram-v2
    - If the approver also prepared or calculated the run, the dialog shows the self-approval notice: "You prepared this run. Approving it yourself is allowed but flagged for review." A justification field (required, at least 20 characters) and a checkbox "I have reviewed the totals and validation results" must both be completed (D-007). The run then shows a "Self-approved" badge permanently.
 7. **Lock.** Primary **Lock run**. Requires re-auth (`REAUTH_REQUIRED` if older than 15 minutes). Confirm dialog with typed confirmation of the run number (for example `PR-2026-11-01`). After lock nothing in the run can be edited; corrections go to an adjustment in a later run (FR-PAY-011).
 8. **Record payments.** Payments tab lists every item with net amount and payment status `unpaid`. For each employee or in bulk: method (`cash` or `cheque`), date, cheque number (required for cheque), reference or acknowledgment note. Primary **Record payment**. Failed or cancelled payments are recorded with a reason. When every item is `paid`, the run moves to `paid`.
-9. **Publish payslips.** Available from `locked`. Primary **Publish payslips** (confirm dialog: "N employees will be able to see their payslip for <Month YYYY>. We'll email them."). Employees see them at `/payslips`; the PDF is generated in their browser from the snapshot (D-037).
+9. **Publish payslips.** Available from `locked` (`POST /payroll/runs/{id}/publish-payslips`). Primary **Publish payslips** (confirm dialog: "N employees will be able to see their payslip for <Month YYYY>. We'll email them."). Employees see them at `/payslips`; the page loads `GET /payroll/payslips/{id}` and the PDF is generated in their browser from that snapshot (D-037).
 10. **Reconcile.** Reconciliation tab compares gross, deductions, net and recorded payments; differences are listed per employee. Primary **Mark as reconciled** when the difference is zero.
 
-Failures: concurrent edit (`VERSION_CONFLICT`) reloads the run and shows "This run was changed by someone else. Review the latest version."; invalid transition (`INVALID_TRANSITION`) reloads and shows the current status.
+Failures: `VERSION_CONFLICT` reloads the run and shows "This run was changed by someone else. Review the latest version."; `INVALID_STATE_TRANSITION` reloads and shows the current status; `PAYROLL_RUN_EXISTS` on create offers to open the existing run; `PAYROLL_VALIDATION_FAILED` on submit opens the Validation tab; `SELF_APPROVAL_NOTE_REQUIRED` focuses the justification field.
 
 ## 8. Profile change request
+
+Stories: US-EMP-008.
 
 Actor: employee (`profile_change.request.own`); reviewer `hr_admin` (`profile_change.review.all`).
 
@@ -201,6 +220,8 @@ Actor: employee (`profile_change.request.own`); reviewer `hr_admin` (`profile_ch
 
 ## 9. Documents
 
+Stories: US-DOC-001 to US-DOC-003.
+
 ### 9.1 Upload (HR, `document.manage`)
 
 1. Employee profile, Documents tab, primary **Upload document**.
@@ -211,10 +232,12 @@ Actor: employee (`profile_change.request.own`); reviewer `hr_admin` (`profile_ch
 ### 9.2 Download (employee or HR)
 
 1. Click a document row; secondary **Download**.
-2. The browser calls `GET /api/v1/documents/{id}/download`; the response streams the file as an attachment. No public URLs are shown or copied.
+2. The browser calls `GET /documents/{id}/download`; the response streams the file as an attachment. No public URLs are shown or copied.
 3. Restricted categories record an access audit entry; the UI does not announce this.
 
 ## 10. Offboarding
+
+Stories: US-EMP-004, US-EMP-009.
 
 Actor: `hr_admin`; finance review by `payroll_officer`. SRS 7.5 describes checklist tasks and asset checks, which are P1 (asset tracking and checklist templates are post-release features, SRS 3.12). v1 covers the steps below.
 

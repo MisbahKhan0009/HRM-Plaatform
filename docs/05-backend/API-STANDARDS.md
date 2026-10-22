@@ -37,7 +37,7 @@ POST /leave/requests/{id}/approve      { "comment": "Enjoy", "version": 3 }
 POST /payroll/runs/{id}/lock           Idempotency-Key: 6a1f...
 ```
 
-An invalid transition returns `409 INVALID_STATE_TRANSITION` with the current status in `detail`.
+An invalid transition returns `409 INVALID_TRANSITION` with the current status in `detail`.
 
 ## 3. Wire format
 
@@ -100,7 +100,7 @@ Errors use RFC 9457 Problem Details, `Content-Type: application/problem+json`.
   "type": "https://hrm.local/problems/leave-insufficient-balance",
   "title": "Not enough leave balance",
   "status": 422,
-  "code": "LEAVE_INSUFFICIENT_BALANCE",
+  "code": "INSUFFICIENT_BALANCE",
   "detail": "Requested 3 days, 1.5 days available.",
   "requestId": "01JC9X...",
   "errors": []
@@ -144,18 +144,25 @@ Field `code` values are the Zod issue code or a custom code from `@hrm/contracts
 | 403 | `SELF_APPROVAL_NOT_ALLOWED` | Approver is the requester (FR-WF-004) |
 | 404 | `NOT_FOUND` | Missing, or exists outside the caller's scope (IDOR rule) |
 | 409 | `VERSION_CONFLICT` | `version` does not match (someone else saved first) |
-| 409 | `INVALID_STATE_TRANSITION` | Action not allowed from the current status |
-| 409 | `DUPLICATE` | Unique constraint (employee code, work email, holiday date ...); `errors[].path` names the field |
+| 409 | `INVALID_TRANSITION` | Action not allowed from the current status |
+| 409 | `EMAIL_TAKEN` | A user with this login email already exists (case-insensitive) |
+| 409 | `WORK_EMAIL_TAKEN` | Another employee has this work email (FR-EMP-009) |
+| 409 | `EMPLOYEE_ALREADY_LINKED` | The employee already has a user, or the user already has an employee (FR-AUTH-010) |
+| 409 | `DEPARTMENT_CODE_TAKEN` | Department code already used |
+| 409 | `DUPLICATE` | Any other unique constraint (employee code, holiday date, cheque number ...); `errors[].path` names the field |
 | 409 | `IDEMPOTENCY_KEY_REUSED` | Same key with a different request body |
 | 409 | `IDEMPOTENCY_IN_PROGRESS` | Same key, first request still running |
-| 409 | `PAYROLL_LOCKED` | Change would modify a locked payroll |
-| 409 | `PAYROLL_RUN_EXISTS` | A regular run already exists for the period |
+| 409 | `RUN_LOCKED` | Change would modify a locked payroll run (or a closed payroll period) |
+| 409 | `RUN_EXISTS` | A regular payroll run already exists for the period |
+| 409 | `SELF_MANAGER` | Employee set as their own manager (FR-ORG-004) |
 | 409 | `REPORTING_CYCLE` | Manager assignment would create a cycle (FR-ORG-005) |
 | 409 | `ALREADY_CHECKED_IN` / `NOT_CHECKED_IN` | Attendance punch out of order |
-| 409 | `LEAVE_OVERLAP` | Overlaps an existing active request |
+| 409 | `OVERLAPPING_LEAVE` | Overlaps an existing active leave request |
+| 409 | `AMOUNT_MISMATCH` | Recorded payments would exceed the item's net amount, or reconciliation totals disagree (FR-PAY-015) |
 | 413 | `FILE_TOO_LARGE` | Upload over 10 MB |
 | 415 | `UNSUPPORTED_FILE_TYPE` | MIME or magic bytes not in allow-list |
-| 422 | `LEAVE_INSUFFICIENT_BALANCE` | Not enough available balance and policy forbids negative |
+| 422 | `INVALID_DATE` | A date breaks a business rule: in the future for attendance, outside the correction window, before joining, spanning two leave years |
+| 422 | `INSUFFICIENT_BALANCE` | Not enough available leave balance and the policy forbids a negative balance |
 | 422 | `LEAVE_NOT_ELIGIBLE` | Policy eligibility not met |
 | 422 | `LEAVE_NO_WORKING_DAYS` | Range contains only weekends and holidays |
 | 422 | `PAYROLL_VALIDATION_FAILED` | Run has blocking validation flags; `errors` lists them per employee |
@@ -186,7 +193,7 @@ Behaviour (stored in `idempotency_records` for 24 h, scoped to user + operation)
 | Same key, different body | `409 IDEMPOTENCY_KEY_REUSED` |
 | Same key, still in progress | `409 IDEMPOTENCY_IN_PROGRESS` |
 
-Other `POST` actions are idempotent by state: approving an already-approved request returns `409 INVALID_STATE_TRANSITION` without side effects.
+Other `POST` actions are idempotent by state: approving an already-approved request returns `409 INVALID_TRANSITION` without side effects.
 
 ## 10. Rate limits
 

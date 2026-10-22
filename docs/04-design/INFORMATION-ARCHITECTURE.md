@@ -10,7 +10,7 @@ The app has two zones: an unauthenticated **auth zone** (sign-in, invite accepta
 ├── /sign-in/verify               6-digit email code
 ├── /sign-in/two-factor           TOTP or recovery code (strong session step-up)
 ├── /accept-invite/$token         first sign-in from an invitation
-└── /recover                      account recovery
+└── /recover                      can't sign in (recovery options)
 
 _app (authenticated shell)
 ├── /dashboard                    role-aware home
@@ -180,7 +180,7 @@ From leading to trailing edge:
 1. **Menu button** (below 1024px only): opens the sidebar drawer.
 2. **Company logo**: the lockup that matches the theme (`bms-logo-full-dark` on Ink, `bms-logo-full-light` on Paper), at least `logo-min-lockup` (120px) wide; the cube mark below that width. Links to `/dashboard`.
 3. **Page title** on mobile only (desktop shows it in the page header).
-4. **Approval inbox button** (`approval.inbox`): tray icon with the pending count badge; links to `/approvals`. The count comes from `GET /api/v1/approvals/inbox` (first page `total`) and refreshes on window focus and every 60 seconds while the tab is visible.
+4. **Approval inbox button** (`approval.inbox`): tray icon with the pending count badge; links to `/approvals`. The count comes from `GET /approvals/inbox` (`page.totalItems`) and refreshes on window focus and every 60 seconds while the tab is visible.
 5. **Check-in shortcut** (`attendance.check_in.own`, desktop only): shows "Check in" or "Check out" and today's worked time. Mobile users use the Attendance tab.
 6. **Theme toggle**: sun/moon icon button, `aria-label` "Switch to light theme" or "Switch to dark theme". Persists the choice (see `docs/06-frontend/THEMING-AND-TOKENS.md`).
 7. **User menu**: avatar with initials; opens a menu with name, email, roles, links to My profile, Security, Preferences, and Sign out.

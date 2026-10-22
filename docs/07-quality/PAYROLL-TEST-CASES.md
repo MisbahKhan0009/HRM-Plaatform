@@ -13,7 +13,7 @@ These cases implement SRS §11.3, adapted to the v1 rules. They do not define pa
 | `days_employed_in_period` counts both the joining date and the last working date (inclusive) | Proposed, **confirm with owner** (sign-off item S-01) |
 | Leave and attendance never change pay | D-017 |
 | No income tax, PF, loans, advances or bonuses | D-019, D-023 |
-| Approved reimbursement claims are paid in the next run whose period end ≥ approval date | D-020, `DOMAIN-MODEL.md` §5.5 |
+| Approved reimbursement claims are paid in the next run whose period end ≥ approval date | D-020, FR-REIM-001…004 (`docs/00-requirements/SRS-v1.1-CHANGES.md` §7), `DOMAIN-MODEL.md` §5.5 |
 | Manual adjustments: `addition` or `deduction`, each approved | D-019, `DOMAIN-MODEL.md` §5.7 |
 | Payments by cash or cheque | D-021 |
 | Decimal arithmetic. Each line is computed at full precision, then rounded **half-up to 2 decimals once**. Item totals are sums of rounded lines. | ADR-0006 |

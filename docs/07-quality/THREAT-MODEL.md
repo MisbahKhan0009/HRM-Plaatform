@@ -61,6 +61,8 @@ Inside TB-1, roles form logical boundaries: employee ⇄ manager ⇄ HR ⇄ payr
 
 ## 4. Residual risks (accepted or open)
 
+Project-wide risks (schedule, scope, policy, compliance) are in `docs/00-requirements/RISK-REGISTER.md`. This table holds only security and availability risks left after the mitigations above; keep the two in step when a risk appears in both.
+
 | ID | Risk | Status | Owner action |
 |---|---|---|---|
 | R-01 | Free tiers have no SLA; outages at Cloudflare, Neon or Google stop the app | Accepted (D-032) | Upgrade path in `docs/08-operations/FREE-TIER-MONITORING.md` §5 |

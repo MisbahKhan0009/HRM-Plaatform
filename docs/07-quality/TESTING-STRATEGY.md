@@ -65,7 +65,7 @@ Run on Chromium on every PR to `main`. Run all three engines (Chromium, Firefox,
 | E2E-04 | Employee checks in and out; attendance summary shows `present` | employee |
 | E2E-05 | Employee requests an attendance correction; manager approves; the original event is still visible | employee, manager |
 | E2E-06 | Employee requests leave; balance shows reservation; manager approves; balance shows usage; employee requests cancellation; manager approves; balance is restored | employee, manager |
-| E2E-07 | Employee submits a transport claim with a receipt; manager approves; claim appears in the next payroll run | employee, manager, payroll_officer |
+| E2E-07 | Employee submits a transport claim with a receipt; manager approves; claim appears in the next payroll run (FR-REIM-001…003) | employee, manager, payroll_officer |
 | E2E-08 | Payroll: create run, calculate, validate, submit, approve (self-approval with justification), lock, record payments, publish payslips; employee downloads their payslip PDF | payroll_officer, employee |
 | E2E-09 | Employee B cannot open employee A's payslip, leave request or document by editing the URL (gets the not-found page) | employee |
 | E2E-10 | Theme toggle: Ink by default, switch to Paper, preference survives reload and a new session | employee |
@@ -138,4 +138,4 @@ Seeds are logged on failure. A failing seed becomes a fixed example test.
 | Security tests (IDOR, privilege escalation, CSRF, malicious uploads, sessions) | `SECURITY-TESTING.md` |
 | Backup restoration drills | `docs/08-operations/BACKUP-AND-RESTORE.md` §5 |
 
-SRS §11.2 acceptance criteria are tracked in `docs/08-operations/GO-LIVE-CHECKLIST.md`.
+SRS §11.2 acceptance criteria are tracked in `docs/08-operations/GO-LIVE-CHECKLIST.md`. Every story in `docs/00-requirements/USER-STORIES.md` has acceptance criteria; each one maps to at least one test in the layers above, and the test name cites the story ID.

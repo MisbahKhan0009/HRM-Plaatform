@@ -8,9 +8,9 @@ The system must run at **$0/month**. Every developer must design within these li
 | Service | Free limit | Our guardrail |
 |---|---|---|
 | Workers | 10 ms CPU/request, 100k requests/day, 3 MB compressed Worker | No password hashing; no PDF/XLSX in Worker; aggregation in SQL; keep bundle < 2 MB (CI check); static assets don't count toward requests |
-| Cron Triggers | limited per account | One per-minute trigger dispatching all jobs |
+| Cron Triggers | 5 per account | Prod: outbox retry (every 15 min, Dhaka working hours) + daily dispatcher; staging: daily only. **No per-minute crons** (they keep Neon awake) |
 | Hyperdrive | included in Free (limited) | Use for all DB access |
-| Neon | 0.5 GB, 100 CU-h/month; compute suspended if exceeded | Files never in DB; audit/outbox pruning policy; monthly usage check |
+| Neon | 0.5 GB, 100 CU-h/month per project (staging branch shares it); compute suspended if exceeded | Let compute scale to zero outside work hours (no frequent background queries); files never in DB; pruning policy; monthly usage check |
 | R2 | 10 GB, 1M Class A / 10M Class B ops per month | 10 MB upload limit; images compressed client-side; backups rotated (keep 30 daily + 12 monthly) |
 | Gmail API | ~500 emails/day | Batch digests for reminders |
 | Sentry | 5k errors/month, 1 seat | Sample non-critical errors; alerts to owner |

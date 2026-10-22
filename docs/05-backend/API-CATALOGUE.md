@@ -132,11 +132,8 @@ Users cannot change their own roles or suspend themselves (`SELF_APPROVAL_NOT_AL
 | POST | `/leave/balances/adjustments` | `leave.balance.adjust`, Strong | key | `{ employeeId, leaveTypeId, year, amount, reason }` |
 | POST | `/leave/requests/preview` | `leave.request.own` | | Computes working days and balance effect without saving |
 | GET | `/leave/requests` | `leave.read.all` / `.team` or own | | filters `status`, `employeeId`, `leaveTypeId`, `from`, `to` |
-| POST | `/leave/requests` | `leave.request.own` (or `leave.request.review.all` with `employeeId` = on behalf) | | Creates `draft` |
+| POST | `/leave/requests` | `leave.request.own` (or `leave.request.review.all` with `employeeId` = on behalf) | | Creates the request directly in `pending` and posts the reservation (DOMAIN-MODEL 5.3); `draft` is not exposed in v1 |
 | GET | `/leave/requests/{id}` | read scopes or own | | |
-| PATCH | `/leave/requests/{id}` | own, `draft` only | | |
-| DELETE | `/leave/requests/{id}` | own, `draft` only | | |
-| POST | `/leave/requests/{id}/submit` | own | | `draft` → `pending`; posts reservation |
 | POST | `/leave/requests/{id}/withdraw` | own | | `pending` → `withdrawn`; releases reservation |
 | POST | `/leave/requests/{id}/approve` | `leave.request.review.team` / `.all` | key | `pending` → `approved`; release + usage (atomic) |
 | POST | `/leave/requests/{id}/reject` | same | | `pending` → `rejected`; comment required |
@@ -150,14 +147,14 @@ Users cannot change their own roles or suspend themselves (`SELF_APPROVAL_NOT_AL
 | Method | Path | Permission + scope | Notes / transition |
 |---|---|---|---|
 | GET | `/reimbursement-claims` | `reimbursement.read.all`, `.review.team` or own | filters `status`, `employeeId`, `from`, `to` |
-| POST | `/reimbursement-claims` | `reimbursement.request.own` | `draft`; optional receipt `documentId` |
+| POST | `/reimbursement-claims` | `reimbursement.request.own` | `draft`; optional receipt `documentId` (FR-REIM-001) |
 | PATCH / DELETE | `/reimbursement-claims/{id}` | own, `draft` only | |
 | POST | `/reimbursement-claims/{id}/submit` | own | `draft` → `submitted` |
 | POST | `/reimbursement-claims/{id}/withdraw` | own | `submitted` → `withdrawn` |
-| POST | `/reimbursement-claims/{id}/approve` | `reimbursement.review.team` / `.all` | `submitted` → `approved` |
+| POST | `/reimbursement-claims/{id}/approve` | `reimbursement.review.team` / `.all` | `submitted` → `approved` (FR-REIM-002) |
 | POST | `/reimbursement-claims/{id}/reject` | same | comment required |
 
-`included` and `paid` are set by payroll, never by an endpoint.
+`included` and `paid` are set by payroll, never by an endpoint (FR-REIM-003). A submitted claim cannot be edited (FR-REIM-004).
 
 ## 8. Payroll
 
@@ -169,7 +166,7 @@ Users cannot change their own roles or suspend themselves (`SELF_APPROVAL_NOT_AL
 | GET | `/payroll/periods` | `payroll.read.all` | | |
 | POST | `/payroll/periods` | `payroll.prepare` | | `{ year, month }`; dates computed |
 | GET | `/payroll/runs` | `payroll.read.all` | | filters `periodId`, `status` |
-| POST | `/payroll/runs` | `payroll.prepare`, Strong | key | `{ periodId, runType }` → `draft`; `409 PAYROLL_RUN_EXISTS` |
+| POST | `/payroll/runs` | `payroll.prepare`, Strong | key | `{ periodId, runType }` → `draft`; `409 RUN_EXISTS` |
 | GET | `/payroll/runs/{id}` | `payroll.read.all` | | Run + totals + validation summary |
 | GET | `/payroll/runs/{id}/items` | `payroll.read.all` | | List; `?employeeId&flag` |
 | GET | `/payroll/runs/{id}/items/{itemId}` | `payroll.read.all` | | Item + line items + snapshot |

@@ -7,6 +7,9 @@ No company domain exists (D-035). Send transactional email (sign-in codes, invit
 
 All sending goes through a `Mailer` interface (`packages/`) so a provider such as Resend can replace it when a domain is bought. Emails are written to the outbox and sent by the cron processor (ADR-0002); failures are retried and never roll back business state (FR-WF-008).
 
+## Setup requirement
+The Google Cloud OAuth consent screen must be set to **In production** (it may stay unverified, because only the dedicated account authorises it). In *Testing* mode, Google expires refresh tokens after 7 days and email stops. See `docs/08-operations/ACCOUNT-SETUP.md`.
+
 ## Risks
 - Gmail may rate-limit or flag automated mail; volumes are low. Monitor send failures in Sentry.
 - Sign-in OTP delivery depends on this account: protect it with 2FA, restrict access to the owner + one backup admin.
