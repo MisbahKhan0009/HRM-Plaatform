@@ -105,10 +105,10 @@ Users cannot change their own roles or suspend themselves (`SELF_APPROVAL_FORBID
 
 | Method | Path | Permission + scope | Notes / transition |
 |---|---|---|---|
-| POST | `/attendance/check-in` | `attendance.check_in.own` | Body `{}`; employee from session (FR-ATT-012); `409 ALREADY_CHECKED_IN` |
-| POST | `/attendance/check-out` | `attendance.check_in.own` | `409 NOT_CHECKED_IN` |
-| GET | `/attendance/me` | `attendance.read.own` | `?from&to` (max 366 days); records + today's state |
-| GET | `/attendance` | `attendance.read.all` / `.team` | Records list; `from`, `to` required; filters `employeeId`, `departmentId`, `status` |
+| POST | `/attendance/check-in` | `attendance.check_in.own` | Body `{}`, other keys ignored; employee from session (FR-ATT-012); `201 { event, record }`; `409 ALREADY_CHECKED_IN`; 10 per minute |
+| POST | `/attendance/check-out` | `attendance.check_in.own` | `201 { event, record }`; `409 NOT_CHECKED_IN` |
+| GET | `/attendance/me` | `attendance.read.own` | `?from&to` (max 366 days; default current month to today), `sort`; paginated records + `today` (state, open check-in, record, schedule) |
+| GET | `/attendance` | `attendance.read.all` / `.team` | Records list; `from`, `to` required; filters `employeeId`, `departmentId`, `status`, `needsReview`; `sort=workDate\|-workDate` |
 | GET | `/attendance/{employeeId}/{workDate}` | read scopes | Record + all events (evidence) |
 | GET | `/attendance/summary` | read scopes | Per-employee counts per status for `from`..`to` (FR-ATT-011) |
 | POST | `/attendance/manual-entries` | `attendance.manage` | `{ employeeId, workDate, checkInAt, checkOutAt, reason }` (FR-ATT-009) |
@@ -116,7 +116,7 @@ Users cannot change their own roles or suspend themselves (`SELF_APPROVAL_FORBID
 | POST | `/attendance/corrections` | `attendance.correction.request.own` | Creates `pending` + approval request |
 | POST | `/attendance/corrections/{id}/approve` | `attendance.correction.review.team` / `.all` | `pending` → `approved`; appends `correction` event |
 | POST | `/attendance/corrections/{id}/reject` | same | comment required |
-| POST | `/attendance/corrections/{id}/withdraw` | own | |
+| POST | `/attendance/corrections/{id}/withdraw` | own | `{ version }` |
 
 ## 6. Leave
 
