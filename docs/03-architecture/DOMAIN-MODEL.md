@@ -103,6 +103,7 @@ separated → active             (rehire: new employment event, same employee co
 `archived` keeps all linked history (FR-EMP-006). Effective-dated transitions are applied by the daily job on their effective date.
 
 ### 5.3 Leave request
+In v1, submitting creates the request directly in `pending`; `draft` is reserved for a later "save without submitting" feature and is not exposed by the API.
 ```text
 draft → pending → approved → cancellation_pending → cancelled
           │  └──► rejected          └──► approved (cancellation rejected)
