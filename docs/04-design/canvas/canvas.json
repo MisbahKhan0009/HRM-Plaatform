@@ -1,23 +1,273 @@
 {
   "v": 3,
-  "createdOnFiles": {"v": 1, "at": "2026-10-22T21:30:00Z"},
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-22T21:30:00Z"
+  },
   "title": "Big-Matrix HRM — App Screens",
-  "launch": {"view": "canvas"},
+  "launch": {
+    "view": "canvas"
+  },
   "pages": [],
   "boards": {
-    "Main.dc.html": {"x": 0, "y": 0, "w": 1440, "h": 900, "title": "Sign in", "expand": "fill"},
-    "Dashboard.dc.html": {"x": 1520, "y": 0, "w": 1440, "h": 1100, "title": "Dashboard — employee", "expand": "fill"},
-    "MobileHome.dc.html": {"x": 3040, "y": 0, "w": 390, "h": 844, "title": "Mobile — home & check-in"},
-    "MobileLeave.dc.html": {"x": 3510, "y": 0, "w": 390, "h": 844, "title": "Mobile — request leave"},
-    "Approvals.dc.html": {"x": 0, "y": 1460, "w": 1440, "h": 1000, "title": "Approvals inbox — manager", "expand": "fill"},
-    "Leave.dc.html": {"x": 1520, "y": 1460, "w": 1440, "h": 1000, "title": "My leave", "expand": "fill"},
-    "Employees.dc.html": {"x": 3040, "y": 1460, "w": 1440, "h": 1000, "title": "Employees — HR", "expand": "fill"},
-    "PayrollRun.dc.html": {"x": 0, "y": 2920, "w": 1440, "h": 1250, "title": "Payroll run — payroll officer", "expand": "fill"},
-    "Payslip.dc.html": {"x": 1520, "y": 2920, "w": 820, "h": 1160, "title": "Payslip (Paper, print)"},
-    "EmployeeProfile.dc.html": {"x": 2420, "y": 2920, "w": 1440, "h": 1100, "title": "Employee profile — HR", "expand": "fill"},
-    "DashboardPaper.dc.html": {"x": 0, "y": 4630, "w": 1440, "h": 1100, "title": "Dashboard — Paper (light) mode", "expand": "fill"},
-    "UIKit.dc.html": {"x": 1520, "y": 4630, "w": 1440, "h": 1500, "title": "UI kit — components & states"},
-    "Sidebar.dc.html": {"x": 3040, "y": 4630, "w": 248, "h": 1000, "title": "Sidebar (shared)"}
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "title": "Sign in",
+      "expand": "fill"
+    },
+    "Dashboard.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 1100,
+      "title": "Dashboard — employee",
+      "expand": "fill"
+    },
+    "MobileHome.dc.html": {
+      "x": 3040,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Mobile — home & check-in"
+    },
+    "MobileLeave.dc.html": {
+      "x": 3510,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Mobile — request leave"
+    },
+    "Approvals.dc.html": {
+      "x": 0,
+      "y": 1460,
+      "w": 1440,
+      "h": 1000,
+      "title": "Approvals inbox — manager",
+      "expand": "fill"
+    },
+    "Leave.dc.html": {
+      "x": 1520,
+      "y": 1460,
+      "w": 1440,
+      "h": 1000,
+      "title": "My leave",
+      "expand": "fill"
+    },
+    "Employees.dc.html": {
+      "x": 3040,
+      "y": 1460,
+      "w": 1440,
+      "h": 1000,
+      "title": "Employees — HR",
+      "expand": "fill"
+    },
+    "PayrollRun.dc.html": {
+      "x": 0,
+      "y": 2920,
+      "w": 1440,
+      "h": 1250,
+      "title": "Payroll run — payroll officer",
+      "expand": "fill"
+    },
+    "Payslip.dc.html": {
+      "x": 1520,
+      "y": 2920,
+      "w": 820,
+      "h": 1160,
+      "title": "Payslip (Paper, print)"
+    },
+    "EmployeeProfile.dc.html": {
+      "x": 2420,
+      "y": 2920,
+      "w": 1440,
+      "h": 1100,
+      "title": "Employee profile — HR",
+      "expand": "fill"
+    },
+    "DashboardPaper.dc.html": {
+      "x": 0,
+      "y": 4630,
+      "w": 1440,
+      "h": 1100,
+      "title": "Dashboard — Paper (light) mode",
+      "expand": "fill"
+    },
+    "UIKit.dc.html": {
+      "x": 1520,
+      "y": 4630,
+      "w": 1440,
+      "h": 1500,
+      "title": "UI kit — components & states"
+    },
+    "Sidebar.dc.html": {
+      "x": 3040,
+      "y": 4630,
+      "w": 248,
+      "h": 1000,
+      "title": "Sidebar (shared)"
+    },
+    "VerifyCode.dc.html": {
+      "x": 0,
+      "y": 6630,
+      "w": 1440,
+      "h": 900,
+      "title": "Sign in — verify email code",
+      "expand": "fill"
+    },
+    "TwoFactor.dc.html": {
+      "x": 1520,
+      "y": 6630,
+      "w": 1440,
+      "h": 900,
+      "title": "Sign in — two-factor step-up",
+      "expand": "fill"
+    },
+    "NotFound.dc.html": {
+      "x": 3040,
+      "y": 6630,
+      "w": 1440,
+      "h": 900,
+      "title": "404 / no access",
+      "expand": "fill"
+    },
+    "AttendanceMe.dc.html": {
+      "x": 0,
+      "y": 7900,
+      "w": 1440,
+      "h": 1150,
+      "title": "My attendance + correction",
+      "expand": "fill"
+    },
+    "ClaimNew.dc.html": {
+      "x": 1520,
+      "y": 7900,
+      "w": 1440,
+      "h": 1000,
+      "title": "New transport claim",
+      "expand": "fill"
+    },
+    "Documents.dc.html": {
+      "x": 3040,
+      "y": 7900,
+      "w": 1440,
+      "h": 900,
+      "title": "My documents",
+      "expand": "fill"
+    },
+    "Security.dc.html": {
+      "x": 4560,
+      "y": 7900,
+      "w": 1440,
+      "h": 1050,
+      "title": "Security & preferences",
+      "expand": "fill"
+    },
+    "AttendanceTeam.dc.html": {
+      "x": 0,
+      "y": 9450,
+      "w": 1440,
+      "h": 1000,
+      "title": "Team attendance — manager",
+      "expand": "fill"
+    },
+    "EmployeeNew.dc.html": {
+      "x": 1520,
+      "y": 9450,
+      "w": 1440,
+      "h": 1300,
+      "title": "New employee (onboarding) — HR",
+      "expand": "fill"
+    },
+    "Offboarding.dc.html": {
+      "x": 3040,
+      "y": 9450,
+      "w": 1440,
+      "h": 1150,
+      "title": "Offboarding — HR",
+      "expand": "fill"
+    },
+    "PayrollRuns.dc.html": {
+      "x": 0,
+      "y": 11150,
+      "w": 1440,
+      "h": 950,
+      "title": "Payroll runs",
+      "expand": "fill"
+    },
+    "PayrollApprove.dc.html": {
+      "x": 1520,
+      "y": 11150,
+      "w": 1440,
+      "h": 1000,
+      "title": "Approve run (self-approval)",
+      "expand": "fill"
+    },
+    "PayrollPayments.dc.html": {
+      "x": 3040,
+      "y": 11150,
+      "w": 1440,
+      "h": 1150,
+      "title": "Record payments + reconciliation",
+      "expand": "fill"
+    },
+    "SalaryStructures.dc.html": {
+      "x": 4560,
+      "y": 11150,
+      "w": 1440,
+      "h": 1000,
+      "title": "Salary structures",
+      "expand": "fill"
+    },
+    "Reports.dc.html": {
+      "x": 0,
+      "y": 12750,
+      "w": 1440,
+      "h": 1100,
+      "title": "Attendance report",
+      "expand": "fill"
+    },
+    "Audit.dc.html": {
+      "x": 1520,
+      "y": 12750,
+      "w": 1440,
+      "h": 1000,
+      "title": "Audit log",
+      "expand": "fill"
+    },
+    "SettingsSchedules.dc.html": {
+      "x": 3040,
+      "y": 12750,
+      "w": 1440,
+      "h": 1000,
+      "title": "Settings — work schedules",
+      "expand": "fill"
+    },
+    "SettingsUsers.dc.html": {
+      "x": 4560,
+      "y": 12750,
+      "w": 1440,
+      "h": 1000,
+      "title": "Settings — users & roles",
+      "expand": "fill"
+    },
+    "SystemHealth.dc.html": {
+      "x": 6080,
+      "y": 12750,
+      "w": 1440,
+      "h": 1050,
+      "title": "System health — admin",
+      "expand": "fill"
+    },
+    "SettingsNav.dc.html": {
+      "x": 7600,
+      "y": 12750,
+      "w": 232,
+      "h": 700,
+      "title": "Settings sub-navigation (shared)"
+    }
   },
   "order": [
     "Main.dc.html",
@@ -32,15 +282,100 @@
     "EmployeeProfile.dc.html",
     "DashboardPaper.dc.html",
     "UIKit.dc.html",
-    "Sidebar.dc.html"
+    "Sidebar.dc.html",
+    "VerifyCode.dc.html",
+    "TwoFactor.dc.html",
+    "NotFound.dc.html",
+    "AttendanceMe.dc.html",
+    "ClaimNew.dc.html",
+    "Documents.dc.html",
+    "Security.dc.html",
+    "AttendanceTeam.dc.html",
+    "EmployeeNew.dc.html",
+    "Offboarding.dc.html",
+    "PayrollRuns.dc.html",
+    "PayrollApprove.dc.html",
+    "PayrollPayments.dc.html",
+    "SalaryStructures.dc.html",
+    "Reports.dc.html",
+    "Audit.dc.html",
+    "SettingsSchedules.dc.html",
+    "SettingsUsers.dc.html",
+    "SystemHealth.dc.html",
+    "SettingsNav.dc.html"
   ],
   "notes": {
-    "rowA": {"x": 0, "y": -260, "text": "Employee: sign-in, home and leave (desktop and mobile)", "kind": "title1", "maxW": 3900},
-    "rowB": {"x": 0, "y": 1200, "text": "Manager and HR: approvals, my leave, employees", "kind": "title1", "maxW": 4480},
-    "rowC": {"x": 0, "y": 2660, "text": "Payroll: run lifecycle, payslip, employee record", "kind": "title1", "maxW": 3860},
-    "rowD": {"x": 0, "y": 4370, "text": "Light mode, UI kit and shared parts", "kind": "title1", "maxW": 3290}
+    "rowA": {
+      "x": 0,
+      "y": -260,
+      "text": "Employee: sign-in, home and leave (desktop and mobile)",
+      "kind": "title1",
+      "maxW": 3900
+    },
+    "rowB": {
+      "x": 0,
+      "y": 1200,
+      "text": "Manager and HR: approvals, my leave, employees",
+      "kind": "title1",
+      "maxW": 4480
+    },
+    "rowC": {
+      "x": 0,
+      "y": 2660,
+      "text": "Payroll: run lifecycle, payslip, employee record",
+      "kind": "title1",
+      "maxW": 3860
+    },
+    "rowD": {
+      "x": 0,
+      "y": 4370,
+      "text": "Light mode, UI kit and shared parts",
+      "kind": "title1",
+      "maxW": 3290
+    },
+    "rowE": {
+      "x": 0,
+      "y": 6370,
+      "text": "Sign-in steps and error pages",
+      "kind": "title1",
+      "maxW": 4480
+    },
+    "rowF": {
+      "x": 0,
+      "y": 7640,
+      "text": "Employee self-service: attendance, claims, documents, security",
+      "kind": "title1",
+      "maxW": 6000
+    },
+    "rowG": {
+      "x": 0,
+      "y": 9190,
+      "text": "Manager and HR operations",
+      "kind": "title1",
+      "maxW": 4480
+    },
+    "rowH": {
+      "x": 0,
+      "y": 10890,
+      "text": "Payroll: runs, approval, payments, salary",
+      "kind": "title1",
+      "maxW": 6000
+    },
+    "rowI": {
+      "x": 0,
+      "y": 12490,
+      "text": "Insights and admin",
+      "kind": "title1",
+      "maxW": 7832
+    }
   },
   "designSystems": [
-    {"title": "Big-Matrix Solutions", "namespace": "bigmatrix", "artifact": "https://claude.ai/artifact/TPY8njdQTkTFrnMwWWogoW", "version": "1792700369-0fba", "copiedAt": "2026-10-22T21:30:00Z"}
+    {
+      "title": "Big-Matrix Solutions",
+      "namespace": "bigmatrix",
+      "artifact": "https://claude.ai/artifact/TPY8njdQTkTFrnMwWWogoW",
+      "version": "1792700369-0fba",
+      "copiedAt": "2026-10-22T21:30:00Z"
+    }
   ]
 }

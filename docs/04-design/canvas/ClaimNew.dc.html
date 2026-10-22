@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>New transport claim · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="employee" active="claims" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <nav aria-label="Breadcrumb" style="flex-grow: 1; display: flex; gap: 8px; align-items: center;"><a class="hrm-label" href="#claims" style="text-decoration: none;">My claims</a><span class="hrm-faint">/</span><span class="hrm-label" style="color: var(--text);">New claim</span></nav>
+      <span class="hrm-avatar" aria-label="Nusrat Jahan">NJ</span>
+    </header>
+
+    <main class="hrm-page" style="max-width: 1320px;">
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <h1 class="hrm-h1">New transport claim</h1>
+        <p class="hrm-muted" style="margin: 0;">Approved claims are paid with your next salary.</p>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;">
+        <form class="hrm-card" aria-label="Claim details" style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 20px; padding: 28px;">
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;">
+            <div class="hrm-field">
+              <label class="hrm-field-label" for="d">Date of travel</label>
+              <input id="d" class="hrm-input" value="21 Oct 2026">
+            </div>
+            <div class="hrm-field">
+              <label class="hrm-field-label" for="amt">Amount</label>
+              <div style="position: relative; display: flex; align-items: center;">
+                <span class="hrm-mono" style="position: absolute; left: 12px; color: var(--text-2);">৳</span>
+                <input id="amt" class="hrm-input hrm-mono" inputmode="decimal" value="1,250.00" style="padding-left: 28px; text-align: right;">
+              </div>
+            </div>
+            <div class="hrm-field">
+              <label class="hrm-field-label" for="from">From</label>
+              <input id="from" class="hrm-input" value="Office, Banani">
+            </div>
+            <div class="hrm-field">
+              <label class="hrm-field-label" for="to">To</label>
+              <input id="to" class="hrm-input" value="Client site, Motijheel">
+            </div>
+          </div>
+          <div class="hrm-field">
+            <label class="hrm-field-label" for="purpose">Purpose</label>
+            <textarea id="purpose" class="hrm-input hrm-textarea" rows="2">Requirements workshop with client. Ride-share both ways.</textarea>
+          </div>
+          <div class="hrm-field">
+            <span class="hrm-field-label">Receipt <span class="hrm-faint" style="font-weight: 400;">(optional)</span></span>
+            <label for="file" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; height: 120px; border: 1px dashed var(--control-border); border-radius: var(--bm-r-lg); background: var(--ground-2); color: var(--text-2); cursor: pointer;">
+              <svg class="hrm-icon hrm-icon-24" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <span>Drag a file here or <span style="color: var(--link); text-decoration: underline;">browse</span></span>
+              <span class="hrm-faint" style="font-size: 12px;">PDF, JPG or PNG, up to 10 MB</span>
+            </label>
+            <input id="file" type="file" accept=".pdf,.jpg,.jpeg,.png" style="position: absolute; width: 1px; height: 1px; opacity: 0;">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--bm-r);">
+              <svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--text-2);"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              <div style="flex-grow: 1; min-width: 0;"><div>pathao-receipts-21-oct.png</div><div class="hrm-faint" style="font-size: 12px;">Image · 284 KB · resized for upload</div></div>
+              <button class="hrm-btn hrm-btn-icon" type="button" aria-label="Remove receipt"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap;">
+            <a class="hrm-btn hrm-btn-text" href="Dashboard.dc.html">Cancel</a>
+            <button class="hrm-btn hrm-btn-secondary" type="button">Save draft</button>
+            <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}">Submit claim</x-import>
+          </div>
+        </form>
+
+        <section aria-labelledby="mine" style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
+          <h2 id="mine" class="hrm-h3">My recent claims</h2>
+          <div class="hrm-table-wrap">
+            <table class="hrm-table">
+              <thead><tr><th scope="col">Claim</th><th scope="col" class="num">Amount</th><th scope="col">Status</th></tr></thead>
+              <tbody>
+                <tr><td><div class="hrm-mono">RC-000052</div><div class="hrm-faint" style="font-size: 12px;">14 Oct · draft</div></td><td class="num">600.00</td><td><span class="hrm-badge tone-neutral">Draft</span></td></tr>
+                <tr><td><div class="hrm-mono">RC-000045</div><div class="hrm-faint" style="font-size: 12px;">8 Oct · Gulshan</div></td><td class="num">1,850.00</td><td><span class="hrm-badge tone-ok">Approved</span></td></tr>
+                <tr><td><div class="hrm-mono">RC-000041</div><div class="hrm-faint" style="font-size: 12px;">Sep payroll</div></td><td class="num">1,850.00</td><td><span class="hrm-badge tone-ok">Paid</span></td></tr>
+                <tr><td><div class="hrm-mono">RC-000033</div><div class="hrm-faint" style="font-size: 12px;">Aug · no receipt</div></td><td class="num">900.00</td><td><span class="hrm-badge tone-bad">Rejected</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="hrm-faint" style="margin: 0; font-size: 13px;">Approved → Included in a payroll run → Paid with salary.</p>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'ink', no: false };
+  }
+}
+</script>
+</body>
+</html>

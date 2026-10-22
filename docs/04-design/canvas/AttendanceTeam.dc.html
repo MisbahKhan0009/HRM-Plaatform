@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Team attendance · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="manager" active="teamAttendance" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <span class="hrm-label" style="flex-grow: 1;">Team · Team attendance</span>
+      <span class="hrm-avatar" aria-label="Tanvir Ahmed">TA</span>
+    </header>
+
+    <main class="hrm-page">
+      <div class="hrm-page-head">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h1 class="hrm-h1">Team attendance</h1>
+          <p class="hrm-muted" style="margin: 0;">6 direct reports. Lateness is shown for awareness only and never affects pay.</p>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <button class="hrm-btn hrm-btn-icon" type="button" aria-label="Previous day"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+          <input class="hrm-input" aria-label="Date" value="Thu, 22 Oct 2026" style="width: 180px;">
+          <button class="hrm-btn hrm-btn-icon hrm-btn-disabled" type="button" aria-label="Next day" aria-disabled="true"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+        </div>
+      </div>
+
+      <x-import component-from-global-scope="BigMatrix.StatBar" stats="{{summary}}" style="max-width: none;"></x-import>
+
+      <div class="hrm-table-wrap">
+        <div class="hrm-table-scroll">
+          <table class="hrm-table">
+            <thead><tr><th scope="col">Employee</th><th scope="col">Status</th><th scope="col">In</th><th scope="col">Out</th><th scope="col" class="num">Worked</th><th scope="col">Note</th></tr></thead>
+            <tbody>
+              <tr><td><div style="font-weight: 500;">Nusrat Jahan</div><div class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0014</div></td><td><span class="hrm-badge tone-ok">Present</span></td><td class="hrm-mono">9:38 am</td><td class="hrm-faint">—</td><td class="num">5 h 42 m</td><td class="hrm-faint">Still checked in</td></tr>
+              <tr><td><div style="font-weight: 500;">Rahim Uddin</div><div class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0009</div></td><td><span class="hrm-badge tone-ok">Present</span></td><td class="hrm-mono">10:24 am</td><td class="hrm-faint">—</td><td class="num">4 h 56 m</td><td class="hrm-faint">Arrived after core start</td></tr>
+              <tr><td><div style="font-weight: 500;">Mahmud Hasan</div><div class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0031</div></td><td><span class="hrm-badge tone-info">On leave</span></td><td class="hrm-faint">—</td><td class="hrm-faint">—</td><td class="num hrm-faint">—</td><td>Sick leave · full day</td></tr>
+              <tr><td><div style="font-weight: 500;">Sadia Karim</div><div class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0022</div></td><td><span class="hrm-badge tone-ok">Present</span></td><td class="hrm-mono">9:05 am</td><td class="hrm-faint">—</td><td class="num">6 h 15 m</td><td></td></tr>
+              <tr><td><div style="font-weight: 500;">Kamrul Islam</div><div class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0027</div></td><td><span class="hrm-badge tone-neutral">Not checked in</span></td><td class="hrm-faint">—</td><td class="hrm-faint">—</td><td class="num hrm-faint">—</td><td class="hrm-faint">Day not closed yet</td></tr>
+              <tr><td><div style="font-weight: 500;">Arif Chowdhury</div><div class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0044</div></td><td><span class="hrm-badge tone-ok">Present</span></td><td class="hrm-mono">9:52 am</td><td class="hrm-faint">—</td><td class="num">5 h 28 m</td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="hrm-table-foot"><span>Times in Asia/Dhaka. Absent is set when the day closes at midnight.</span><a class="hrm-btn hrm-btn-text hrm-btn-sm" href="Approvals.dc.html">1 correction waiting →</a></div>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      theme: this.props.theme ?? 'ink',
+      summary: [
+        { value: '4', label: 'Present' },
+        { value: '1', label: 'On leave' },
+        { value: '1', label: 'Not checked in' },
+        { value: '0', label: 'Absent' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

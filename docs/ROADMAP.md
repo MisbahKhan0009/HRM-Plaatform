@@ -30,4 +30,5 @@ This is the master sequence for building the HRM platform. Each stage has an
 - [x] Stage 4 — Monorepo structure approved: `docs/03-architecture/MONOREPO.md`
 - [x] Stage 5 — Documentation: ~70 docs across `docs/00`–`10`, root `README`/`AGENTS`/`CONTRIBUTING`/`SECURITY`; index `docs/README.md`
 - [x] Owner decisions: defaults accepted (D-041…D-043); remaining go-live inputs listed in `docs/00-requirements/OPEN-QUESTIONS.md`
-- [ ] Stage 6 — UX/UI design: 13 core screens on the Claude Design canvas (`docs/04-design/DESIGN-CANVAS.md`); awaiting owner review, then remaining screens
+- [x] Stage 6 — UX/UI design: 33 artboards on the Claude Design canvas covering all roles and flows (`docs/04-design/DESIGN-CANVAS.md`)
+- [ ] Stage 7 — Engineering foundation (next)

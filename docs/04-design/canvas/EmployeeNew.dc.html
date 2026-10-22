@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>New employee · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="hr" active="employees" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <nav aria-label="Breadcrumb" style="flex-grow: 1; display: flex; gap: 8px; align-items: center;"><a class="hrm-label" href="Employees.dc.html" style="text-decoration: none;">Employees</a><span class="hrm-faint">/</span><span class="hrm-label" style="color: var(--text);">New employee</span></nav>
+      <span class="hrm-avatar" aria-label="Farzana Akter">FA</span>
+    </header>
+
+    <main class="hrm-page" style="max-width: 1240px;">
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <h1 class="hrm-h1">New employee</h1>
+        <p class="hrm-muted" style="margin: 0;">Collect only what the company needs. Salary is added separately by payroll.</p>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start;">
+        <nav aria-label="Form sections" style="flex: 1 1 200px; max-width: 240px;">
+          <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px;">
+            <li><a href="#identity" class="hrm-nav-item" style="gap: 10px;"><span class="hrm-badge tone-ok no-dot" style="width: 22px; padding: 0; justify-content: center;">✓</span>Identity</a></li>
+            <li><a href="#employment" class="hrm-nav-item is-active" aria-current="step" style="gap: 10px;"><span class="hrm-badge tone-info no-dot" style="width: 22px; padding: 0; justify-content: center;">2</span>Employment</a></li>
+            <li><a href="#contact" class="hrm-nav-item" style="gap: 10px;"><span class="hrm-badge tone-neutral no-dot" style="width: 22px; padding: 0; justify-content: center;">3</span>Contact</a></li>
+            <li><a href="#emergency" class="hrm-nav-item" style="gap: 10px;"><span class="hrm-badge tone-neutral no-dot" style="width: 22px; padding: 0; justify-content: center;">4</span>Emergency contact</a></li>
+            <li><a href="#review" class="hrm-nav-item" style="gap: 10px;"><span class="hrm-badge tone-neutral no-dot" style="width: 22px; padding: 0; justify-content: center;">5</span>Review</a></li>
+          </ol>
+        </nav>
+
+        <form style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 24px;">
+          <section class="hrm-card" aria-labelledby="s1" style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;"><h2 id="s1" class="hrm-h3">Identity</h2><button class="hrm-btn hrm-btn-text hrm-btn-sm" type="button">Edit</button></div>
+            <dl class="hrm-dl">
+              <dt>Employee code</dt><dd class="hrm-mono">EMP-0045</dd>
+              <dt>Name</dt><dd>Zahid Rahman</dd>
+              <dt>Work email</dt><dd>zahid.rahman@big-matrix.com</dd>
+            </dl>
+          </section>
+
+          <section class="hrm-card" aria-labelledby="s2" style="display: flex; flex-direction: column; gap: 20px; border-color: var(--line-strong);">
+            <h2 id="s2" class="hrm-h3">Employment</h2>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;">
+              <div class="hrm-field"><label class="hrm-field-label" for="dep">Department</label><select id="dep" class="hrm-input hrm-select"><option>Engineering</option></select></div>
+              <div class="hrm-field"><label class="hrm-field-label" for="pos">Position</label><select id="pos" class="hrm-input hrm-select"><option>Frontend engineer</option></select></div>
+              <div class="hrm-field">
+                <label class="hrm-field-label" for="mgr">Manager</label>
+                <div class="hrm-search"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><input id="mgr" class="hrm-input" value="EMP-0004 · Tanvir Ahmed"></div>
+              </div>
+              <div class="hrm-field"><label class="hrm-field-label" for="join">Joining date</label><input id="join" class="hrm-input" value="2 Nov 2026"></div>
+              <div class="hrm-field"><label class="hrm-field-label" for="sch">Work schedule</label><select id="sch" class="hrm-input hrm-select"><option>Standard · Sun–Thu · core 10–4</option></select></div>
+              <div class="hrm-field"><label class="hrm-field-label" for="ct">Contract</label><select id="ct" class="hrm-input hrm-select"><option>Probation · 6 months</option></select></div>
+            </div>
+            <div class="hrm-field">
+              <span class="hrm-field-label">Starting status</span>
+              <div class="hrm-segment" role="group" aria-label="Starting status"><button class="hrm-segment-item" type="button" aria-pressed="false">Draft</button><button class="hrm-segment-item is-on" type="button" aria-pressed="true">Preboarding</button></div>
+              <span class="hrm-field-hint">Becomes Probation automatically on 2 Nov 2026.</span>
+            </div>
+            <label style="display: flex; gap: 10px; align-items: flex-start;"><input class="hrm-check" type="checkbox" checked style="margin-top: 2px;"><span><span style="font-weight: 500;">Invite Zahid to sign in</span><br><span class="hrm-faint" style="font-size: 13px;">An invitation email goes to the work email after you create the record.</span></span></label>
+          </section>
+
+          <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+            <a class="hrm-btn hrm-btn-text" href="Employees.dc.html">Cancel</a>
+            <div style="display: flex; gap: 12px;">
+              <button class="hrm-btn hrm-btn-secondary" type="button">Back</button>
+              <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}">Continue to contact</x-import>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'ink', no: false };
+  }
+}
+</script>
+</body>
+</html>

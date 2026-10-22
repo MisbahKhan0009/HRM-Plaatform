@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Approve payroll run · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}" style="position: relative;">
+  <div class="hrm-shell-side" aria-hidden="true">
+    <dc-import name="Sidebar" theme="{{theme}}" role="payroll" active="payroll" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main" aria-hidden="true">
+    <header class="hrm-topbar">
+      <span class="hrm-label" style="flex-grow: 1;">Payroll runs / October 2026</span>
+      <span class="hrm-avatar">IH</span>
+    </header>
+    <main class="hrm-page" style="max-width: 1320px;">
+      <div class="hrm-page-head">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; gap: 8px; align-items: center;"><span class="hrm-label"><span class="hrm-mono">PR-2026-10-01</span> · Regular run</span><span class="hrm-badge tone-warn">Submitted</span></div>
+          <h1 class="hrm-h1">October 2026 payroll</h1>
+        </div>
+        <div style="display: flex; gap: 8px;"><button class="hrm-btn hrm-btn-secondary" type="button" tabindex="-1">Return to draft</button><button class="hrm-btn hrm-btn-primary" type="button" tabindex="-1">Approve run</button></div>
+      </div>
+      <ol class="hrm-steps" style="list-style: none; margin: 0; padding: 0;"><li class="hrm-step is-done">Draft</li><li class="hrm-step is-done">Calculated</li><li class="hrm-step is-current">Submitted</li><li class="hrm-step">Approved</li><li class="hrm-step">Locked</li><li class="hrm-step">Paid</li><li class="hrm-step">Reconciled</li></ol>
+      <div class="hrm-card" style="height: 420px;"></div>
+    </main>
+  </div>
+
+  <div style="position: absolute; inset: 0; background: rgba(8, 9, 10, 0.72); display: flex; align-items: flex-start; justify-content: center; padding: 120px 16px 40px;">
+    <div role="dialog" aria-modal="true" aria-labelledby="dlg-title" aria-describedby="dlg-desc" class="hrm-card" style="width: 100%; max-width: 560px; padding: 28px; display: flex; flex-direction: column; gap: 20px; border-color: var(--line-strong); background: var(--surface);">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h2 id="dlg-title" class="hrm-h2">Approve October 2026 payroll?</h2>
+          <p id="dlg-desc" class="hrm-muted" style="margin: 0;">After approval you can lock the run and record payments. 44 employees · net pay <span class="hrm-mono" style="color: var(--text);">৳ 2,882,686.43</span>.</p>
+        </div>
+        <button class="hrm-btn hrm-btn-icon" type="button" aria-label="Close"><svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      </div>
+
+      <div class="hrm-alert hrm-alert-warn">
+        <svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <span><strong style="font-weight: 600;">You prepared this run.</strong> Approving your own run is allowed, but it's flagged as self-approved and your reason is kept with the run.</span>
+      </div>
+
+      <div class="hrm-field">
+        <label class="hrm-field-label" for="why">Reason for approving your own run</label>
+        <textarea id="why" class="hrm-input hrm-textarea" rows="3">Director on leave until 2 Nov. Totals checked against the September register and the 3 noted changes.</textarea>
+      </div>
+
+      <label style="display: flex; gap: 10px; align-items: flex-start;"><input class="hrm-check" type="checkbox" checked style="margin-top: 2px;"><span>I've reviewed the validation results and the items with notes.</span></label>
+
+      <p class="hrm-faint" style="margin: 0; font-size: 13px;">You'll confirm with your passkey. This action is recorded in the audit log.</p>
+
+      <div style="display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap;">
+        <button class="hrm-btn hrm-btn-secondary" type="button">Cancel</button>
+        <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}">Approve as self-approved</x-import>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'ink', no: false };
+  }
+}
+</script>
+</body>
+</html>

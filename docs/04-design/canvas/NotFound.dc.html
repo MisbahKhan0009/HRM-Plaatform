@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Page not found · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-brand-stage" data-theme="{{theme}}" style="min-height: 900px; display: flex; flex-direction: column; padding: 40px 32px;">
+  <x-import component-from-global-scope="BigMatrix.Glow" second="{{yes}}"></x-import>
+  <x-import component-from-global-scope="BigMatrix.DotGrid"></x-import>
+  <header class="hrm-stage-content" style="width: 100%; max-width: 1240px; margin: 0 auto;">
+    <sc-if value="{{isPaper}}" hint-placeholder-val="{{false}}">
+      <img src="/_blob/77c10b5a7f35f70f76a8367300b2efe2" alt="Big-Matrix Solutions" style="height: 34px; width: auto; display: block;">
+    </sc-if>
+    <sc-if value="{{isInk}}" hint-placeholder-val="{{true}}">
+      <img src="/_blob/a863de2814fb92714aab1d020a7ab70e" alt="Big-Matrix Solutions" style="height: 34px; width: auto; display: block;">
+    </sc-if>
+  </header>
+  <main class="hrm-stage-content" style="flex-grow: 1; width: 100%; max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; gap: 24px;">
+    <x-import component-from-global-scope="BigMatrix.Eyebrow">Error 404</x-import>
+    <h1 style="margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 64px; line-height: 1.04; letter-spacing: -0.032em; color: var(--text); max-width: 720px;">This page isn't <em class="hrm-em">here</em></h1>
+    <p style="margin: 0; font-size: 18px; line-height: 1.65; color: var(--text-2); max-width: 560px;">The link may be wrong or out of date, or the page may need access you don't have. If you think you should see it, ask HR.</p>
+    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+      <x-import component-from-global-scope="BigMatrix.Button" href="Dashboard.dc.html">Go to dashboard</x-import>
+      <button class="hrm-btn hrm-btn-secondary" type="button">Go back</button>
+    </div>
+    <p class="hrm-mono hrm-faint" style="margin: 0; font-size: 12px;">Request ID 01JBK3S9W4Q7Z2</p>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const theme = this.props.theme ?? 'ink';
+    return { theme, isPaper: theme === 'paper', isInk: theme !== 'paper', yes: true };
+  }
+}
+</script>
+</body>
+</html>

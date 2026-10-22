@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Work schedules · Settings · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="hr" active="settings" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <nav aria-label="Breadcrumb" style="flex-grow: 1; display: flex; gap: 8px; align-items: center;"><span class="hrm-label">Settings</span><span class="hrm-faint">/</span><span class="hrm-label" style="color: var(--text);">Work schedules</span></nav>
+      <span class="hrm-avatar" aria-label="Farzana Akter">FA</span>
+    </header>
+
+    <main class="hrm-page" style="max-width: 1320px; flex-direction: row; flex-wrap: wrap; align-items: flex-start;">
+      <div style="flex: 1 1 200px; max-width: 232px;">
+        <dc-import name="SettingsNav" theme="{{theme}}" active="schedules" hint-size="232px,700px"></dc-import>
+      </div>
+
+      <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 24px;">
+        <div class="hrm-page-head">
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <h1 class="hrm-h1">Work schedules</h1>
+            <p class="hrm-muted" style="margin: 0;">Changes create a new version from a date you choose. Past attendance keeps the version it used.</p>
+          </div>
+          <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}">Add schedule</x-import>
+        </div>
+
+        <section class="hrm-card" aria-labelledby="std" style="display: flex; flex-direction: column; gap: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <div style="display: flex; gap: 10px; align-items: center;"><h2 id="std" class="hrm-h3">Standard</h2><span class="hrm-badge tone-ok">Default</span></div>
+            <span class="hrm-muted" style="font-size: 13px;">Assigned to <span class="hrm-mono">42</span> employees</span>
+          </div>
+          <div class="hrm-field">
+            <span class="hrm-field-label">Working days</span>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <label class="hrm-segment-item is-on" style="border: 1px solid var(--line-strong);"><input class="hrm-check" type="checkbox" checked>Sun</label>
+              <label class="hrm-segment-item is-on" style="border: 1px solid var(--line-strong);"><input class="hrm-check" type="checkbox" checked>Mon</label>
+              <label class="hrm-segment-item is-on" style="border: 1px solid var(--line-strong);"><input class="hrm-check" type="checkbox" checked>Tue</label>
+              <label class="hrm-segment-item is-on" style="border: 1px solid var(--line-strong);"><input class="hrm-check" type="checkbox" checked>Wed</label>
+              <label class="hrm-segment-item is-on" style="border: 1px solid var(--line-strong);"><input class="hrm-check" type="checkbox" checked>Thu</label>
+              <label class="hrm-segment-item" style="border: 1px solid var(--line);"><input class="hrm-check" type="checkbox">Fri</label>
+              <label class="hrm-segment-item" style="border: 1px solid var(--line);"><input class="hrm-check" type="checkbox">Sat</label>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;">
+            <div class="hrm-field"><label class="hrm-field-label" for="cs">Core hours start</label><input id="cs" class="hrm-input hrm-mono" type="time" value="10:00"></div>
+            <div class="hrm-field"><label class="hrm-field-label" for="ce">Core hours end</label><input id="ce" class="hrm-input hrm-mono" type="time" value="16:00"></div>
+            <div class="hrm-field"><label class="hrm-field-label" for="mh">Minimum per day</label><input id="mh" class="hrm-input hrm-mono" value="8 h 00 m"></div>
+          </div>
+          <div class="hrm-field" style="max-width: 260px;"><label class="hrm-field-label" for="ef">Effective from</label><input id="ef" class="hrm-input" value="1 Nov 2026"></div>
+          <div style="display: flex; justify-content: flex-end; gap: 12px;">
+            <button class="hrm-btn hrm-btn-text" type="button">Discard</button>
+            <button class="hrm-btn hrm-btn-secondary" type="button">Save new version</button>
+          </div>
+        </section>
+
+        <section aria-labelledby="ver" style="display: flex; flex-direction: column; gap: 12px;">
+          <h2 id="ver" class="hrm-label" style="margin: 0;">Versions</h2>
+          <div class="hrm-table-wrap">
+            <table class="hrm-table">
+              <thead><tr><th scope="col">Effective</th><th scope="col">Days</th><th scope="col">Core hours</th><th scope="col">Minimum</th><th scope="col">Changed by</th></tr></thead>
+              <tbody>
+                <tr><td>1 Jan 2026 – now</td><td>Sun–Thu</td><td class="hrm-mono">10:00–16:00</td><td class="hrm-mono">8 h</td><td>Farzana Akter</td></tr>
+                <tr><td>1 Jan 2025 – 31 Dec 2025</td><td>Sun–Thu</td><td class="hrm-mono">10:00–15:30</td><td class="hrm-mono">8 h</td><td>Farzana Akter</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'ink', no: false };
+  }
+}
+</script>
+</body>
+</html>
