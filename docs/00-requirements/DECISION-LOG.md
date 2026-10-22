@@ -67,3 +67,4 @@ in ADRs, docs and code comments (e.g. `see D-001`).
 | D-037 | PDF payslips and XLSX/CSV exports are **generated in the browser** from immutable server data, keeping Worker CPU under the free limit | ADR-0006 |
 | D-038 | Company & brand: **Big-Matrix Solutions** design system (owner's design-system artifact), snapshot in `docs/02-brand/source/` | docs/02-brand |
 | D-039 | AI skills: only free third-party skills from GitHub / skills.sh, reviewed before commit; no self-made skills | docs/SKILLS.md |
+| D-040 | App UI: brand adapted for product use; **Ink (dark) default with a toggle to Paper (light)**; dot grid + glow only on brand moments; adds `warn` status tokens | docs/02-brand/APP-UI-ADAPTATION.md |
