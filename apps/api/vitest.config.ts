@@ -25,5 +25,6 @@ export default defineConfig({
     provide: { testDatabaseUrl },
     // One database for all files: each file creates its own company, so files stay independent.
     testTimeout: 20_000,
+    hookTimeout: 60_000,
   },
 });

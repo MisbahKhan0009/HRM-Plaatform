@@ -8,6 +8,7 @@ import { session } from './middleware/session';
 import { authRoutes } from './modules/accounts/auth.routes';
 import { approvalRoutes } from './modules/approvals/approvals.routes';
 import { healthRoutes } from './modules/health/health.routes';
+import { leaveRoutes } from './modules/leave/leave.routes';
 import { organizationRoutes } from './modules/organization/organization.routes';
 import type { AppEnv } from './types';
 
@@ -32,6 +33,7 @@ app.route('/api/v1', healthRoutes);
 app.route('/api/v1', authRoutes);
 app.route('/api/v1', approvalRoutes);
 app.route('/api/v1', organizationRoutes);
+app.route('/api/v1', leaveRoutes);
 
 // Better Auth serves the rest of /auth/* (sign-in, passkeys, TOTP, sessions); our routes above match first.
 app.on(['GET', 'POST'], '/api/v1/auth/*', (c) => c.var.deps.auth().handler(c.req.raw));

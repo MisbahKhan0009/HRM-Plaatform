@@ -358,3 +358,10 @@ Stored in `settings` (DATA-MODEL section 1). Changing a key needs `settings.<sco
 5. Does a transport claim need a receipt above some amount? v1 makes the receipt optional at every amount.
 6. Should approved but unpaid reimbursement claims of a separated employee be paid in an off-cycle run? v1 includes them in the final regular run only if approved before it is calculated.
 7. ~~Mid-month salary change~~: decided, split-period proration (D-041).
+8. Does `max_balance` cap `monthly_accrual` postings as it caps `per_days_worked` (5.3)? v1 applies the cap to both.
+9. `carry_forward_expiry_months` allows 1 to 24, but an expiry date of 1 January or later in the next year collides with the next year end (5.4). v1 expires carried days only when the date falls inside the leave year (1 to 11 months); for 12 or more the next year end governs.
+10. When `max_balance` caps a `per_days_worked` posting, is the excess forfeited? v1 computes `earned_ytd - already` each month, so capped days are posted later once the balance has room.
+11. With `min_notice_days` 0, an employee cannot request leave that starts before today (3.1), so retroactive sick leave needs HR on behalf. Should sick leave allow a retroactive window?
+12. Who are an employee's colleagues on the team calendar when `leave.calendar.visible_to_team` is on? v1 shows employees who share the same manager.
+13. Are `optional` holidays excluded from leave days like other holidays? v1 excludes every holiday type.
+14. An employee eligible before 1 January who has no grant for the year (for example at go-live) receives the full annual entitlement from the daily `leave.eligibility_grants` step. Confirm.
