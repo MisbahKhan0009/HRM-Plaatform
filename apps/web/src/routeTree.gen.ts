@@ -35,9 +35,15 @@ import { Route as AppLeaveCalendarRouteImport } from './routes/_app/leave/calend
 import { Route as AppLeaveManageRouteImport } from './routes/_app/leave/manage'
 import { Route as AppLeaveNewRouteImport } from './routes/_app/leave/new'
 import { Route as AppMeIndexRouteImport } from './routes/_app/me/index'
+import { Route as AppMeCompensationRouteImport } from './routes/_app/me/compensation'
 import { Route as AppMePreferencesRouteImport } from './routes/_app/me/preferences'
 import { Route as AppMeProfileChangesRouteImport } from './routes/_app/me/profile-changes'
 import { Route as AppMeSecurityRouteImport } from './routes/_app/me/security'
+import { Route as AppPayrollIndexRouteImport } from './routes/_app/payroll/index'
+import { Route as AppPayrollAdjustmentsRouteImport } from './routes/_app/payroll/adjustments'
+import { Route as AppPayrollSalaryStructuresRouteImport } from './routes/_app/payroll/salary-structures'
+import { Route as AppPayslipsIndexRouteImport } from './routes/_app/payslips/index'
+import { Route as AppPayslipsPayslipIdRouteImport } from './routes/_app/payslips/$payslipId'
 import { Route as AppReimbursementsIndexRouteImport } from './routes/_app/reimbursements/index'
 import { Route as AppReimbursementsClaimIdRouteImport } from './routes/_app/reimbursements/$claimId'
 import { Route as AppReimbursementsManageRouteImport } from './routes/_app/reimbursements/manage'
@@ -63,6 +69,7 @@ import { Route as AppAttendanceEmployeeIdWorkDateRouteImport } from './routes/_a
 import { Route as AppAttendanceCorrectionsCorrectionIdRouteImport } from './routes/_app/attendance/corrections/$correctionId'
 import { Route as AppEmployeesProfileChangesIdRouteImport } from './routes/_app/employees/profile-changes/$id'
 import { Route as AppLeaveRequestsRequestIdRouteImport } from './routes/_app/leave/requests/$requestId'
+import { Route as AppPayrollRunsRunIdRouteImport } from './routes/_app/payroll/runs.$runId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -193,6 +200,11 @@ const AppMeIndexRoute = AppMeIndexRouteImport.update({
   path: '/me/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppMeCompensationRoute = AppMeCompensationRouteImport.update({
+  id: '/me/compensation',
+  path: '/me/compensation',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppMePreferencesRoute = AppMePreferencesRouteImport.update({
   id: '/me/preferences',
   path: '/me/preferences',
@@ -206,6 +218,32 @@ const AppMeProfileChangesRoute = AppMeProfileChangesRouteImport.update({
 const AppMeSecurityRoute = AppMeSecurityRouteImport.update({
   id: '/me/security',
   path: '/me/security',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPayrollIndexRoute = AppPayrollIndexRouteImport.update({
+  id: '/payroll/',
+  path: '/payroll/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPayrollAdjustmentsRoute = AppPayrollAdjustmentsRouteImport.update({
+  id: '/payroll/adjustments',
+  path: '/payroll/adjustments',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPayrollSalaryStructuresRoute =
+  AppPayrollSalaryStructuresRouteImport.update({
+    id: '/payroll/salary-structures',
+    path: '/payroll/salary-structures',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppPayslipsIndexRoute = AppPayslipsIndexRouteImport.update({
+  id: '/payslips/',
+  path: '/payslips/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPayslipsPayslipIdRoute = AppPayslipsPayslipIdRouteImport.update({
+  id: '/payslips/$payslipId',
+  path: '/payslips/$payslipId',
   getParentRoute: () => AppRoute,
 } as any)
 const AppReimbursementsIndexRoute = AppReimbursementsIndexRouteImport.update({
@@ -340,6 +378,11 @@ const AppLeaveRequestsRequestIdRoute =
     path: '/leave/requests/$requestId',
     getParentRoute: () => AppRoute,
   } as any)
+const AppPayrollRunsRunIdRoute = AppPayrollRunsRunIdRouteImport.update({
+  id: '/payroll/runs/$runId',
+  path: '/payroll/runs/$runId',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -359,9 +402,13 @@ export interface FileRoutesByFullPath {
   '/leave/calendar': typeof AppLeaveCalendarRoute
   '/leave/manage': typeof AppLeaveManageRoute
   '/leave/new': typeof AppLeaveNewRoute
+  '/me/compensation': typeof AppMeCompensationRoute
   '/me/preferences': typeof AppMePreferencesRoute
   '/me/profile-changes': typeof AppMeProfileChangesRoute
   '/me/security': typeof AppMeSecurityRoute
+  '/payroll/adjustments': typeof AppPayrollAdjustmentsRoute
+  '/payroll/salary-structures': typeof AppPayrollSalaryStructuresRoute
+  '/payslips/$payslipId': typeof AppPayslipsPayslipIdRoute
   '/reimbursements/$claimId': typeof AppReimbursementsClaimIdRoute
   '/reimbursements/manage': typeof AppReimbursementsManageRoute
   '/reimbursements/new': typeof AppReimbursementsNewRoute
@@ -389,12 +436,15 @@ export interface FileRoutesByFullPath {
   '/employees/': typeof AppEmployeesIndexRoute
   '/leave/': typeof AppLeaveIndexRoute
   '/me/': typeof AppMeIndexRoute
+  '/payroll/': typeof AppPayrollIndexRoute
+  '/payslips/': typeof AppPayslipsIndexRoute
   '/reimbursements/': typeof AppReimbursementsIndexRoute
   '/reports/': typeof AppReportsIndexRoute
   '/attendance/$employeeId/$workDate': typeof AppAttendanceEmployeeIdWorkDateRoute
   '/attendance/corrections/$correctionId': typeof AppAttendanceCorrectionsCorrectionIdRoute
   '/employees/profile-changes/$id': typeof AppEmployeesProfileChangesIdRoute
   '/leave/requests/$requestId': typeof AppLeaveRequestsRequestIdRoute
+  '/payroll/runs/$runId': typeof AppPayrollRunsRunIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -414,9 +464,13 @@ export interface FileRoutesByTo {
   '/leave/calendar': typeof AppLeaveCalendarRoute
   '/leave/manage': typeof AppLeaveManageRoute
   '/leave/new': typeof AppLeaveNewRoute
+  '/me/compensation': typeof AppMeCompensationRoute
   '/me/preferences': typeof AppMePreferencesRoute
   '/me/profile-changes': typeof AppMeProfileChangesRoute
   '/me/security': typeof AppMeSecurityRoute
+  '/payroll/adjustments': typeof AppPayrollAdjustmentsRoute
+  '/payroll/salary-structures': typeof AppPayrollSalaryStructuresRoute
+  '/payslips/$payslipId': typeof AppPayslipsPayslipIdRoute
   '/reimbursements/$claimId': typeof AppReimbursementsClaimIdRoute
   '/reimbursements/manage': typeof AppReimbursementsManageRoute
   '/reimbursements/new': typeof AppReimbursementsNewRoute
@@ -444,12 +498,15 @@ export interface FileRoutesByTo {
   '/employees': typeof AppEmployeesIndexRoute
   '/leave': typeof AppLeaveIndexRoute
   '/me': typeof AppMeIndexRoute
+  '/payroll': typeof AppPayrollIndexRoute
+  '/payslips': typeof AppPayslipsIndexRoute
   '/reimbursements': typeof AppReimbursementsIndexRoute
   '/reports': typeof AppReportsIndexRoute
   '/attendance/$employeeId/$workDate': typeof AppAttendanceEmployeeIdWorkDateRoute
   '/attendance/corrections/$correctionId': typeof AppAttendanceCorrectionsCorrectionIdRoute
   '/employees/profile-changes/$id': typeof AppEmployeesProfileChangesIdRoute
   '/leave/requests/$requestId': typeof AppLeaveRequestsRequestIdRoute
+  '/payroll/runs/$runId': typeof AppPayrollRunsRunIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -471,9 +528,13 @@ export interface FileRoutesById {
   '/_app/leave/calendar': typeof AppLeaveCalendarRoute
   '/_app/leave/manage': typeof AppLeaveManageRoute
   '/_app/leave/new': typeof AppLeaveNewRoute
+  '/_app/me/compensation': typeof AppMeCompensationRoute
   '/_app/me/preferences': typeof AppMePreferencesRoute
   '/_app/me/profile-changes': typeof AppMeProfileChangesRoute
   '/_app/me/security': typeof AppMeSecurityRoute
+  '/_app/payroll/adjustments': typeof AppPayrollAdjustmentsRoute
+  '/_app/payroll/salary-structures': typeof AppPayrollSalaryStructuresRoute
+  '/_app/payslips/$payslipId': typeof AppPayslipsPayslipIdRoute
   '/_app/reimbursements/$claimId': typeof AppReimbursementsClaimIdRoute
   '/_app/reimbursements/manage': typeof AppReimbursementsManageRoute
   '/_app/reimbursements/new': typeof AppReimbursementsNewRoute
@@ -501,12 +562,15 @@ export interface FileRoutesById {
   '/_app/employees/': typeof AppEmployeesIndexRoute
   '/_app/leave/': typeof AppLeaveIndexRoute
   '/_app/me/': typeof AppMeIndexRoute
+  '/_app/payroll/': typeof AppPayrollIndexRoute
+  '/_app/payslips/': typeof AppPayslipsIndexRoute
   '/_app/reimbursements/': typeof AppReimbursementsIndexRoute
   '/_app/reports/': typeof AppReportsIndexRoute
   '/_app/attendance/$employeeId/$workDate': typeof AppAttendanceEmployeeIdWorkDateRoute
   '/_app/attendance/corrections/$correctionId': typeof AppAttendanceCorrectionsCorrectionIdRoute
   '/_app/employees/profile-changes/$id': typeof AppEmployeesProfileChangesIdRoute
   '/_app/leave/requests/$requestId': typeof AppLeaveRequestsRequestIdRoute
+  '/_app/payroll/runs/$runId': typeof AppPayrollRunsRunIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -528,9 +592,13 @@ export interface FileRouteTypes {
     | '/leave/calendar'
     | '/leave/manage'
     | '/leave/new'
+    | '/me/compensation'
     | '/me/preferences'
     | '/me/profile-changes'
     | '/me/security'
+    | '/payroll/adjustments'
+    | '/payroll/salary-structures'
+    | '/payslips/$payslipId'
     | '/reimbursements/$claimId'
     | '/reimbursements/manage'
     | '/reimbursements/new'
@@ -558,12 +626,15 @@ export interface FileRouteTypes {
     | '/employees/'
     | '/leave/'
     | '/me/'
+    | '/payroll/'
+    | '/payslips/'
     | '/reimbursements/'
     | '/reports/'
     | '/attendance/$employeeId/$workDate'
     | '/attendance/corrections/$correctionId'
     | '/employees/profile-changes/$id'
     | '/leave/requests/$requestId'
+    | '/payroll/runs/$runId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -583,9 +654,13 @@ export interface FileRouteTypes {
     | '/leave/calendar'
     | '/leave/manage'
     | '/leave/new'
+    | '/me/compensation'
     | '/me/preferences'
     | '/me/profile-changes'
     | '/me/security'
+    | '/payroll/adjustments'
+    | '/payroll/salary-structures'
+    | '/payslips/$payslipId'
     | '/reimbursements/$claimId'
     | '/reimbursements/manage'
     | '/reimbursements/new'
@@ -613,12 +688,15 @@ export interface FileRouteTypes {
     | '/employees'
     | '/leave'
     | '/me'
+    | '/payroll'
+    | '/payslips'
     | '/reimbursements'
     | '/reports'
     | '/attendance/$employeeId/$workDate'
     | '/attendance/corrections/$correctionId'
     | '/employees/profile-changes/$id'
     | '/leave/requests/$requestId'
+    | '/payroll/runs/$runId'
   id:
     | '__root__'
     | '/'
@@ -639,9 +717,13 @@ export interface FileRouteTypes {
     | '/_app/leave/calendar'
     | '/_app/leave/manage'
     | '/_app/leave/new'
+    | '/_app/me/compensation'
     | '/_app/me/preferences'
     | '/_app/me/profile-changes'
     | '/_app/me/security'
+    | '/_app/payroll/adjustments'
+    | '/_app/payroll/salary-structures'
+    | '/_app/payslips/$payslipId'
     | '/_app/reimbursements/$claimId'
     | '/_app/reimbursements/manage'
     | '/_app/reimbursements/new'
@@ -669,12 +751,15 @@ export interface FileRouteTypes {
     | '/_app/employees/'
     | '/_app/leave/'
     | '/_app/me/'
+    | '/_app/payroll/'
+    | '/_app/payslips/'
     | '/_app/reimbursements/'
     | '/_app/reports/'
     | '/_app/attendance/$employeeId/$workDate'
     | '/_app/attendance/corrections/$correctionId'
     | '/_app/employees/profile-changes/$id'
     | '/_app/leave/requests/$requestId'
+    | '/_app/payroll/runs/$runId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -872,6 +957,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMeIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/me/compensation': {
+      id: '/_app/me/compensation'
+      path: '/me/compensation'
+      fullPath: '/me/compensation'
+      preLoaderRoute: typeof AppMeCompensationRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/me/preferences': {
       id: '/_app/me/preferences'
       path: '/me/preferences'
@@ -891,6 +983,41 @@ declare module '@tanstack/react-router' {
       path: '/me/security'
       fullPath: '/me/security'
       preLoaderRoute: typeof AppMeSecurityRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/payroll/': {
+      id: '/_app/payroll/'
+      path: '/payroll'
+      fullPath: '/payroll/'
+      preLoaderRoute: typeof AppPayrollIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/payroll/adjustments': {
+      id: '/_app/payroll/adjustments'
+      path: '/payroll/adjustments'
+      fullPath: '/payroll/adjustments'
+      preLoaderRoute: typeof AppPayrollAdjustmentsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/payroll/salary-structures': {
+      id: '/_app/payroll/salary-structures'
+      path: '/payroll/salary-structures'
+      fullPath: '/payroll/salary-structures'
+      preLoaderRoute: typeof AppPayrollSalaryStructuresRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/payslips/': {
+      id: '/_app/payslips/'
+      path: '/payslips'
+      fullPath: '/payslips/'
+      preLoaderRoute: typeof AppPayslipsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/payslips/$payslipId': {
+      id: '/_app/payslips/$payslipId'
+      path: '/payslips/$payslipId'
+      fullPath: '/payslips/$payslipId'
+      preLoaderRoute: typeof AppPayslipsPayslipIdRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/reimbursements/': {
@@ -1068,6 +1195,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLeaveRequestsRequestIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/payroll/runs/$runId': {
+      id: '/_app/payroll/runs/$runId'
+      path: '/payroll/runs/$runId'
+      fullPath: '/payroll/runs/$runId'
+      preLoaderRoute: typeof AppPayrollRunsRunIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -1115,9 +1249,13 @@ interface AppRouteChildren {
   AppLeaveCalendarRoute: typeof AppLeaveCalendarRoute
   AppLeaveManageRoute: typeof AppLeaveManageRoute
   AppLeaveNewRoute: typeof AppLeaveNewRoute
+  AppMeCompensationRoute: typeof AppMeCompensationRoute
   AppMePreferencesRoute: typeof AppMePreferencesRoute
   AppMeProfileChangesRoute: typeof AppMeProfileChangesRoute
   AppMeSecurityRoute: typeof AppMeSecurityRoute
+  AppPayrollAdjustmentsRoute: typeof AppPayrollAdjustmentsRoute
+  AppPayrollSalaryStructuresRoute: typeof AppPayrollSalaryStructuresRoute
+  AppPayslipsPayslipIdRoute: typeof AppPayslipsPayslipIdRoute
   AppReimbursementsClaimIdRoute: typeof AppReimbursementsClaimIdRoute
   AppReimbursementsManageRoute: typeof AppReimbursementsManageRoute
   AppReimbursementsNewRoute: typeof AppReimbursementsNewRoute
@@ -1132,12 +1270,15 @@ interface AppRouteChildren {
   AppEmployeesIndexRoute: typeof AppEmployeesIndexRoute
   AppLeaveIndexRoute: typeof AppLeaveIndexRoute
   AppMeIndexRoute: typeof AppMeIndexRoute
+  AppPayrollIndexRoute: typeof AppPayrollIndexRoute
+  AppPayslipsIndexRoute: typeof AppPayslipsIndexRoute
   AppReimbursementsIndexRoute: typeof AppReimbursementsIndexRoute
   AppReportsIndexRoute: typeof AppReportsIndexRoute
   AppAttendanceEmployeeIdWorkDateRoute: typeof AppAttendanceEmployeeIdWorkDateRoute
   AppAttendanceCorrectionsCorrectionIdRoute: typeof AppAttendanceCorrectionsCorrectionIdRoute
   AppEmployeesProfileChangesIdRoute: typeof AppEmployeesProfileChangesIdRoute
   AppLeaveRequestsRequestIdRoute: typeof AppLeaveRequestsRequestIdRoute
+  AppPayrollRunsRunIdRoute: typeof AppPayrollRunsRunIdRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -1153,9 +1294,13 @@ const AppRouteChildren: AppRouteChildren = {
   AppLeaveCalendarRoute: AppLeaveCalendarRoute,
   AppLeaveManageRoute: AppLeaveManageRoute,
   AppLeaveNewRoute: AppLeaveNewRoute,
+  AppMeCompensationRoute: AppMeCompensationRoute,
   AppMePreferencesRoute: AppMePreferencesRoute,
   AppMeProfileChangesRoute: AppMeProfileChangesRoute,
   AppMeSecurityRoute: AppMeSecurityRoute,
+  AppPayrollAdjustmentsRoute: AppPayrollAdjustmentsRoute,
+  AppPayrollSalaryStructuresRoute: AppPayrollSalaryStructuresRoute,
+  AppPayslipsPayslipIdRoute: AppPayslipsPayslipIdRoute,
   AppReimbursementsClaimIdRoute: AppReimbursementsClaimIdRoute,
   AppReimbursementsManageRoute: AppReimbursementsManageRoute,
   AppReimbursementsNewRoute: AppReimbursementsNewRoute,
@@ -1170,6 +1315,8 @@ const AppRouteChildren: AppRouteChildren = {
   AppEmployeesIndexRoute: AppEmployeesIndexRoute,
   AppLeaveIndexRoute: AppLeaveIndexRoute,
   AppMeIndexRoute: AppMeIndexRoute,
+  AppPayrollIndexRoute: AppPayrollIndexRoute,
+  AppPayslipsIndexRoute: AppPayslipsIndexRoute,
   AppReimbursementsIndexRoute: AppReimbursementsIndexRoute,
   AppReportsIndexRoute: AppReportsIndexRoute,
   AppAttendanceEmployeeIdWorkDateRoute: AppAttendanceEmployeeIdWorkDateRoute,
@@ -1177,6 +1324,7 @@ const AppRouteChildren: AppRouteChildren = {
     AppAttendanceCorrectionsCorrectionIdRoute,
   AppEmployeesProfileChangesIdRoute: AppEmployeesProfileChangesIdRoute,
   AppLeaveRequestsRequestIdRoute: AppLeaveRequestsRequestIdRoute,
+  AppPayrollRunsRunIdRoute: AppPayrollRunsRunIdRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

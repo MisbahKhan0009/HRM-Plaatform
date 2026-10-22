@@ -9,6 +9,7 @@ import { TeamTodayWidget, TodayAttendanceWidget } from '../attendance/widgets';
 import { ExpiringDocumentsWidget } from '../documents';
 import { PeopleOverviewWidget } from '../employees';
 import { LeaveBalancesWidget, MyLeaveRequestsWidget, WhoIsOnLeaveWidget } from '../leave/widgets';
+import { LatestPayslipWidget, PayrollStatusWidget } from '../payroll/widgets';
 import { MyClaimsWidget } from '../reimbursements';
 import { systemQueries } from '../system/api';
 import { healthProblems, SystemHealthSummary } from '../system/components';
@@ -119,6 +120,7 @@ export const DASHBOARD_WIDGETS: DashboardWidget[] = [
   { key: 'leave-balances', any: ['leave.request.own'], span: 6, Component: LeaveBalancesWidget },
   { key: 'my-leave-requests', any: ['leave.request.own'], span: 6, Component: MyLeaveRequestsWidget },
   { key: 'my-claims', any: ['reimbursement.request.own'], span: 6, Component: MyClaimsWidget },
+  { key: 'latest-payslip', any: ['payslip.read.own'], span: 6, Component: LatestPayslipWidget },
   { key: 'approvals', any: ['approval.inbox'], span: 6, hasPrimaryAction: true, Component: ApprovalsWidget },
   { key: 'team-today', any: ['attendance.read.team'], span: 6, Component: TeamTodayWidget },
   {
@@ -129,5 +131,12 @@ export const DASHBOARD_WIDGETS: DashboardWidget[] = [
   },
   { key: 'people-overview', any: ['report.hr'], span: 6, Component: PeopleOverviewWidget },
   { key: 'expiring-documents', any: ['document.read.all'], span: 6, Component: ExpiringDocumentsWidget },
+  {
+    key: 'payroll-status',
+    any: ['payroll.read.all'],
+    span: 6,
+    hasPrimaryAction: true,
+    Component: PayrollStatusWidget,
+  },
   { key: 'system-health', any: ['system.health.read'], span: 6, Component: SystemHealthWidget },
 ];
