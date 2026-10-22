@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { IsoDateSchema, PageQuerySchema } from './primitives';
 
 export const auditCategoryValues = ['business', 'payroll', 'security', 'technical'] as const;
 export type AuditCategory = (typeof auditCategoryValues)[number];
@@ -24,6 +25,7 @@ export const AUDIT_ACTIONS = [
   'role.granted',
   'role.revoked',
   'role.permissions_changed',
+  'role.updated',
   'settings.changed',
   'company.updated',
   'department.created',
@@ -96,6 +98,7 @@ export const AUDIT_ACTIONS = [
   'document.downloaded',
   'report.exported',
   'job.failed',
+  'job.run_requested',
   'outbox.message_dead',
 ] as const;
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
@@ -142,6 +145,33 @@ export const AuditLogEntrySchema = z.object({
   employeeId: z.uuid().nullable(),
   requestId: z.string().nullable(),
   ipAddress: z.string().nullable(),
+  /** Absent when the caller may see the event but not its details (AUDIT.md §5, `audit.read.technical`). */
   metadata: z.record(z.string(), z.unknown()).optional(),
 });
 export type AuditLogEntry = z.infer<typeof AuditLogEntrySchema>;
+
+/** `GET /audit-logs` (AUDIT.md §5). `from` and `to` are Asia/Dhaka business dates, inclusive, at most 366 days apart. */
+export const AuditLogQuerySchema = PageQuerySchema.extend({
+  from: IsoDateSchema,
+  to: IsoDateSchema,
+  actorUserId: z.uuid().optional(),
+  /** Prefix match, e.g. `payroll_run.` */
+  action: z
+    .string()
+    .regex(/^[a-z_.]{1,80}$/)
+    .optional(),
+  category: z.enum(auditCategoryValues).optional(),
+  entityType: z
+    .string()
+    .regex(/^[a-z_]{1,60}$/)
+    .optional(),
+  entityId: z.uuid().optional(),
+  employeeId: z.uuid().optional(),
+})
+  .strict()
+  .refine((q) => q.from <= q.to, { path: ['to'], message: 'Must be on or after from' })
+  .refine((q) => (Date.parse(q.to) - Date.parse(q.from)) / 86_400_000 <= 365, {
+    path: ['to'],
+    message: 'At most 366 days',
+  });
+export type AuditLogQuery = z.infer<typeof AuditLogQuerySchema>;

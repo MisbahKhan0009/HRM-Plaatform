@@ -8,3 +8,4 @@ export * from './organization';
 export * from './permissions';
 export * from './primitives';
 export * from './settings';
+export * from './users';

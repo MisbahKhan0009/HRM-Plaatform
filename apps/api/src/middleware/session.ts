@@ -8,7 +8,9 @@ import { problemResponse } from '../lib/problem';
 import type { AppEnv } from '../types';
 
 const V1 = '/api/v1';
-const PUBLIC_PREFIXES = [`${V1}/health`, `${V1}/openapi.json`, `${V1}/auth/invitations/`, `${V1}/__test/`];
+/** `/health` is public; `/health/details` is not, so it is matched exactly (API-CATALOGUE §13). */
+const PUBLIC_EXACT = [`${V1}/health`];
+const PUBLIC_PREFIXES = [`${V1}/openapi.json`, `${V1}/auth/invitations/`, `${V1}/__test/`];
 /** Our own routes under /auth that need a session (everything else under /auth is Better Auth's). */
 const OWN_AUTH = [`${V1}/auth/me`, `${V1}/auth/step-up/`];
 /** Routes a privileged user may call on a weak session, to see who they are and step up (AUTH-IMPLEMENTATION §3.1). */
@@ -178,7 +180,8 @@ async function guardBetterAuth(c: Parameters<typeof authenticate>[0], path: stri
 export const session = () =>
   createMiddleware<AppEnv>(async (c, next) => {
     const path = c.req.path;
-    if (!path.startsWith(V1) || startsWithAny(path, PUBLIC_PREFIXES)) return next();
+    if (!path.startsWith(V1) || PUBLIC_EXACT.includes(path) || startsWithAny(path, PUBLIC_PREFIXES))
+      return next();
     if (path.startsWith(`${V1}/auth/`) && !startsWithAny(path, OWN_AUTH)) {
       const denied = await guardBetterAuth(c, path);
       return denied ?? next();
