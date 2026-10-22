@@ -23,4 +23,6 @@ This is the master sequence for building the HRM platform. Each stage has an
 ## Status
 
 - [x] SRS v1.0 received — `docs/00-requirements/SRS-v1.0.md`
-- [ ] Stage 1 — Requirements analysis (in progress)
+
+- [x] Stage 1 — Requirements analysis: decisions D-001…D-025 recorded in `docs/00-requirements/DECISION-LOG.md`
+- [ ] Stage 2 — Tech stack selection (in progress)
