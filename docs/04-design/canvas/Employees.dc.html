@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Employees · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="hr" active="employees" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <span class="hrm-label" style="flex-grow: 1;">People · Employees</span>
+      <span class="hrm-avatar" aria-label="Farzana Akter">FA</span>
+    </header>
+
+    <main class="hrm-page" style="max-width: 1320px;">
+      <div class="hrm-page-head">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h1 class="hrm-h1">Employees</h1>
+          <p class="hrm-muted" style="margin: 0;">45 people. Archived records keep their full history.</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <a class="hrm-btn hrm-btn-secondary" href="#import"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>Import CSV</a>
+          <a class="hrm-btn hrm-btn-primary" href="#new"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Add employee</a>
+        </div>
+      </div>
+
+      <x-import component-from-global-scope="BigMatrix.StatBar" stats="{{headcount}}" style="max-width: none;"></x-import>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+          <div class="hrm-search" style="flex: 1 1 280px; max-width: 360px;">
+            <svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input class="hrm-input" type="search" aria-label="Search employees" placeholder="Search name, code or email">
+          </div>
+          <span class="hrm-badge tone-neutral no-dot" style="height: 32px; padding: 0 12px; text-transform: none; letter-spacing: 0; font-family: var(--font-body); font-size: 13px;">Status: not archived<button class="hrm-btn hrm-btn-icon" type="button" aria-label="Remove filter" style="width: 20px; height: 20px;"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></span>
+          <span class="hrm-badge tone-neutral no-dot" style="height: 32px; padding: 0 12px; text-transform: none; letter-spacing: 0; font-family: var(--font-body); font-size: 13px;">Department: Engineering<button class="hrm-btn hrm-btn-icon" type="button" aria-label="Remove filter" style="width: 20px; height: 20px;"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></span>
+          <button class="hrm-btn hrm-btn-secondary hrm-btn-sm" type="button"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>Filters</button>
+          <button class="hrm-btn hrm-btn-text hrm-btn-sm" type="button">Reset</button>
+          <span style="flex-grow: 1;"></span>
+          <button class="hrm-btn hrm-btn-secondary hrm-btn-sm" type="button"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Export</button>
+        </div>
+
+        <div class="hrm-table-wrap">
+          <div class="hrm-table-scroll">
+            <table class="hrm-table">
+              <thead><tr><th scope="col" aria-sort="ascending">Employee ↑</th><th scope="col">Department</th><th scope="col">Position</th><th scope="col">Manager</th><th scope="col">Joined</th><th scope="col">Status</th></tr></thead>
+              <tbody>
+                <tr><td><a href="EmployeeProfile.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text);"><span class="hrm-avatar" aria-hidden="true">MH</span><span style="display: flex; flex-direction: column;"><span style="font-weight: 500;">Mahmud Hasan</span><span class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0031</span></span></a></td><td>Engineering</td><td>Backend engineer</td><td>Tanvir Ahmed</td><td>12 Aug 2026</td><td><span class="hrm-badge tone-warn">Probation</span></td></tr>
+                <tr><td><a href="EmployeeProfile.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text);"><span class="hrm-avatar" aria-hidden="true">NJ</span><span style="display: flex; flex-direction: column;"><span style="font-weight: 500;">Nusrat Jahan</span><span class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0014</span></span></a></td><td>Engineering</td><td>Software engineer</td><td>Tanvir Ahmed</td><td>3 Jan 2024</td><td><span class="hrm-badge tone-ok">Active</span></td></tr>
+                <tr><td><a href="EmployeeProfile.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text);"><span class="hrm-avatar" aria-hidden="true">RU</span><span style="display: flex; flex-direction: column;"><span style="font-weight: 500;">Rahim Uddin</span><span class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0009</span></span></a></td><td>Engineering</td><td>QA engineer</td><td>Tanvir Ahmed</td><td>17 Apr 2023</td><td><span class="hrm-badge tone-ok">Active</span></td></tr>
+                <tr><td><a href="EmployeeProfile.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text);"><span class="hrm-avatar" aria-hidden="true">SK</span><span style="display: flex; flex-direction: column;"><span style="font-weight: 500;">Sadia Karim</span><span class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0022</span></span></a></td><td>Engineering</td><td>ML engineer</td><td>Tanvir Ahmed</td><td>1 Mar 2025</td><td><span class="hrm-badge tone-warn">Notice period</span></td></tr>
+                <tr><td><a href="EmployeeProfile.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text);"><span class="hrm-avatar" aria-hidden="true">TA</span><span style="display: flex; flex-direction: column;"><span style="font-weight: 500;">Tanvir Ahmed</span><span class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0004</span></span></a></td><td>Engineering</td><td>Engineering manager</td><td>Ayesha Siddiqua</td><td>9 Jun 2021</td><td><span class="hrm-badge tone-ok">Active</span></td></tr>
+                <tr><td><a href="EmployeeProfile.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text);"><span class="hrm-avatar" aria-hidden="true">ZR</span><span style="display: flex; flex-direction: column;"><span style="font-weight: 500;">Zahid Rahman</span><span class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0045</span></span></a></td><td>Engineering</td><td>Frontend engineer</td><td>Tanvir Ahmed</td><td>Starts 2 Nov 2026</td><td><span class="hrm-badge tone-warn">Preboarding</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="hrm-table-foot">
+            <span><span class="hrm-mono">1–6</span> of <span class="hrm-mono">6</span> in Engineering</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <select class="hrm-input hrm-select" aria-label="Rows per page" style="width: 92px; height: 32px;"><option>25</option><option>50</option><option>100</option></select>
+              <button class="hrm-btn hrm-btn-icon hrm-btn-disabled" type="button" aria-label="Previous page" aria-disabled="true"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+              <button class="hrm-btn hrm-btn-icon hrm-btn-disabled" type="button" aria-label="Next page" aria-disabled="true"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      theme: this.props.theme ?? 'ink',
+      headcount: [
+        { value: '38', label: 'Active' },
+        { value: '4', label: 'Probation' },
+        { value: '1', label: 'Notice period' },
+        { value: '2', label: 'Preboarding' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

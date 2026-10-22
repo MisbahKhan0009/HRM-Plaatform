@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dashboard · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="employee" active="dashboard" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <span class="hrm-label" style="flex-grow: 1;">Dashboard</span>
+      <div class="hrm-segment" role="group" aria-label="Theme">
+        <button class="{{inkClass}}" type="button" aria-pressed="{{isInk}}"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>Ink</button>
+        <button class="{{paperClass}}" type="button" aria-pressed="{{isPaper}}"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>Paper</button>
+      </div>
+      <span class="hrm-avatar" aria-label="Nusrat Jahan">NJ</span>
+    </header>
+
+    <main class="hrm-page">
+      <section class="hrm-card hrm-brand-stage" aria-labelledby="welcome" style="padding: 32px; display: flex; flex-wrap: wrap; gap: 32px; align-items: center; justify-content: space-between;">
+        <x-import component-from-global-scope="BigMatrix.Glow"></x-import>
+        <x-import component-from-global-scope="BigMatrix.DotGrid"></x-import>
+        <div class="hrm-stage-content" style="display: flex; flex-direction: column; gap: 12px; min-width: 0;">
+          <span class="hrm-label">Thursday, 22 Oct 2026</span>
+          <h1 id="welcome" class="hrm-h1">Good morning, Nusrat</h1>
+          <p style="margin: 0; color: var(--text-2);">Core hours today are 10:00 am to 4:00 pm. Minimum 8 h.</p>
+        </div>
+        <div class="hrm-stage-content hrm-card" style="background: var(--ground); display: flex; align-items: center; gap: 24px; flex-wrap: wrap; padding: 20px 24px;">
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <span class="hrm-label">Today</span>
+            <span class="hrm-badge tone-neutral">Not checked in</span>
+          </div>
+          <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}">Check in</x-import>
+        </div>
+      </section>
+
+      <section aria-labelledby="balances" style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+          <h2 id="balances" class="hrm-label" style="margin: 0;">Leave balance · 2026</h2>
+          <a class="hrm-btn hrm-btn-text" href="Leave.dc.html">Request leave →</a>
+        </div>
+        <x-import component-from-global-scope="BigMatrix.StatBar" stats="{{balances}}" style="max-width: none;"></x-import>
+      </section>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px;">
+        <section class="hrm-card" aria-labelledby="week" style="display: flex; flex-direction: column; gap: 16px; padding: 0; overflow: hidden;">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px 0;">
+            <h2 id="week" class="hrm-h3">This week</h2>
+            <a class="hrm-btn hrm-btn-text" href="#attendance">My attendance →</a>
+          </div>
+          <table class="hrm-table">
+            <thead><tr><th scope="col">Day</th><th scope="col">In</th><th scope="col">Out</th><th scope="col" class="num">Worked</th><th scope="col">Status</th></tr></thead>
+            <tbody>
+              <tr><td>Sun 18 Oct</td><td class="hrm-mono">9:41 am</td><td class="hrm-mono">6:12 pm</td><td class="num">8 h 31 m</td><td><span class="hrm-badge tone-ok">Present</span></td></tr>
+              <tr><td>Mon 19 Oct</td><td class="hrm-mono">10:22 am</td><td class="hrm-mono">6:05 pm</td><td class="num">7 h 43 m</td><td><span class="hrm-badge tone-warn">Short hours</span></td></tr>
+              <tr><td>Tue 20 Oct</td><td class="hrm-faint">—</td><td class="hrm-faint">—</td><td class="num hrm-faint">—</td><td><span class="hrm-badge tone-info">On leave</span></td></tr>
+              <tr><td>Wed 21 Oct</td><td class="hrm-mono">9:30 am</td><td class="hrm-faint">—</td><td class="num hrm-faint">—</td><td><span class="hrm-badge tone-warn">Missing punch</span></td></tr>
+            </tbody>
+          </table>
+          <div style="padding: 0 24px 20px;">
+            <a class="hrm-btn hrm-btn-secondary hrm-btn-sm" href="#correction">Request a correction for 21 Oct</a>
+          </div>
+        </section>
+
+        <section class="hrm-card" aria-labelledby="requests" style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <h2 id="requests" class="hrm-h3">My requests</h2>
+            <span class="hrm-label">Last 30 days</span>
+          </div>
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column;">
+            <li style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line);">
+              <div style="flex-grow: 1; min-width: 0;"><div style="font-weight: 500;">Casual leave · 2 days</div><div class="hrm-faint" style="font-size: 13px;">4–5 Nov · <span class="hrm-mono">LV-000214</span></div></div>
+              <span class="hrm-badge tone-warn">Pending</span>
+            </li>
+            <li style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line);">
+              <div style="flex-grow: 1; min-width: 0;"><div style="font-weight: 500;">Transport claim · <span class="hrm-mono">৳ 1,850.00</span></div><div class="hrm-faint" style="font-size: 13px;">Client visit, Gulshan · <span class="hrm-mono">RC-000045</span></div></div>
+              <span class="hrm-badge tone-ok">Approved</span>
+            </li>
+            <li style="display: flex; align-items: center; gap: 12px; padding: 12px 0;">
+              <div style="flex-grow: 1; min-width: 0;"><div style="font-weight: 500;">Sick leave · 1 day</div><div class="hrm-faint" style="font-size: 13px;">20 Oct · <span class="hrm-mono">LV-000209</span></div></div>
+              <span class="hrm-badge tone-ok">Approved</span>
+            </li>
+          </ul>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <a class="hrm-btn hrm-btn-secondary hrm-btn-sm" href="Leave.dc.html">New leave request</a>
+            <a class="hrm-btn hrm-btn-secondary hrm-btn-sm" href="#claim">New transport claim</a>
+          </div>
+        </section>
+
+        <section class="hrm-card" aria-labelledby="payslip" style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <h2 id="payslip" class="hrm-h3">Latest payslip</h2>
+            <span class="hrm-badge tone-ok">Paid</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <span class="hrm-label">September 2026 · Net pay</span>
+            <span class="hrm-kpi">৳ 66,850.00</span>
+            <span class="hrm-faint" style="font-size: 13px;">Paid by cheque on 30 Sep 2026</span>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <a class="hrm-btn hrm-btn-secondary hrm-btn-sm" href="Payslip.dc.html">View payslip</a>
+            <button class="hrm-btn hrm-btn-text hrm-btn-sm" type="button"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Download PDF</button>
+          </div>
+        </section>
+
+        <section class="hrm-card" aria-labelledby="holidays" style="display: flex; flex-direction: column; gap: 16px;">
+          <h2 id="holidays" class="hrm-h3">Upcoming holidays</h2>
+          <ul class="hrm-dash-list">
+            <li><span style="color: var(--text);">16 Dec</span>&nbsp;Victory Day</li>
+            <li><span style="color: var(--text);">25 Dec</span>&nbsp;Christmas Day</li>
+          </ul>
+          <p class="hrm-faint" style="margin: 0; font-size: 13px;">Holiday list set by HR in Settings → Holidays.</p>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const theme = this.props.theme ?? 'ink';
+    const isPaper = theme === 'paper';
+    return {
+      theme, isPaper, isInk: !isPaper, no: false,
+      inkClass: isPaper ? 'hrm-segment-item' : 'hrm-segment-item is-on',
+      paperClass: isPaper ? 'hrm-segment-item is-on' : 'hrm-segment-item',
+      balances: [
+        { value: '7 / 10', label: 'Casual days left' },
+        { value: '12 / 14', label: 'Sick days left' },
+        { value: '9.5', label: 'Earned days left' },
+        { value: '2', label: 'Days pending' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

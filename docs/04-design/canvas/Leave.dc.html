@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My leave · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="employee" active="leave" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <span class="hrm-label" style="flex-grow: 1;">Me · My leave</span>
+      <span class="hrm-avatar" aria-label="Nusrat Jahan">NJ</span>
+    </header>
+
+    <main class="hrm-page">
+      <div class="hrm-page-head">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h1 class="hrm-h1">My leave</h1>
+          <p class="hrm-muted" style="margin: 0;">Leave year 1 Jan – 31 Dec 2026. Pending requests hold days until they're decided.</p>
+        </div>
+        <a class="hrm-btn hrm-btn-primary" href="MobileLeave.dc.html"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>New leave request</a>
+      </div>
+
+      <section aria-label="Balances" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+        <div class="hrm-card" style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline;"><h2 class="hrm-h3">Casual</h2><span class="hrm-label">Paid</span></div>
+          <div style="display: flex; align-items: baseline; gap: 6px;"><span class="hrm-kpi">7</span><span class="hrm-muted">of 10 days left</span></div>
+          <div class="hrm-meter" role="img" aria-label="1 day used, 2 days pending, 7 left"><span style="width: 30%;"></span></div>
+          <div class="hrm-faint" style="font-size: 13px;">1 used · 2 pending · no carry-forward</div>
+        </div>
+        <div class="hrm-card" style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline;"><h2 class="hrm-h3">Sick</h2><span class="hrm-label">Paid</span></div>
+          <div style="display: flex; align-items: baseline; gap: 6px;"><span class="hrm-kpi">12</span><span class="hrm-muted">of 14 days left</span></div>
+          <div class="hrm-meter" role="img" aria-label="2 days used, 12 left"><span style="width: 14%;"></span></div>
+          <div class="hrm-faint" style="font-size: 13px;">2 used · no carry-forward</div>
+        </div>
+        <div class="hrm-card" style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline;"><h2 class="hrm-h3">Earned</h2><span class="hrm-label">Paid</span></div>
+          <div style="display: flex; align-items: baseline; gap: 6px;"><span class="hrm-kpi">9.5</span><span class="hrm-muted">days available</span></div>
+          <div class="hrm-meter" role="img" aria-label="Accrues 1 day per 18 days worked"><span style="width: 60%;"></span></div>
+          <div class="hrm-faint" style="font-size: 13px;">Accrues 1 day per 18 days worked</div>
+        </div>
+        <div class="hrm-card" style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline;"><h2 class="hrm-h3">Compensatory</h2><span class="hrm-label">Paid</span></div>
+          <div style="display: flex; align-items: baseline; gap: 6px;"><span class="hrm-kpi">1</span><span class="hrm-muted">day available</span></div>
+          <div class="hrm-meter" role="img" aria-label="Granted by HR"><span style="width: 100%;"></span></div>
+          <div class="hrm-faint" style="font-size: 13px;">Granted by HR for weekend work</div>
+        </div>
+      </section>
+
+      <section aria-labelledby="reqs" style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+          <h2 id="reqs" class="hrm-h2">Requests</h2>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <select class="hrm-input hrm-select" aria-label="Status" style="width: 160px; height: 36px;"><option>All statuses</option><option>Pending</option><option>Approved</option></select>
+            <select class="hrm-input hrm-select" aria-label="Year" style="width: 110px; height: 36px;"><option>2026</option><option>2025</option></select>
+          </div>
+        </div>
+        <div class="hrm-table-wrap">
+          <div class="hrm-table-scroll">
+            <table class="hrm-table">
+              <thead><tr><th scope="col">Request</th><th scope="col">Type</th><th scope="col">Dates</th><th scope="col" class="num">Days</th><th scope="col">Approver</th><th scope="col">Status</th><th scope="col"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Actions</span></th></tr></thead>
+              <tbody>
+                <tr><td class="hrm-mono">LV-000214</td><td>Casual</td><td>4 – 5 Nov 2026</td><td class="num">2</td><td>Tanvir Ahmed</td><td><span class="hrm-badge tone-warn">Pending</span></td><td style="text-align: right;"><button class="hrm-btn hrm-btn-text hrm-btn-sm" type="button">Withdraw</button></td></tr>
+                <tr><td class="hrm-mono">LV-000209</td><td>Sick</td><td>20 Oct 2026</td><td class="num">1</td><td>Tanvir Ahmed</td><td><span class="hrm-badge tone-ok">Approved</span></td><td style="text-align: right;"><button class="hrm-btn hrm-btn-text hrm-btn-sm" type="button">Cancel</button></td></tr>
+                <tr><td class="hrm-mono">LV-000188</td><td>Casual</td><td>14 Sep 2026 · first half</td><td class="num">0.5</td><td>Tanvir Ahmed</td><td><span class="hrm-badge tone-ok">Approved</span></td><td></td></tr>
+                <tr><td class="hrm-mono">LV-000151</td><td>Casual</td><td>2 – 3 Aug 2026</td><td class="num">2</td><td>Tanvir Ahmed</td><td><span class="hrm-badge tone-bad">Rejected</span></td><td></td></tr>
+                <tr><td class="hrm-mono">LV-000117</td><td>Sick</td><td>6 Jul 2026</td><td class="num">1</td><td>Tanvir Ahmed</td><td><span class="hrm-badge tone-neutral">Cancelled</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="hrm-table-foot"><span><span class="hrm-mono">1–5</span> of <span class="hrm-mono">5</span></span><span>Half-day casual leave on 14 Sep counted as <span class="hrm-mono">0.5</span>.</span></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'ink' };
+  }
+}
+</script>
+</body>
+</html>

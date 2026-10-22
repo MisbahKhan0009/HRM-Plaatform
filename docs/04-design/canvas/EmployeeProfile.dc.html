@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Nusrat Jahan · Employees · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="hr" active="employees" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <nav aria-label="Breadcrumb" style="flex-grow: 1; display: flex; gap: 8px; align-items: center;"><a class="hrm-label" href="Employees.dc.html" style="text-decoration: none;">Employees</a><span class="hrm-faint">/</span><span class="hrm-label" style="color: var(--text);">Nusrat Jahan</span></nav>
+      <span class="hrm-avatar" aria-label="Farzana Akter">FA</span>
+    </header>
+
+    <main class="hrm-page" style="max-width: 1320px;">
+      <div class="hrm-page-head" style="align-items: center;">
+        <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+          <span class="hrm-avatar hrm-avatar-lg" aria-hidden="true">NJ</span>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;"><h1 class="hrm-h1">Nusrat Jahan</h1><span class="hrm-badge tone-ok">Active</span></div>
+            <span class="hrm-muted">Software engineer · Engineering · <span class="hrm-mono">EMP-0014</span></span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="hrm-btn hrm-btn-secondary" type="button">Record employment event</button>
+          <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}">Edit profile</x-import>
+        </div>
+      </div>
+
+      <nav class="hrm-tabs" aria-label="Employee sections">
+        <a class="hrm-tab is-active" href="#overview" aria-current="page">Overview</a>
+        <a class="hrm-tab" href="#employment">Employment</a>
+        <a class="hrm-tab" href="#contact">Contact</a>
+        <a class="hrm-tab" href="#documents">Documents</a>
+        <a class="hrm-tab" href="#attendance">Attendance</a>
+        <a class="hrm-tab" href="#leave">Leave</a>
+        <a class="hrm-tab" href="#compensation">Compensation</a>
+        <a class="hrm-tab" href="#history">History</a>
+      </nav>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px; align-items: start;">
+        <section class="hrm-card" aria-labelledby="emp" style="display: flex; flex-direction: column; gap: 16px;">
+          <h2 id="emp" class="hrm-h3">Employment</h2>
+          <dl class="hrm-dl">
+            <dt>Joined</dt><dd>3 Jan 2024</dd>
+            <dt>Manager</dt><dd><a href="#manager">Tanvir Ahmed</a></dd>
+            <dt>Work schedule</dt><dd>Standard · Sun–Thu · core 10:00 am – 4:00 pm</dd>
+            <dt>Contract</dt><dd>Permanent · from 3 Jul 2024</dd>
+            <dt>Work email</dt><dd>nusrat.jahan@big-matrix.com</dd>
+          </dl>
+        </section>
+
+        <section class="hrm-card" aria-labelledby="acct" style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;"><h2 id="acct" class="hrm-h3">Sign-in account</h2><span class="hrm-badge tone-ok">Active</span></div>
+          <dl class="hrm-dl">
+            <dt>Sign-in methods</dt><dd>Passkey (2 devices) · email code</dd>
+            <dt>Roles</dt><dd>Employee</dd>
+            <dt>Last sign-in</dt><dd>22 Oct 2026, 9:38 am</dd>
+          </dl>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="hrm-btn hrm-btn-secondary hrm-btn-sm" type="button">Reset sign-in methods</button>
+            <button class="hrm-btn hrm-btn-destructive hrm-btn-sm" type="button">Suspend account</button>
+          </div>
+        </section>
+
+        <section class="hrm-card" aria-labelledby="docs" style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;"><h2 id="docs" class="hrm-h3">Documents</h2><a class="hrm-btn hrm-btn-text hrm-btn-sm" href="#documents">All 5 →</a></div>
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column;">
+            <li style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line);"><svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--text-2);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg><div style="flex-grow: 1;"><div>Employment contract</div><div class="hrm-faint" style="font-size: 12px;">Contract · v2 · PDF · 412 KB</div></div><span class="hrm-badge tone-ok">Current</span></li>
+            <li style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line);"><svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--text-2);"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><div style="flex-grow: 1;"><div>National ID</div><div class="hrm-faint" style="font-size: 12px;">Identity · HR only · access is logged</div></div><span class="hrm-badge tone-locked">Restricted</span></li>
+            <li style="display: flex; align-items: center; gap: 12px; padding: 10px 0;"><svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--text-2);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg><div style="flex-grow: 1;"><div>AWS certification</div><div class="hrm-faint" style="font-size: 12px;">Certificate · expires 14 Nov 2026</div></div><span class="hrm-badge tone-warn">Expiring</span></li>
+          </ul>
+        </section>
+
+        <section class="hrm-card" aria-labelledby="hist" style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;"><h2 id="hist" class="hrm-h3">Employment history</h2><span class="hrm-label">Effective-dated</span></div>
+          <ol class="hrm-timeline">
+            <li class="is-key"><div style="font-weight: 500;">Position changed to Software engineer</div><div class="hrm-faint" style="font-size: 13px;">Effective 1 Jul 2025 · by Farzana Akter</div></li>
+            <li><div style="font-weight: 500;">Confirmed after probation</div><div class="hrm-faint" style="font-size: 13px;">Effective 3 Jul 2024 · by Farzana Akter</div></li>
+            <li><div style="font-weight: 500;">Hired as Junior software engineer</div><div class="hrm-faint" style="font-size: 13px;">Effective 3 Jan 2024 · by Farzana Akter</div></li>
+          </ol>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'ink', no: false };
+  }
+}
+</script>
+</body>
+</html>

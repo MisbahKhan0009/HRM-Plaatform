@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>UI kit · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1500px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: #0f1011;">
+  <sc-for list="{{themes}}" as="t" hint-placeholder-count="2">
+    <section class="hrm-root" data-theme="{{t.id}}" aria-label="{{t.name}}" style="padding: 48px; display: flex; flex-direction: column; gap: 32px; min-width: 0; height: 1500px;">
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <x-import component-from-global-scope="BigMatrix.Eyebrow">{{t.name}}</x-import>
+        <h1 class="hrm-h1">Components &amp; states</h1>
+        <p class="hrm-muted" style="margin: 0;">Specs: docs/04-design/COMPONENT-SPECS.md. Tokens: Big-Matrix design system plus app tokens warn and control-border.</p>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <span class="hrm-label">Buttons</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+          <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}">Approve leave</x-import>
+          <button class="hrm-btn hrm-btn-secondary" type="button">Recalculate</button>
+          <button class="hrm-btn hrm-btn-destructive" type="button">Reject</button>
+          <button class="hrm-btn hrm-btn-text" type="button">Withdraw</button>
+          <button class="hrm-btn hrm-btn-icon" type="button" aria-label="More actions"><svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></button>
+          <button class="hrm-btn hrm-btn-secondary hrm-btn-disabled" type="button" aria-disabled="true">Disabled</button>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+          <x-import component-from-global-scope="BigMatrix.Button">Open payroll run</x-import>
+          <span class="hrm-faint" style="font-size: 13px;">Arrow only on buttons that go to another page.</span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;">
+        <div class="hrm-field">
+          <label class="hrm-field-label" for="{{t.id}}-a">Work email</label>
+          <input id="{{t.id}}-a" class="hrm-input" type="email" placeholder="name@big-matrix.com">
+          <span class="hrm-field-hint">The address HR invited you with.</span>
+        </div>
+        <div class="hrm-field">
+          <label class="hrm-field-label" for="{{t.id}}-b">Amount</label>
+          <input id="{{t.id}}-b" class="hrm-input hrm-input-invalid hrm-mono" aria-invalid="true" value="৳ 0.00" style="text-align: right;">
+          <span class="hrm-field-error"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>Enter an amount above ৳ 0.</span>
+        </div>
+        <div class="hrm-field">
+          <label class="hrm-field-label" for="{{t.id}}-c">Leave type</label>
+          <select id="{{t.id}}-c" class="hrm-input hrm-select"><option>Casual · 7 days left</option></select>
+        </div>
+        <div class="hrm-field">
+          <span class="hrm-field-label">Duration</span>
+          <div class="hrm-segment" role="group" aria-label="Duration"><button class="hrm-segment-item is-on" type="button" aria-pressed="true">Full days</button><button class="hrm-segment-item" type="button" aria-pressed="false">Half day</button></div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <span class="hrm-label">Status badges · word always shown</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <span class="hrm-badge tone-neutral">Draft</span>
+          <span class="hrm-badge tone-warn">Pending</span>
+          <span class="hrm-badge tone-warn">Calculated</span>
+          <span class="hrm-badge tone-ok">Approved</span>
+          <span class="hrm-badge tone-ok">Paid</span>
+          <span class="hrm-badge tone-bad">Rejected</span>
+          <span class="hrm-badge tone-bad">Absent</span>
+          <span class="hrm-badge tone-info">On leave</span>
+          <span class="hrm-badge tone-info">Holiday</span>
+          <span class="hrm-badge tone-locked">Locked</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <span class="hrm-label">Alerts</span>
+        <div class="hrm-alert hrm-alert-warn"><svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><span>You prepared this run. Approving it yourself needs a reason and is recorded.</span></div>
+        <div class="hrm-alert hrm-alert-bad"><svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg><span>Not enough Casual leave. You have 1 day left.</span></div>
+        <div class="hrm-alert hrm-alert-ok"><svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Leave approved. Nusrat has been emailed.</span></div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <span class="hrm-label">Table</span>
+        <div class="hrm-table-wrap">
+          <table class="hrm-table">
+            <thead><tr><th scope="col">Employee</th><th scope="col">Status</th><th scope="col" class="num">Net pay</th></tr></thead>
+            <tbody>
+              <tr><td>Nusrat Jahan <span class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0014</span></td><td><span class="hrm-badge tone-ok">Paid</span></td><td class="num">66,850.00</td></tr>
+              <tr><td>Rahim Uddin <span class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0009</span></td><td><span class="hrm-badge tone-warn">Unpaid</span></td><td class="num">43,096.78</td></tr>
+              <tr class="total"><td>Total</td><td></td><td class="num">109,946.78</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <span class="hrm-label">KPI · StatBar</span>
+        <x-import component-from-global-scope="BigMatrix.StatBar" stats="{{stats}}"></x-import>
+      </div>
+
+      <div class="hrm-card hrm-brand-stage" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; padding: 40px 24px;">
+        <x-import component-from-global-scope="BigMatrix.Glow"></x-import>
+        <x-import component-from-global-scope="BigMatrix.DotGrid"></x-import>
+        <div class="hrm-stage-content" style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <span class="hrm-label">Empty state · brand moment</span>
+          <h2 class="hrm-h2">No requests <em class="hrm-em">waiting</em></h2>
+          <p class="hrm-muted" style="margin: 0;">New leave, correction and claim requests from your team appear here.</p>
+        </div>
+      </div>
+    </section>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      no: false,
+      themes: [{ id: 'ink', name: 'Ink · default' }, { id: 'paper', name: 'Paper · light' }],
+      stats: [
+        { value: '7', label: 'Casual left' },
+        { value: '12', label: 'Sick left' },
+        { value: '9.5', label: 'Earned left' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

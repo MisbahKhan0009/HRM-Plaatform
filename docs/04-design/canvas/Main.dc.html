@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sign in · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-brand-stage" data-theme="{{theme}}" style="min-height: 900px; display: flex; flex-direction: column;">
+  <x-import component-from-global-scope="BigMatrix.Glow" second="{{yes}}"></x-import>
+  <x-import component-from-global-scope="BigMatrix.DotGrid"></x-import>
+  <div class="hrm-stage-content" style="flex-grow: 1; display: flex; flex-direction: column; width: 100%; max-width: 1240px; margin: 0 auto; padding: 40px 32px; gap: 40px;">
+    <header style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+      <sc-if value="{{isPaper}}" hint-placeholder-val="{{false}}">
+        <img src="/_blob/77c10b5a7f35f70f76a8367300b2efe2" alt="Big-Matrix Solutions" style="height: 34px; width: auto; display: block;">
+      </sc-if>
+      <sc-if value="{{isInk}}" hint-placeholder-val="{{true}}">
+        <img src="/_blob/a863de2814fb92714aab1d020a7ab70e" alt="Big-Matrix Solutions" style="height: 34px; width: auto; display: block;">
+      </sc-if>
+      <span class="hrm-label">People &amp; payroll</span>
+    </header>
+
+    <main style="flex-grow: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 64px;">
+      <section style="flex: 1 1 420px; display: flex; flex-direction: column; gap: 24px; min-width: 0;">
+        <x-import component-from-global-scope="BigMatrix.Eyebrow">Big-Matrix HRM</x-import>
+        <h1 style="margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 56px; line-height: 1.04; letter-spacing: -0.032em; color: var(--text); max-width: 560px;">Your work life, in <em class="hrm-em">one</em> place</h1>
+        <p style="margin: 0; font-size: 18px; line-height: 1.65; color: var(--text-2); max-width: 480px;">Check in, request leave, claim transport costs and download your payslips. Managers approve requests from one inbox.</p>
+        <ul class="hrm-dash-list" style="font-size: 15px;">
+          <li>Sign in with a passkey or a one-time code. No passwords.</li>
+          <li>Your data stays private to you, your manager and HR.</li>
+        </ul>
+      </section>
+
+      <section class="hrm-card" aria-labelledby="signin-title" style="flex: 0 1 440px; padding: 32px; display: flex; flex-direction: column; gap: 20px; background: var(--surface);">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h2 id="signin-title" class="hrm-h2">Sign in</h2>
+          <p style="margin: 0; color: var(--text-2);">Use the work email HR invited you with.</p>
+        </div>
+        <div class="hrm-field">
+          <label class="hrm-field-label" for="email">Work email</label>
+          <input id="email" class="hrm-input" type="email" autocomplete="username webauthn" placeholder="name@big-matrix.com">
+        </div>
+        <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}" style="width: 100%; justify-content: center;">Email me a sign-in code</x-import>
+        <div style="display: flex; align-items: center; gap: 12px; color: var(--text-3);">
+          <hr class="hrm-divider" style="flex-grow: 1;">
+          <span class="hrm-label">or</span>
+          <hr class="hrm-divider" style="flex-grow: 1;">
+        </div>
+        <button class="hrm-btn hrm-btn-secondary hrm-btn-block" type="button">
+          <svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>
+          Sign in with a passkey
+        </button>
+        <p style="margin: 0; font-size: 13px; color: var(--text-2);">Admins, HR, payroll and directors confirm with a passkey or an authenticator app. <a href="#help">Can't sign in?</a></p>
+      </section>
+    </main>
+
+    <footer style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; color: var(--text-3);">
+      <x-import component-from-global-scope="BigMatrix.Tick" width="{{twelve}}"></x-import>
+      <span class="hrm-label">Big-Matrix Solutions · Internal system</span>
+    </footer>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const theme = this.props.theme ?? 'ink';
+    return { theme, isPaper: theme === 'paper', isInk: theme !== 'paper', yes: true, no: false, twelve: 12 };
+  }
+}
+</script>
+</body>
+</html>

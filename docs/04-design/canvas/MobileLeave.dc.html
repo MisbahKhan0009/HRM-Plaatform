@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>New leave request on mobile · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root" data-theme="{{theme}}" style="width: 390px; height: 844px; display: flex; flex-direction: column; overflow: hidden;">
+  <header style="display: flex; align-items: center; gap: 8px; padding: 12px 12px; border-bottom: 1px solid var(--line);">
+    <a class="hrm-btn hrm-btn-icon" href="MobileHome.dc.html" aria-label="Back"><svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg></a>
+    <h1 class="hrm-h3" style="flex-grow: 1;">New leave request</h1>
+  </header>
+
+  <form style="flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; gap: 16px; padding: 16px 20px;">
+    <div class="hrm-field">
+      <label class="hrm-field-label" for="type">Leave type</label>
+      <select id="type" class="hrm-input hrm-select">
+        <option>Casual leave · 7 days left</option>
+        <option>Sick leave · 12 days left</option>
+        <option>Earned leave · 9.5 days left</option>
+      </select>
+    </div>
+
+    <div class="hrm-field">
+      <span class="hrm-field-label" id="dur">Duration</span>
+      <div class="hrm-segment" role="group" aria-labelledby="dur" style="width: 100%;">
+        <button class="hrm-segment-item is-on" type="button" aria-pressed="true" style="flex-grow: 1; justify-content: center; height: 40px;">Full days</button>
+        <button class="hrm-segment-item" type="button" aria-pressed="false" style="flex-grow: 1; justify-content: center; height: 40px;">Half day</button>
+      </div>
+    </div>
+
+    <div class="hrm-card hrm-card-tight" style="display: flex; flex-direction: column; gap: 8px;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <button class="hrm-btn hrm-btn-icon" type="button" aria-label="Previous month"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+        <span style="font-weight: 600;">November 2026</span>
+        <button class="hrm-btn hrm-btn-icon" type="button" aria-label="Next month"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+      </div>
+      <div class="hrm-cal" role="grid" aria-label="November 2026">
+        <span class="hrm-cal-h">S</span><span class="hrm-cal-h">M</span><span class="hrm-cal-h">T</span><span class="hrm-cal-h">W</span><span class="hrm-cal-h">T</span><span class="hrm-cal-h">F</span><span class="hrm-cal-h">S</span>
+        <span class="hrm-cal-d">1</span><span class="hrm-cal-d">2</span><span class="hrm-cal-d">3</span><span class="hrm-cal-d is-range" aria-selected="true">4</span><span class="hrm-cal-d is-range" aria-selected="true">5</span><span class="hrm-cal-d is-off">6</span><span class="hrm-cal-d is-off">7</span>
+        <span class="hrm-cal-d">8</span><span class="hrm-cal-d">9</span><span class="hrm-cal-d">10</span><span class="hrm-cal-d">11</span><span class="hrm-cal-d">12</span><span class="hrm-cal-d is-off">13</span><span class="hrm-cal-d is-off">14</span>
+        <span class="hrm-cal-d">15</span><span class="hrm-cal-d">16</span><span class="hrm-cal-d">17</span><span class="hrm-cal-d">18</span><span class="hrm-cal-d">19</span><span class="hrm-cal-d is-off">20</span><span class="hrm-cal-d is-off">21</span>
+        <span class="hrm-cal-d">22</span><span class="hrm-cal-d">23</span><span class="hrm-cal-d">24</span><span class="hrm-cal-d">25</span><span class="hrm-cal-d">26</span><span class="hrm-cal-d is-off">27</span><span class="hrm-cal-d is-off">28</span>
+        <span class="hrm-cal-d">29</span><span class="hrm-cal-d">30</span>
+      </div>
+      <p class="hrm-faint" style="margin: 0; font-size: 12px;">Fri and Sat are weekends. They aren't counted.</p>
+    </div>
+
+    <div class="hrm-alert" role="status" style="justify-content: space-between; align-items: center;">
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-weight: 600;">Wed 4 – Thu 5 Nov · 2 working days</span>
+        <span class="hrm-muted" style="font-size: 13px;">Casual balance after approval: 5 days</span>
+      </div>
+    </div>
+
+    <div class="hrm-field">
+      <label class="hrm-field-label" for="reason">Reason <span class="hrm-faint" style="font-weight: 400;">(optional)</span></label>
+      <textarea id="reason" class="hrm-input hrm-textarea" rows="2" placeholder="Family event in Sylhet"></textarea>
+      <span class="hrm-field-hint">Goes to Tanvir Ahmed for approval.</span>
+    </div>
+  </form>
+
+  <div style="padding: 12px 20px 24px; border-top: 1px solid var(--line); background: var(--ground);">
+    <button class="hrm-btn hrm-btn-primary hrm-btn-lg hrm-btn-block" type="submit">Submit request</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'ink' };
+  }
+}
+</script>
+</body>
+</html>
