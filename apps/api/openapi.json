@@ -47760,6 +47760,13 @@
                           "onBehalf": {
                             "type": "boolean"
                           },
+                          "filedByUserId": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "format": "uuid"
+                          },
                           "version": {
                             "type": "integer"
                           },
@@ -47791,6 +47798,7 @@
                           "decisionComment",
                           "cancellationReason",
                           "onBehalf",
+                          "filedByUserId",
                           "version",
                           "createdAt",
                           "updatedAt"
@@ -48324,6 +48332,13 @@
                     "onBehalf": {
                       "type": "boolean"
                     },
+                    "filedByUserId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uuid"
+                    },
                     "version": {
                       "type": "integer"
                     },
@@ -48355,6 +48370,7 @@
                     "decisionComment",
                     "cancellationReason",
                     "onBehalf",
+                    "filedByUserId",
                     "version",
                     "createdAt",
                     "updatedAt"
@@ -49029,6 +49045,13 @@
                     "onBehalf": {
                       "type": "boolean"
                     },
+                    "filedByUserId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uuid"
+                    },
                     "version": {
                       "type": "integer"
                     },
@@ -49060,6 +49083,7 @@
                     "decisionComment",
                     "cancellationReason",
                     "onBehalf",
+                    "filedByUserId",
                     "version",
                     "createdAt",
                     "updatedAt"
@@ -49436,6 +49460,13 @@
                     "onBehalf": {
                       "type": "boolean"
                     },
+                    "filedByUserId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uuid"
+                    },
                     "version": {
                       "type": "integer"
                     },
@@ -49467,6 +49498,7 @@
                     "decisionComment",
                     "cancellationReason",
                     "onBehalf",
+                    "filedByUserId",
                     "version",
                     "createdAt",
                     "updatedAt"
@@ -50070,6 +50102,13 @@
                     "onBehalf": {
                       "type": "boolean"
                     },
+                    "filedByUserId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uuid"
+                    },
                     "version": {
                       "type": "integer"
                     },
@@ -50101,6 +50140,7 @@
                     "decisionComment",
                     "cancellationReason",
                     "onBehalf",
+                    "filedByUserId",
                     "version",
                     "createdAt",
                     "updatedAt"
@@ -50801,6 +50841,13 @@
                     "onBehalf": {
                       "type": "boolean"
                     },
+                    "filedByUserId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uuid"
+                    },
                     "version": {
                       "type": "integer"
                     },
@@ -50832,6 +50879,7 @@
                     "decisionComment",
                     "cancellationReason",
                     "onBehalf",
+                    "filedByUserId",
                     "version",
                     "createdAt",
                     "updatedAt"
@@ -51531,6 +51579,13 @@
                     "onBehalf": {
                       "type": "boolean"
                     },
+                    "filedByUserId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uuid"
+                    },
                     "version": {
                       "type": "integer"
                     },
@@ -51562,6 +51617,7 @@
                     "decisionComment",
                     "cancellationReason",
                     "onBehalf",
+                    "filedByUserId",
                     "version",
                     "createdAt",
                     "updatedAt"
@@ -52271,6 +52327,13 @@
                     "onBehalf": {
                       "type": "boolean"
                     },
+                    "filedByUserId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uuid"
+                    },
                     "version": {
                       "type": "integer"
                     },
@@ -52302,6 +52365,7 @@
                     "decisionComment",
                     "cancellationReason",
                     "onBehalf",
+                    "filedByUserId",
                     "version",
                     "createdAt",
                     "updatedAt"
@@ -53002,6 +53066,13 @@
                     "onBehalf": {
                       "type": "boolean"
                     },
+                    "filedByUserId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uuid"
+                    },
                     "version": {
                       "type": "integer"
                     },
@@ -53033,6 +53104,7 @@
                     "decisionComment",
                     "cancellationReason",
                     "onBehalf",
+                    "filedByUserId",
                     "version",
                     "createdAt",
                     "updatedAt"

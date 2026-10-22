@@ -24,6 +24,10 @@ import { Route as AppAttendanceIndexRouteImport } from './routes/_app/attendance
 import { Route as AppAttendanceRecordsRouteImport } from './routes/_app/attendance/records'
 import { Route as AppAttendanceTeamRouteImport } from './routes/_app/attendance/team'
 import { Route as AppAuditIndexRouteImport } from './routes/_app/audit/index'
+import { Route as AppLeaveIndexRouteImport } from './routes/_app/leave/index'
+import { Route as AppLeaveCalendarRouteImport } from './routes/_app/leave/calendar'
+import { Route as AppLeaveManageRouteImport } from './routes/_app/leave/manage'
+import { Route as AppLeaveNewRouteImport } from './routes/_app/leave/new'
 import { Route as AppMeIndexRouteImport } from './routes/_app/me/index'
 import { Route as AppMePreferencesRouteImport } from './routes/_app/me/preferences'
 import { Route as AppMeSecurityRouteImport } from './routes/_app/me/security'
@@ -31,6 +35,7 @@ import { Route as AppSettingsCompanyRouteImport } from './routes/_app/settings/c
 import { Route as AppSettingsDepartmentsRouteImport } from './routes/_app/settings/departments'
 import { Route as AppSettingsHolidaysRouteImport } from './routes/_app/settings/holidays'
 import { Route as AppSettingsHrRouteImport } from './routes/_app/settings/hr'
+import { Route as AppSettingsLeaveTypesRouteImport } from './routes/_app/settings/leave-types'
 import { Route as AppSettingsPayrollRouteImport } from './routes/_app/settings/payroll'
 import { Route as AppSettingsPositionsRouteImport } from './routes/_app/settings/positions'
 import { Route as AppSettingsRolesRouteImport } from './routes/_app/settings/roles'
@@ -39,6 +44,7 @@ import { Route as AppSettingsUsersRouteImport } from './routes/_app/settings/use
 import { Route as AppSettingsWorkSchedulesRouteImport } from './routes/_app/settings/work-schedules'
 import { Route as AppAttendanceEmployeeIdWorkDateRouteImport } from './routes/_app/attendance/$employeeId/$workDate'
 import { Route as AppAttendanceCorrectionsCorrectionIdRouteImport } from './routes/_app/attendance/corrections/$correctionId'
+import { Route as AppLeaveRequestsRequestIdRouteImport } from './routes/_app/leave/requests/$requestId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -114,6 +120,26 @@ const AppAuditIndexRoute = AppAuditIndexRouteImport.update({
   path: '/audit/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppLeaveIndexRoute = AppLeaveIndexRouteImport.update({
+  id: '/leave/',
+  path: '/leave/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLeaveCalendarRoute = AppLeaveCalendarRouteImport.update({
+  id: '/leave/calendar',
+  path: '/leave/calendar',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLeaveManageRoute = AppLeaveManageRouteImport.update({
+  id: '/leave/manage',
+  path: '/leave/manage',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLeaveNewRoute = AppLeaveNewRouteImport.update({
+  id: '/leave/new',
+  path: '/leave/new',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppMeIndexRoute = AppMeIndexRouteImport.update({
   id: '/me/',
   path: '/me/',
@@ -147,6 +173,11 @@ const AppSettingsHolidaysRoute = AppSettingsHolidaysRouteImport.update({
 const AppSettingsHrRoute = AppSettingsHrRouteImport.update({
   id: '/hr',
   path: '/hr',
+  getParentRoute: () => AppSettingsRouteRoute,
+} as any)
+const AppSettingsLeaveTypesRoute = AppSettingsLeaveTypesRouteImport.update({
+  id: '/leave-types',
+  path: '/leave-types',
   getParentRoute: () => AppSettingsRouteRoute,
 } as any)
 const AppSettingsPayrollRoute = AppSettingsPayrollRouteImport.update({
@@ -192,6 +223,12 @@ const AppAttendanceCorrectionsCorrectionIdRoute =
     path: '/attendance/corrections/$correctionId',
     getParentRoute: () => AppRoute,
   } as any)
+const AppLeaveRequestsRequestIdRoute =
+  AppLeaveRequestsRequestIdRouteImport.update({
+    id: '/leave/requests/$requestId',
+    path: '/leave/requests/$requestId',
+    getParentRoute: () => AppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -204,12 +241,16 @@ export interface FileRoutesByFullPath {
   '/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
   '/attendance/records': typeof AppAttendanceRecordsRoute
   '/attendance/team': typeof AppAttendanceTeamRoute
+  '/leave/calendar': typeof AppLeaveCalendarRoute
+  '/leave/manage': typeof AppLeaveManageRoute
+  '/leave/new': typeof AppLeaveNewRoute
   '/me/preferences': typeof AppMePreferencesRoute
   '/me/security': typeof AppMeSecurityRoute
   '/settings/company': typeof AppSettingsCompanyRoute
   '/settings/departments': typeof AppSettingsDepartmentsRoute
   '/settings/holidays': typeof AppSettingsHolidaysRoute
   '/settings/hr': typeof AppSettingsHrRoute
+  '/settings/leave-types': typeof AppSettingsLeaveTypesRoute
   '/settings/payroll': typeof AppSettingsPayrollRoute
   '/settings/positions': typeof AppSettingsPositionsRoute
   '/settings/roles': typeof AppSettingsRolesRoute
@@ -220,9 +261,11 @@ export interface FileRoutesByFullPath {
   '/approvals/': typeof AppApprovalsIndexRoute
   '/attendance/': typeof AppAttendanceIndexRoute
   '/audit/': typeof AppAuditIndexRoute
+  '/leave/': typeof AppLeaveIndexRoute
   '/me/': typeof AppMeIndexRoute
   '/attendance/$employeeId/$workDate': typeof AppAttendanceEmployeeIdWorkDateRoute
   '/attendance/corrections/$correctionId': typeof AppAttendanceCorrectionsCorrectionIdRoute
+  '/leave/requests/$requestId': typeof AppLeaveRequestsRequestIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -235,12 +278,16 @@ export interface FileRoutesByTo {
   '/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
   '/attendance/records': typeof AppAttendanceRecordsRoute
   '/attendance/team': typeof AppAttendanceTeamRoute
+  '/leave/calendar': typeof AppLeaveCalendarRoute
+  '/leave/manage': typeof AppLeaveManageRoute
+  '/leave/new': typeof AppLeaveNewRoute
   '/me/preferences': typeof AppMePreferencesRoute
   '/me/security': typeof AppMeSecurityRoute
   '/settings/company': typeof AppSettingsCompanyRoute
   '/settings/departments': typeof AppSettingsDepartmentsRoute
   '/settings/holidays': typeof AppSettingsHolidaysRoute
   '/settings/hr': typeof AppSettingsHrRoute
+  '/settings/leave-types': typeof AppSettingsLeaveTypesRoute
   '/settings/payroll': typeof AppSettingsPayrollRoute
   '/settings/positions': typeof AppSettingsPositionsRoute
   '/settings/roles': typeof AppSettingsRolesRoute
@@ -251,9 +298,11 @@ export interface FileRoutesByTo {
   '/approvals': typeof AppApprovalsIndexRoute
   '/attendance': typeof AppAttendanceIndexRoute
   '/audit': typeof AppAuditIndexRoute
+  '/leave': typeof AppLeaveIndexRoute
   '/me': typeof AppMeIndexRoute
   '/attendance/$employeeId/$workDate': typeof AppAttendanceEmployeeIdWorkDateRoute
   '/attendance/corrections/$correctionId': typeof AppAttendanceCorrectionsCorrectionIdRoute
+  '/leave/requests/$requestId': typeof AppLeaveRequestsRequestIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -268,12 +317,16 @@ export interface FileRoutesById {
   '/_app/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
   '/_app/attendance/records': typeof AppAttendanceRecordsRoute
   '/_app/attendance/team': typeof AppAttendanceTeamRoute
+  '/_app/leave/calendar': typeof AppLeaveCalendarRoute
+  '/_app/leave/manage': typeof AppLeaveManageRoute
+  '/_app/leave/new': typeof AppLeaveNewRoute
   '/_app/me/preferences': typeof AppMePreferencesRoute
   '/_app/me/security': typeof AppMeSecurityRoute
   '/_app/settings/company': typeof AppSettingsCompanyRoute
   '/_app/settings/departments': typeof AppSettingsDepartmentsRoute
   '/_app/settings/holidays': typeof AppSettingsHolidaysRoute
   '/_app/settings/hr': typeof AppSettingsHrRoute
+  '/_app/settings/leave-types': typeof AppSettingsLeaveTypesRoute
   '/_app/settings/payroll': typeof AppSettingsPayrollRoute
   '/_app/settings/positions': typeof AppSettingsPositionsRoute
   '/_app/settings/roles': typeof AppSettingsRolesRoute
@@ -284,9 +337,11 @@ export interface FileRoutesById {
   '/_app/approvals/': typeof AppApprovalsIndexRoute
   '/_app/attendance/': typeof AppAttendanceIndexRoute
   '/_app/audit/': typeof AppAuditIndexRoute
+  '/_app/leave/': typeof AppLeaveIndexRoute
   '/_app/me/': typeof AppMeIndexRoute
   '/_app/attendance/$employeeId/$workDate': typeof AppAttendanceEmployeeIdWorkDateRoute
   '/_app/attendance/corrections/$correctionId': typeof AppAttendanceCorrectionsCorrectionIdRoute
+  '/_app/leave/requests/$requestId': typeof AppLeaveRequestsRequestIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -301,12 +356,16 @@ export interface FileRouteTypes {
     | '/approvals/$approvalId'
     | '/attendance/records'
     | '/attendance/team'
+    | '/leave/calendar'
+    | '/leave/manage'
+    | '/leave/new'
     | '/me/preferences'
     | '/me/security'
     | '/settings/company'
     | '/settings/departments'
     | '/settings/holidays'
     | '/settings/hr'
+    | '/settings/leave-types'
     | '/settings/payroll'
     | '/settings/positions'
     | '/settings/roles'
@@ -317,9 +376,11 @@ export interface FileRouteTypes {
     | '/approvals/'
     | '/attendance/'
     | '/audit/'
+    | '/leave/'
     | '/me/'
     | '/attendance/$employeeId/$workDate'
     | '/attendance/corrections/$correctionId'
+    | '/leave/requests/$requestId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -332,12 +393,16 @@ export interface FileRouteTypes {
     | '/approvals/$approvalId'
     | '/attendance/records'
     | '/attendance/team'
+    | '/leave/calendar'
+    | '/leave/manage'
+    | '/leave/new'
     | '/me/preferences'
     | '/me/security'
     | '/settings/company'
     | '/settings/departments'
     | '/settings/holidays'
     | '/settings/hr'
+    | '/settings/leave-types'
     | '/settings/payroll'
     | '/settings/positions'
     | '/settings/roles'
@@ -348,9 +413,11 @@ export interface FileRouteTypes {
     | '/approvals'
     | '/attendance'
     | '/audit'
+    | '/leave'
     | '/me'
     | '/attendance/$employeeId/$workDate'
     | '/attendance/corrections/$correctionId'
+    | '/leave/requests/$requestId'
   id:
     | '__root__'
     | '/'
@@ -364,12 +431,16 @@ export interface FileRouteTypes {
     | '/_app/approvals/$approvalId'
     | '/_app/attendance/records'
     | '/_app/attendance/team'
+    | '/_app/leave/calendar'
+    | '/_app/leave/manage'
+    | '/_app/leave/new'
     | '/_app/me/preferences'
     | '/_app/me/security'
     | '/_app/settings/company'
     | '/_app/settings/departments'
     | '/_app/settings/holidays'
     | '/_app/settings/hr'
+    | '/_app/settings/leave-types'
     | '/_app/settings/payroll'
     | '/_app/settings/positions'
     | '/_app/settings/roles'
@@ -380,9 +451,11 @@ export interface FileRouteTypes {
     | '/_app/approvals/'
     | '/_app/attendance/'
     | '/_app/audit/'
+    | '/_app/leave/'
     | '/_app/me/'
     | '/_app/attendance/$employeeId/$workDate'
     | '/_app/attendance/corrections/$correctionId'
+    | '/_app/leave/requests/$requestId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -502,6 +575,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAuditIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/leave/': {
+      id: '/_app/leave/'
+      path: '/leave'
+      fullPath: '/leave/'
+      preLoaderRoute: typeof AppLeaveIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/leave/calendar': {
+      id: '/_app/leave/calendar'
+      path: '/leave/calendar'
+      fullPath: '/leave/calendar'
+      preLoaderRoute: typeof AppLeaveCalendarRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/leave/manage': {
+      id: '/_app/leave/manage'
+      path: '/leave/manage'
+      fullPath: '/leave/manage'
+      preLoaderRoute: typeof AppLeaveManageRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/leave/new': {
+      id: '/_app/leave/new'
+      path: '/leave/new'
+      fullPath: '/leave/new'
+      preLoaderRoute: typeof AppLeaveNewRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/me/': {
       id: '/_app/me/'
       path: '/me'
@@ -549,6 +650,13 @@ declare module '@tanstack/react-router' {
       path: '/hr'
       fullPath: '/settings/hr'
       preLoaderRoute: typeof AppSettingsHrRouteImport
+      parentRoute: typeof AppSettingsRouteRoute
+    }
+    '/_app/settings/leave-types': {
+      id: '/_app/settings/leave-types'
+      path: '/leave-types'
+      fullPath: '/settings/leave-types'
+      preLoaderRoute: typeof AppSettingsLeaveTypesRouteImport
       parentRoute: typeof AppSettingsRouteRoute
     }
     '/_app/settings/payroll': {
@@ -607,6 +715,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAttendanceCorrectionsCorrectionIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/leave/requests/$requestId': {
+      id: '/_app/leave/requests/$requestId'
+      path: '/leave/requests/$requestId'
+      fullPath: '/leave/requests/$requestId'
+      preLoaderRoute: typeof AppLeaveRequestsRequestIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -615,6 +730,7 @@ interface AppSettingsRouteRouteChildren {
   AppSettingsDepartmentsRoute: typeof AppSettingsDepartmentsRoute
   AppSettingsHolidaysRoute: typeof AppSettingsHolidaysRoute
   AppSettingsHrRoute: typeof AppSettingsHrRoute
+  AppSettingsLeaveTypesRoute: typeof AppSettingsLeaveTypesRoute
   AppSettingsPayrollRoute: typeof AppSettingsPayrollRoute
   AppSettingsPositionsRoute: typeof AppSettingsPositionsRoute
   AppSettingsRolesRoute: typeof AppSettingsRolesRoute
@@ -628,6 +744,7 @@ const AppSettingsRouteRouteChildren: AppSettingsRouteRouteChildren = {
   AppSettingsDepartmentsRoute: AppSettingsDepartmentsRoute,
   AppSettingsHolidaysRoute: AppSettingsHolidaysRoute,
   AppSettingsHrRoute: AppSettingsHrRoute,
+  AppSettingsLeaveTypesRoute: AppSettingsLeaveTypesRoute,
   AppSettingsPayrollRoute: AppSettingsPayrollRoute,
   AppSettingsPositionsRoute: AppSettingsPositionsRoute,
   AppSettingsRolesRoute: AppSettingsRolesRoute,
@@ -645,14 +762,19 @@ interface AppRouteChildren {
   AppApprovalsApprovalIdRoute: typeof AppApprovalsApprovalIdRoute
   AppAttendanceRecordsRoute: typeof AppAttendanceRecordsRoute
   AppAttendanceTeamRoute: typeof AppAttendanceTeamRoute
+  AppLeaveCalendarRoute: typeof AppLeaveCalendarRoute
+  AppLeaveManageRoute: typeof AppLeaveManageRoute
+  AppLeaveNewRoute: typeof AppLeaveNewRoute
   AppMePreferencesRoute: typeof AppMePreferencesRoute
   AppMeSecurityRoute: typeof AppMeSecurityRoute
   AppApprovalsIndexRoute: typeof AppApprovalsIndexRoute
   AppAttendanceIndexRoute: typeof AppAttendanceIndexRoute
   AppAuditIndexRoute: typeof AppAuditIndexRoute
+  AppLeaveIndexRoute: typeof AppLeaveIndexRoute
   AppMeIndexRoute: typeof AppMeIndexRoute
   AppAttendanceEmployeeIdWorkDateRoute: typeof AppAttendanceEmployeeIdWorkDateRoute
   AppAttendanceCorrectionsCorrectionIdRoute: typeof AppAttendanceCorrectionsCorrectionIdRoute
+  AppLeaveRequestsRequestIdRoute: typeof AppLeaveRequestsRequestIdRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -661,15 +783,20 @@ const AppRouteChildren: AppRouteChildren = {
   AppApprovalsApprovalIdRoute: AppApprovalsApprovalIdRoute,
   AppAttendanceRecordsRoute: AppAttendanceRecordsRoute,
   AppAttendanceTeamRoute: AppAttendanceTeamRoute,
+  AppLeaveCalendarRoute: AppLeaveCalendarRoute,
+  AppLeaveManageRoute: AppLeaveManageRoute,
+  AppLeaveNewRoute: AppLeaveNewRoute,
   AppMePreferencesRoute: AppMePreferencesRoute,
   AppMeSecurityRoute: AppMeSecurityRoute,
   AppApprovalsIndexRoute: AppApprovalsIndexRoute,
   AppAttendanceIndexRoute: AppAttendanceIndexRoute,
   AppAuditIndexRoute: AppAuditIndexRoute,
+  AppLeaveIndexRoute: AppLeaveIndexRoute,
   AppMeIndexRoute: AppMeIndexRoute,
   AppAttendanceEmployeeIdWorkDateRoute: AppAttendanceEmployeeIdWorkDateRoute,
   AppAttendanceCorrectionsCorrectionIdRoute:
     AppAttendanceCorrectionsCorrectionIdRoute,
+  AppLeaveRequestsRequestIdRoute: AppLeaveRequestsRequestIdRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

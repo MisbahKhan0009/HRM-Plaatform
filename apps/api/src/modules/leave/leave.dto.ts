@@ -66,6 +66,7 @@ export const toLeaveRequest = (v: LeaveRequestView): LeaveRequestDto => {
     decisionComment: r.decisionComment,
     cancellationReason: r.cancellationReason,
     onBehalf: r.onBehalfBy !== null,
+    filedByUserId: r.onBehalfBy,
     ...stamp(r),
   };
 };

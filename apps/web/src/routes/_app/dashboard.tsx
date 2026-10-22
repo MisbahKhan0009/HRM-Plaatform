@@ -18,6 +18,8 @@ function Dashboard() {
   }, [t]);
   if (!me) return null;
   const widgets = DASHBOARD_WIDGETS.filter((w) => w.any.length === 0 || canAny(me, w.any));
+  // Only the first visible widget with a primary action keeps the primary style (INFORMATION-ARCHITECTURE §5).
+  const primaryKey = widgets.find((w) => w.hasPrimaryAction)?.key;
   const firstName = (me.employee?.name ?? me.user.name).split(' ')[0];
   return (
     <div className="flex flex-col gap-6">
@@ -33,9 +35,9 @@ function Dashboard() {
         </div>
       </section>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        {widgets.map((w, i) => (
+        {widgets.map((w) => (
           <div key={w.key} className={SPAN[w.span]}>
-            <w.Component me={me} primary={i === 0} />
+            <w.Component me={me} primary={w.key === primaryKey} />
           </div>
         ))}
       </div>

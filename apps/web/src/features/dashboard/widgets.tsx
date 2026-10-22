@@ -6,6 +6,7 @@ import type { ComponentType } from 'react';
 import { api } from '../../lib/api/client';
 import { formatRelative } from '../../lib/format';
 import { TeamTodayWidget, TodayAttendanceWidget } from '../attendance/widgets';
+import { LeaveBalancesWidget, MyLeaveRequestsWidget, WhoIsOnLeaveWidget } from '../leave/widgets';
 import { systemQueries } from '../system/api';
 import { healthProblems, SystemHealthSummary } from '../system/components';
 
@@ -15,6 +16,8 @@ export interface DashboardWidget {
   any: Permission[];
   /** Grid span on desktop (12 columns). */
   span: 4 | 6 | 8 | 12;
+  /** The widget can carry the page's one primary button (INFORMATION-ARCHITECTURE §5 rule). */
+  hasPrimaryAction?: boolean;
   Component: ComponentType<{ me: CurrentUser; primary: boolean }>;
 }
 
@@ -103,8 +106,22 @@ function SystemHealthWidget() {
 }
 
 export const DASHBOARD_WIDGETS: DashboardWidget[] = [
-  { key: 'attendance-today', any: ['attendance.check_in.own'], span: 6, Component: TodayAttendanceWidget },
-  { key: 'approvals', any: ['approval.inbox'], span: 6, Component: ApprovalsWidget },
+  {
+    key: 'attendance-today',
+    any: ['attendance.check_in.own'],
+    span: 6,
+    hasPrimaryAction: true,
+    Component: TodayAttendanceWidget,
+  },
+  { key: 'leave-balances', any: ['leave.request.own'], span: 6, Component: LeaveBalancesWidget },
+  { key: 'my-leave-requests', any: ['leave.request.own'], span: 6, Component: MyLeaveRequestsWidget },
+  { key: 'approvals', any: ['approval.inbox'], span: 6, hasPrimaryAction: true, Component: ApprovalsWidget },
   { key: 'team-today', any: ['attendance.read.team'], span: 6, Component: TeamTodayWidget },
+  {
+    key: 'who-is-on-leave',
+    any: ['leave.read.team', 'leave.read.all'],
+    span: 6,
+    Component: WhoIsOnLeaveWidget,
+  },
   { key: 'system-health', any: ['system.health.read'], span: 6, Component: SystemHealthWidget },
 ];

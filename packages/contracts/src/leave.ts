@@ -273,6 +273,8 @@ export const LeaveRequestSchema = z.object({
   cancellationReason: z.string().nullable(),
   /** Created by HR on the employee's behalf (D-014). */
   onBehalf: z.boolean(),
+  /** The HR user who filed it on the employee's behalf; they may not decide it (FR-WF-004). */
+  filedByUserId: z.uuid().nullable(),
   ...auditFields,
 });
 export type LeaveRequestDto = z.infer<typeof LeaveRequestSchema>;
