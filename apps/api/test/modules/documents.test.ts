@@ -629,8 +629,14 @@ describe('receipts for claim reviewers', () => {
       receiptDocumentId: receipt.id,
       status: 'submitted',
     });
-    expect((await call('GET', `/api/v1/documents/${receipt.id}`, { cookie: manager.cookie })).status).toBe(200);
-    expect((await call('GET', `/api/v1/documents/${receipt.id}/download`, { cookie: manager.cookie })).status).toBe(200);
-    expect((await call('GET', `/api/v1/documents/${receipt.id}`, { cookie: outsider.cookie })).status).toBe(404);
+    expect((await call('GET', `/api/v1/documents/${receipt.id}`, { cookie: manager.cookie })).status).toBe(
+      200,
+    );
+    expect(
+      (await call('GET', `/api/v1/documents/${receipt.id}/download`, { cookie: manager.cookie })).status,
+    ).toBe(200);
+    expect((await call('GET', `/api/v1/documents/${receipt.id}`, { cookie: outsider.cookie })).status).toBe(
+      404,
+    );
   });
 });
