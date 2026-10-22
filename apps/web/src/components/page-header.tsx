@@ -38,7 +38,7 @@ export function PageHeader({
         </Link>
       ) : null}
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex min-w-0 flex-col gap-1.5">
+        <div className="flex min-w-[min(100%,280px)] flex-1 flex-col gap-1.5">
           <div className="flex flex-wrap items-center gap-3">
             <h1
               ref={h1}
