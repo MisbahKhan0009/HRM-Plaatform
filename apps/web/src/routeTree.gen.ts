@@ -20,6 +20,9 @@ import { Route as authSignInTwoFactorRouteImport } from './routes/(auth)/sign-in
 import { Route as authSignInVerifyRouteImport } from './routes/(auth)/sign-in/verify'
 import { Route as AppApprovalsIndexRouteImport } from './routes/_app/approvals/index'
 import { Route as AppApprovalsApprovalIdRouteImport } from './routes/_app/approvals/$approvalId'
+import { Route as AppAttendanceIndexRouteImport } from './routes/_app/attendance/index'
+import { Route as AppAttendanceRecordsRouteImport } from './routes/_app/attendance/records'
+import { Route as AppAttendanceTeamRouteImport } from './routes/_app/attendance/team'
 import { Route as AppMeIndexRouteImport } from './routes/_app/me/index'
 import { Route as AppMePreferencesRouteImport } from './routes/_app/me/preferences'
 import { Route as AppMeSecurityRouteImport } from './routes/_app/me/security'
@@ -28,6 +31,8 @@ import { Route as AppSettingsDepartmentsRouteImport } from './routes/_app/settin
 import { Route as AppSettingsHolidaysRouteImport } from './routes/_app/settings/holidays'
 import { Route as AppSettingsPositionsRouteImport } from './routes/_app/settings/positions'
 import { Route as AppSettingsWorkSchedulesRouteImport } from './routes/_app/settings/work-schedules'
+import { Route as AppAttendanceEmployeeIdWorkDateRouteImport } from './routes/_app/attendance/$employeeId/$workDate'
+import { Route as AppAttendanceCorrectionsCorrectionIdRouteImport } from './routes/_app/attendance/corrections/$correctionId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -83,6 +88,21 @@ const AppApprovalsApprovalIdRoute = AppApprovalsApprovalIdRouteImport.update({
   path: '/approvals/$approvalId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAttendanceIndexRoute = AppAttendanceIndexRouteImport.update({
+  id: '/attendance/',
+  path: '/attendance/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAttendanceRecordsRoute = AppAttendanceRecordsRouteImport.update({
+  id: '/attendance/records',
+  path: '/attendance/records',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAttendanceTeamRoute = AppAttendanceTeamRouteImport.update({
+  id: '/attendance/team',
+  path: '/attendance/team',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppMeIndexRoute = AppMeIndexRouteImport.update({
   id: '/me/',
   path: '/me/',
@@ -124,6 +144,18 @@ const AppSettingsWorkSchedulesRoute =
     path: '/work-schedules',
     getParentRoute: () => AppSettingsRouteRoute,
   } as any)
+const AppAttendanceEmployeeIdWorkDateRoute =
+  AppAttendanceEmployeeIdWorkDateRouteImport.update({
+    id: '/attendance/$employeeId/$workDate',
+    path: '/attendance/$employeeId/$workDate',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppAttendanceCorrectionsCorrectionIdRoute =
+  AppAttendanceCorrectionsCorrectionIdRouteImport.update({
+    id: '/attendance/corrections/$correctionId',
+    path: '/attendance/corrections/$correctionId',
+    getParentRoute: () => AppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -134,6 +166,8 @@ export interface FileRoutesByFullPath {
   '/sign-in/two-factor': typeof authSignInTwoFactorRoute
   '/sign-in/verify': typeof authSignInVerifyRoute
   '/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
+  '/attendance/records': typeof AppAttendanceRecordsRoute
+  '/attendance/team': typeof AppAttendanceTeamRoute
   '/me/preferences': typeof AppMePreferencesRoute
   '/me/security': typeof AppMeSecurityRoute
   '/settings/company': typeof AppSettingsCompanyRoute
@@ -143,7 +177,10 @@ export interface FileRoutesByFullPath {
   '/settings/work-schedules': typeof AppSettingsWorkSchedulesRoute
   '/sign-in/': typeof authSignInIndexRoute
   '/approvals/': typeof AppApprovalsIndexRoute
+  '/attendance/': typeof AppAttendanceIndexRoute
   '/me/': typeof AppMeIndexRoute
+  '/attendance/$employeeId/$workDate': typeof AppAttendanceEmployeeIdWorkDateRoute
+  '/attendance/corrections/$correctionId': typeof AppAttendanceCorrectionsCorrectionIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -154,6 +191,8 @@ export interface FileRoutesByTo {
   '/sign-in/two-factor': typeof authSignInTwoFactorRoute
   '/sign-in/verify': typeof authSignInVerifyRoute
   '/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
+  '/attendance/records': typeof AppAttendanceRecordsRoute
+  '/attendance/team': typeof AppAttendanceTeamRoute
   '/me/preferences': typeof AppMePreferencesRoute
   '/me/security': typeof AppMeSecurityRoute
   '/settings/company': typeof AppSettingsCompanyRoute
@@ -163,7 +202,10 @@ export interface FileRoutesByTo {
   '/settings/work-schedules': typeof AppSettingsWorkSchedulesRoute
   '/sign-in': typeof authSignInIndexRoute
   '/approvals': typeof AppApprovalsIndexRoute
+  '/attendance': typeof AppAttendanceIndexRoute
   '/me': typeof AppMeIndexRoute
+  '/attendance/$employeeId/$workDate': typeof AppAttendanceEmployeeIdWorkDateRoute
+  '/attendance/corrections/$correctionId': typeof AppAttendanceCorrectionsCorrectionIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -176,6 +218,8 @@ export interface FileRoutesById {
   '/(auth)/sign-in/two-factor': typeof authSignInTwoFactorRoute
   '/(auth)/sign-in/verify': typeof authSignInVerifyRoute
   '/_app/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
+  '/_app/attendance/records': typeof AppAttendanceRecordsRoute
+  '/_app/attendance/team': typeof AppAttendanceTeamRoute
   '/_app/me/preferences': typeof AppMePreferencesRoute
   '/_app/me/security': typeof AppMeSecurityRoute
   '/_app/settings/company': typeof AppSettingsCompanyRoute
@@ -185,7 +229,10 @@ export interface FileRoutesById {
   '/_app/settings/work-schedules': typeof AppSettingsWorkSchedulesRoute
   '/(auth)/sign-in/': typeof authSignInIndexRoute
   '/_app/approvals/': typeof AppApprovalsIndexRoute
+  '/_app/attendance/': typeof AppAttendanceIndexRoute
   '/_app/me/': typeof AppMeIndexRoute
+  '/_app/attendance/$employeeId/$workDate': typeof AppAttendanceEmployeeIdWorkDateRoute
+  '/_app/attendance/corrections/$correctionId': typeof AppAttendanceCorrectionsCorrectionIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -198,6 +245,8 @@ export interface FileRouteTypes {
     | '/sign-in/two-factor'
     | '/sign-in/verify'
     | '/approvals/$approvalId'
+    | '/attendance/records'
+    | '/attendance/team'
     | '/me/preferences'
     | '/me/security'
     | '/settings/company'
@@ -207,7 +256,10 @@ export interface FileRouteTypes {
     | '/settings/work-schedules'
     | '/sign-in/'
     | '/approvals/'
+    | '/attendance/'
     | '/me/'
+    | '/attendance/$employeeId/$workDate'
+    | '/attendance/corrections/$correctionId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -218,6 +270,8 @@ export interface FileRouteTypes {
     | '/sign-in/two-factor'
     | '/sign-in/verify'
     | '/approvals/$approvalId'
+    | '/attendance/records'
+    | '/attendance/team'
     | '/me/preferences'
     | '/me/security'
     | '/settings/company'
@@ -227,7 +281,10 @@ export interface FileRouteTypes {
     | '/settings/work-schedules'
     | '/sign-in'
     | '/approvals'
+    | '/attendance'
     | '/me'
+    | '/attendance/$employeeId/$workDate'
+    | '/attendance/corrections/$correctionId'
   id:
     | '__root__'
     | '/'
@@ -239,6 +296,8 @@ export interface FileRouteTypes {
     | '/(auth)/sign-in/two-factor'
     | '/(auth)/sign-in/verify'
     | '/_app/approvals/$approvalId'
+    | '/_app/attendance/records'
+    | '/_app/attendance/team'
     | '/_app/me/preferences'
     | '/_app/me/security'
     | '/_app/settings/company'
@@ -248,7 +307,10 @@ export interface FileRouteTypes {
     | '/_app/settings/work-schedules'
     | '/(auth)/sign-in/'
     | '/_app/approvals/'
+    | '/_app/attendance/'
     | '/_app/me/'
+    | '/_app/attendance/$employeeId/$workDate'
+    | '/_app/attendance/corrections/$correctionId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -340,6 +402,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppApprovalsApprovalIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/attendance/': {
+      id: '/_app/attendance/'
+      path: '/attendance'
+      fullPath: '/attendance/'
+      preLoaderRoute: typeof AppAttendanceIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/attendance/records': {
+      id: '/_app/attendance/records'
+      path: '/attendance/records'
+      fullPath: '/attendance/records'
+      preLoaderRoute: typeof AppAttendanceRecordsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/attendance/team': {
+      id: '/_app/attendance/team'
+      path: '/attendance/team'
+      fullPath: '/attendance/team'
+      preLoaderRoute: typeof AppAttendanceTeamRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/me/': {
       id: '/_app/me/'
       path: '/me'
@@ -396,6 +479,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsWorkSchedulesRouteImport
       parentRoute: typeof AppSettingsRouteRoute
     }
+    '/_app/attendance/$employeeId/$workDate': {
+      id: '/_app/attendance/$employeeId/$workDate'
+      path: '/attendance/$employeeId/$workDate'
+      fullPath: '/attendance/$employeeId/$workDate'
+      preLoaderRoute: typeof AppAttendanceEmployeeIdWorkDateRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/attendance/corrections/$correctionId': {
+      id: '/_app/attendance/corrections/$correctionId'
+      path: '/attendance/corrections/$correctionId'
+      fullPath: '/attendance/corrections/$correctionId'
+      preLoaderRoute: typeof AppAttendanceCorrectionsCorrectionIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -422,20 +519,31 @@ interface AppRouteChildren {
   AppSettingsRouteRoute: typeof AppSettingsRouteRouteWithChildren
   AppDashboardRoute: typeof AppDashboardRoute
   AppApprovalsApprovalIdRoute: typeof AppApprovalsApprovalIdRoute
+  AppAttendanceRecordsRoute: typeof AppAttendanceRecordsRoute
+  AppAttendanceTeamRoute: typeof AppAttendanceTeamRoute
   AppMePreferencesRoute: typeof AppMePreferencesRoute
   AppMeSecurityRoute: typeof AppMeSecurityRoute
   AppApprovalsIndexRoute: typeof AppApprovalsIndexRoute
+  AppAttendanceIndexRoute: typeof AppAttendanceIndexRoute
   AppMeIndexRoute: typeof AppMeIndexRoute
+  AppAttendanceEmployeeIdWorkDateRoute: typeof AppAttendanceEmployeeIdWorkDateRoute
+  AppAttendanceCorrectionsCorrectionIdRoute: typeof AppAttendanceCorrectionsCorrectionIdRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppSettingsRouteRoute: AppSettingsRouteRouteWithChildren,
   AppDashboardRoute: AppDashboardRoute,
   AppApprovalsApprovalIdRoute: AppApprovalsApprovalIdRoute,
+  AppAttendanceRecordsRoute: AppAttendanceRecordsRoute,
+  AppAttendanceTeamRoute: AppAttendanceTeamRoute,
   AppMePreferencesRoute: AppMePreferencesRoute,
   AppMeSecurityRoute: AppMeSecurityRoute,
   AppApprovalsIndexRoute: AppApprovalsIndexRoute,
+  AppAttendanceIndexRoute: AppAttendanceIndexRoute,
   AppMeIndexRoute: AppMeIndexRoute,
+  AppAttendanceEmployeeIdWorkDateRoute: AppAttendanceEmployeeIdWorkDateRoute,
+  AppAttendanceCorrectionsCorrectionIdRoute:
+    AppAttendanceCorrectionsCorrectionIdRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

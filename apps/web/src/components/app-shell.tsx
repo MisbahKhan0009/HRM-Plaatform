@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { CheckInShortcut } from '../features/attendance/widgets';
 import { api } from '../lib/api/client';
 import { authClient } from '../lib/auth/auth-client';
 import { can, useMe } from '../lib/auth/me';
@@ -309,6 +310,7 @@ export function AppShell({ children, enrolOnly = false }: { children: ReactNode;
                 </Button>
               </Tooltip>
             ) : null}
+            {me?.employee && can(me, 'attendance.check_in.own') ? <CheckInShortcut me={me} /> : null}
             <ThemeToggle />
             <UserMenu />
           </header>

@@ -43,6 +43,7 @@ const FIELD_FOR: Record<string, string> = {
   REPORTING_CYCLE: 'managerId',
   PAYMENT_AMOUNT_MISMATCH: 'amount',
   SELF_APPROVAL_NOTE_REQUIRED: 'selfApprovalNote',
+  INVALID_DATE: 'workDate',
   FILE_TOO_LARGE: 'file',
   UNSUPPORTED_FILE_TYPE: 'file',
 };
