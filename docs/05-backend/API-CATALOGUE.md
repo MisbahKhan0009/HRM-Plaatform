@@ -78,23 +78,23 @@ Users cannot change their own roles or suspend themselves (`SELF_APPROVAL_FORBID
 |---|---|---|---|---|---|
 | GET | `/employees` | `employee.read.all` / `.team` | | List; filters `status`, `departmentId`, `positionId`, `managerId`, `q`; sort `employeeCode`, `lastName`, `joiningDate` | `EmployeeBasic` |
 | POST | `/employees` | `employee.manage` | | Creates `draft`; code generated (X-001) | `CreateEmployeeInput` → `EmployeeFull` |
-| GET | `/employees/{id}` | `employee.read.all` / `.team` / `.own` | | DTO depends on permission | `EmployeeFull` / `EmployeeBasic` / `EmployeeSelf` |
+| GET | `/employees/{id}` | `employee.read.all` / `.team` / `.own` | | DTO depends on permission; the `view` field (`full`, `basic`, `self`) names it | `EmployeeFull` / `EmployeeBasic` / `EmployeeSelf` |
 | PATCH | `/employees/{id}` | `employee.manage` | | Non-lifecycle fields only; manager change runs cycle check | `UpdateEmployeeInput` |
 | GET | `/employees/{id}/contact` | `employee.contact.read.all` or own | | | `EmployeeContact` |
-| PATCH | `/employees/{id}/contact` | `employee.manage` | | | `UpdateEmployeeContactInput` |
-| GET | `/employees/{id}/history` | `employee.read.all` / own | | Employment events | `EmploymentEvent` |
+| PATCH | `/employees/{id}/contact` | `employee.manage` | | `version: 0` creates the record when none exists | `UpdateEmployeeContactInput` |
+| GET | `/employees/{id}/history` | `employee.read.all` / `.team` / own | | Employment events; `.team` readers do not see `salary_changed` (US-EMP-005) | `EmploymentEvent` |
 | POST | `/employees/{id}/employment-events` | `employee.manage` | | Promotion, transfer, manager change; future date = `scheduled` | `CreateEmploymentEventInput` |
 | POST | `/employees/{id}/start-preboarding` | `employee.manage` | | `draft` → `preboarding` | `EmployeeFull` |
-| POST | `/employees/{id}/hire` | `employee.manage` | | → `probation` or `active` on `effectiveDate` | |
+| POST | `/employees/{id}/hire` | `employee.manage` | | `preboarding` → `probation` (with `probationEndDate`) or `active` on `effectiveDate` | `HireEmployeeInput` |
 | POST | `/employees/{id}/confirm` | `employee.manage` | | `probation` → `active` | |
 | POST | `/employees/{id}/start-notice` | `employee.manage` | | → `notice_period` | |
-| POST | `/employees/{id}/separate` | `employee.manage`, Fresh | | → `separated`; schedules access revocation | `SeparateEmployeeInput` |
+| POST | `/employees/{id}/separate` | `employee.manage`, Fresh | | → `separated` on `separationDate` (last employed day); the daily job `accounts.apply_access_revocation` deactivates the login after it | `SeparateEmployeeInput` |
 | POST | `/employees/{id}/rehire` | `employee.manage` | | `separated` → `active` | |
 | POST | `/employees/{id}/archive` | `employee.manage` | | `separated` → `archived` | |
 | GET / POST | `/employees/{id}/contracts` | read: `employee.read.all` / own; write: `employee.manage` | | FR-DOC-009 | `EmploymentContract` |
 | PATCH | `/employees/{id}/contracts/{contractId}` | `employee.manage` | | | |
-| POST | `/employees/import/preview` | `employee.manage` | | CSV upload; returns mapping, row errors, duplicates (FR-EMP-008); nothing saved | `EmployeeImportPreview` |
-| POST | `/employees/import/commit` | `employee.manage` | key | Commits a preview by `previewToken` | `EmployeeImportResult` |
+| POST | `/employees/import/preview` | `employee.manage` | | JSON `{ csv, mapping? }`, at most 500 rows; returns mapping, row errors, duplicates and `previewToken` (SHA-256 of the CSV) (FR-EMP-008); nothing saved | `EmployeeImportPreviewInput` → `EmployeeImportPreview` |
+| POST | `/employees/import/commit` | `employee.manage` | key | Re-sends `{ csv, previewToken, mapping? }`; the server re-validates and creates the valid rows in `draft`; nothing is stored between preview and commit | `EmployeeImportCommitInput` → `EmployeeImportResult` |
 | GET | `/me/profile` | `employee.read.own` | | Shortcut to own `EmployeeSelf` | |
 | GET / POST | `/profile-change-requests` | list: `profile_change.review.all` or own; create: `profile_change.request.own` | | Create derives employee from session | `ProfileChangeRequest` |
 | POST | `/profile-change-requests/{id}/approve` | `profile_change.review.all` | | applies changes | |
