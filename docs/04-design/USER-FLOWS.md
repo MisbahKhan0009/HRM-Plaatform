@@ -7,7 +7,7 @@ Conventions used below:
 - "Primary" is the one Red Fill button on the screen.
 - "Confirm dialog" is the confirmation pattern in COMPONENT-SPECS.md section 12.
 - Every mutation that the API accepts writes an audit entry; flows do not repeat this.
-- Emails are sent asynchronously through the outbox (D-025, D-036). The UI never waits for an email and never says "email sent"; it says "We'll email ..." or names who will be notified.
+- Emails are sent asynchronously after the change is saved, usually within a minute, with retries if sending fails (D-025, `docs/05-backend/JOBS-AND-OUTBOX.md`). The UI never waits for an email and never says "email sent"; it says "We'll email ..." or names who will be notified.
 
 ## 1. Sign-in (passwordless, D-033)
 
@@ -131,7 +131,7 @@ Actor: employee with `leave.request.own`; approver as in section 4.
 2. Form: leave type (only types the employee is eligible for), start date, end date, unit (`day` or `half_day`; for half day a single date and `first_half` or `second_half`), reason (required when the leave type requires it).
 3. As dates change the form calls `POST /leave/requests/preview` and shows "N working days" and "Balance after this request: M days". Holidays and weekends inside the range are listed. The preview is advisory; the submit response is authoritative.
 4. Primary **Submit request**. The request is created directly in `pending` (v1 exposes no leave drafts), the balance is reserved (D-016), the approver is emailed. Redirect to `/leave/requests/$requestId`.
-5. Failures on the date fields: `LEAVE_INSUFFICIENT_BALANCE` "You have N days of <type> available."; `LEAVE_OVERLAP` "You already have leave on <dates>."; `LEAVE_NO_WORKING_DAYS` "These dates are all weekends or holidays."; `LEAVE_NOT_ELIGIBLE` "You aren't eligible for <type> yet."
+5. Failures on the date fields: `INSUFFICIENT_BALANCE` "You have N days of <type> available."; `OVERLAPPING_LEAVE` "You already have leave on <dates>."; `LEAVE_NO_WORKING_DAYS` "These dates are all weekends or holidays."; `LEAVE_NOT_ELIGIBLE` "You aren't eligible for <type> yet."
 
 ### 5.2 Approve or reject
 
@@ -204,7 +204,7 @@ stateDiagram-v2
 9. **Publish payslips.** Available from `locked` (`POST /payroll/runs/{id}/publish-payslips`). Primary **Publish payslips** (confirm dialog: "N employees will be able to see their payslip for <Month YYYY>. We'll email them."). Employees see them at `/payslips`; the page loads `GET /payroll/payslips/{id}` and the PDF is generated in their browser from that snapshot (D-037).
 10. **Reconcile.** Reconciliation tab compares gross, deductions, net and recorded payments; differences are listed per employee. Primary **Mark as reconciled** when the difference is zero.
 
-Failures: `VERSION_CONFLICT` reloads the run and shows "This run was changed by someone else. Review the latest version."; `INVALID_STATE_TRANSITION` reloads and shows the current status; `PAYROLL_RUN_EXISTS` on create offers to open the existing run; `PAYROLL_VALIDATION_FAILED` on submit opens the Validation tab; `SELF_APPROVAL_NOTE_REQUIRED` focuses the justification field.
+Failures: `VERSION_CONFLICT` reloads the run and shows "This run was changed by someone else. Review the latest version."; `INVALID_TRANSITION` reloads and shows the current status; `PAYROLL_RUN_EXISTS` on create offers to open the existing run; `PAYROLL_MISSING_SALARY_STRUCTURE`, `PAYROLL_NEGATIVE_NET` or `PAYROLL_CURRENCY_MISMATCH` on submit opens the Validation tab with one row per item; `PAYROLL_MIDPERIOD_SALARY_CHANGE_UNCONFIRMED` on calculate links to `/settings/payroll`; `PAYMENT_AMOUNT_MISMATCH` on a payment keeps the form open with the amount field flagged; `SELF_APPROVAL_NOTE_REQUIRED` focuses the justification field.
 
 ## 8. Profile change request
 

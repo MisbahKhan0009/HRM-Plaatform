@@ -93,5 +93,5 @@ Managers and employees see their own request history through the subject's endpo
 
 ## 6. Integrity checks
 
-- A nightly sub-step of `maintenance.prune` counts audit rows for the previous day by category and stores the counts in `job_runs.items` metadata, so a sudden drop to zero is visible on the health page.
+- A nightly sub-step of `maintenance.prune` counts audit rows for the previous day by category and stores the counts in `job_runs.details`, so a sudden drop to zero is visible on the health page.
 - Restore drills (`docs/08-operations/BACKUP-AND-RESTORE.md`) compare audit row counts between production and the restored copy.

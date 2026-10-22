@@ -136,7 +136,7 @@ features/leave/
 - **Route errors** (`errorComponent` per section): load failures show the inline error panel (SCREEN-INVENTORY.md section 0) inside the shell, keeping navigation usable.
 - `notFound()` from guards or `404 NOT_FOUND` from loaders renders the 404 page.
 - **Mutation errors** are handled where the action happens: field errors in forms (FORMS-AND-VALIDATION.md), inline alerts for page actions, toasts for row actions. Message text is chosen by `code` (CONTENT-STYLE.md section 6).
-- `409 VERSION_CONFLICT` and `409 INVALID_STATE_TRANSITION`: invalidate the record's query, show the inline alert, keep the user's form input where possible.
+- `409 VERSION_CONFLICT` and `409 INVALID_TRANSITION`: invalidate the record's query, show the inline alert, keep the user's form input where possible.
 
 ## 8. Observability
 

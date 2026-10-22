@@ -190,6 +190,7 @@ CREATE TABLE job_runs (
   started_at   timestamptz NOT NULL DEFAULT now(),
   finished_at  timestamptz NULL,
   items        integer NOT NULL DEFAULT 0,
+  details      jsonb NOT NULL DEFAULT '{}'::jsonb,   -- job-specific counters, e.g. audit rows per category
   error        text NULL,
   UNIQUE (company_id, job, run_key)
 );

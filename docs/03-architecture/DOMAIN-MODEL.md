@@ -67,6 +67,13 @@ leave_unit:             day | half_day
 half_day_part:          first_half | second_half
 leave_ledger_type:      grant | accrual | reservation | reservation_release | usage | adjustment |
                         reversal | carry_forward | expiry
+leave_request_status:   draft | pending | approved | rejected | withdrawn | cancellation_pending | cancelled
+correction_status:      pending | approved | rejected | withdrawn
+claim_status:           draft | submitted | approved | rejected | withdrawn | included | paid
+reimbursement_category: transport
+profile_change_status:  pending | approved | rejected | withdrawn
+adjustment_status:      pending | approved | rejected | applied
+payroll_run_type:       regular | off_cycle
 payroll_run_status:     draft | calculated | submitted | returned | approved | locked | paid | reconciled
 payroll_line_kind:      earning | deduction
 payroll_line_code:      base_salary | proration_adjustment | reimbursement | addition | deduction | arrears

@@ -55,7 +55,7 @@ Reported, never penalised (D-010): `late_minutes = max(0, first_in_local - core_
 ### 2.4 Daily lifecycle
 
 - The first punch of the day creates the `attendance_records` row with `is_final = false`. Every new event recomputes the row in the same transaction.
-- The `attendance.close_day` job (00:15) finalises the previous work date: it creates rows for employed employees without one (status from rules 1 to 5), recomputes all rows and sets `is_final = true`.
+- The `attendance.close_day` job (daily dispatcher, 00:05) finalises the previous work date: it creates rows for employed employees without one (status from rules 1 to 5), recomputes all rows and sets `is_final = true`.
 - An approved correction recomputes the row and sets `has_correction = true`. Attendance never changes pay in v1 (D-017), so a correction to a date in a locked payroll period needs no adjustment.
 
 ### 2.5 Worked example
@@ -129,6 +129,8 @@ Approval does not re-check the balance, because the reservation already holds it
 
 ## 5. Accrual, carry-forward and expiry
 
+All postings in this section run in the daily dispatcher (`JOBS-AND-OUTBOX.md`); each job checks its date and records itself in `job_runs` so it posts at most once.
+
 Each leave type has one active `leave_policies` row per date. Parameters are configuration; the seed defaults below follow common Bangladesh Labour Act 2006 practice and are **labelled seed defaults to be verified by the owner and an adviser**.
 
 | Type | `allocation_method` | Seed default parameters |
@@ -146,11 +148,11 @@ Each leave type has one active `leave_policies` row per date. Parameters are con
 
 ### 5.2 `monthly_accrual`
 
-On the 1st of each month (`leave.accrue`), post `accrual_per_month` for the previous month to employees eligible on the last day of that month. The entry's `effective_date` is the last day of the previous month, which the unique index uses to prevent double posting.
+On the 1st of each month (`leave.accrue`, run by the daily dispatcher), post `accrual_per_month` for the previous month to employees eligible on the last day of that month. The entry's `effective_date` is the last day of the previous month, which the unique index uses to prevent double posting.
 
 ### 5.3 `per_days_worked`
 
-On the 1st of each month, for each eligible employee:
+On the 1st of each month (`leave.accrue`), for each eligible employee:
 
 ```text
 worked_days_ytd = count of attendance_records in the leave year up to the end of the previous month
@@ -174,7 +176,7 @@ For each employee and leave type, using the previous year's balance after all De
 4. If `carry > 0`: post `carry_forward +carry` in the new year, effective 1 January.
 5. Post the new year's `annual_grant` entries.
 
-When `carry_forward_expiry_months` is set, usage in the new year consumes carried-forward days first. On the expiry date, `leave.accrue` posts `expiry -max(0, carry - usage_since_1_january)`.
+When `carry_forward_expiry_months` is set, usage in the new year consumes carried-forward days first. On the expiry date, the daily dispatcher's leave step posts `expiry -max(0, carry - usage_since_1_january)`.
 
 The job runs once per year per company (`job_runs` unique `run_key` = year).
 
@@ -205,13 +207,17 @@ Leave and attendance do not change pay (D-017).
 
 ### 6.3 Base salary lines
 
-Split `[from, to]` into segments by the approved salary structures that cover it. For each segment `s`:
+**Single salary structure in the period** (the normal case):
 
 ```text
-amount_s = round_half_up(gross_s × days_s / days_in_period, 2)
+amount = round_half_up(gross × days_employed / days_in_period, 2)
 ```
 
-Each segment is one `earning` line with code `base_salary`, label "Base salary" (or "Base salary (1 to 14 Nov)" when there is more than one segment), and `calculation = { grossAmount, days, daysInPeriod, salaryStructureId }`. Rounding is per line; totals are sums of rounded lines (ADR-0006). Arithmetic uses `decimal.js` with precision 30 and rounding `ROUND_HALF_UP`; JavaScript `number` is never used for money.
+One `earning` line, code `base_salary`, label "Base salary", `calculation = { grossAmount, days, daysInPeriod, salaryStructureId }`. Rounding is per line; totals are sums of rounded lines (ADR-0006). Arithmetic uses `decimal.js` with precision 30 and rounding `ROUND_HALF_UP`; JavaScript `number` is never used for money.
+
+**More than one approved salary structure overlaps the employed part of the period** (a mid-period change): the owner has not decided how to pay this (open question 7 below). Until setting `payroll.midperiod_salary_change_policy` is set, `calculate` fails with `422 PAYROLL_MIDPERIOD_SALARY_CHANGE_UNCONFIRMED` and lists the affected employees. The workaround in the meantime is to make salary changes effective on the 1st of a month.
+
+The proposed policy for the owner to confirm is `segment_proration`: split the employed days by structure and pay each segment `round_half_up(gross_s × days_s / days_in_period, 2)` as its own `base_salary` line labelled with its date range. The domain function is written for it but disabled until the setting is set.
 
 ### 6.4 Other lines
 
@@ -228,12 +234,11 @@ Each segment is one `earning` line with code `base_salary`, label "Base salary" 
 
 | Flag | Blocking | Condition |
 |---|---|---|
-| `no_salary_structure` | yes | 6.1 |
-| `negative_net` | yes | `net_amount < 0` |
-| `currency_mismatch` | yes | any source not in the run currency |
+| `no_salary_structure` | yes (`PAYROLL_MISSING_SALARY_STRUCTURE`) | 6.1 |
+| `negative_net` | yes (`PAYROLL_NEGATIVE_NET`) | `net_amount < 0` |
+| `currency_mismatch` | yes (`PAYROLL_CURRENCY_MISMATCH`) | any source not in the run currency |
 | `zero_net` | no | `net_amount = 0` |
 | `joiner` / `leaver` | no | `days_employed < days_in_period` due to joining / separation |
-| `salary_changed_in_period` | no | more than one base segment |
 | `net_change_over_threshold` | no | net differs from the employee's previous regular run by more than setting `payroll.anomaly_threshold_percent` (seed default 20) |
 | `large_reimbursement` | no | one claim above setting `reimbursements.review_threshold` |
 
@@ -278,7 +283,7 @@ These are calculated by hand from the rules above. Payroll acceptance requires t
 | Full month | Gross 45,000; November (30 days) | 45000 × 30/30 | 45,000.00 |
 | Joiner | Gross 45,000; joins 12 Nov | 19 days: 45000 × 19/30 | 28,500.00 |
 | Leaver, 31-day month | Gross 50,000; last day 10 Dec | 50000 × 10/31 = 16129.032... | 16,129.03 |
-| Increment mid-month | 40,000 to 14 Nov, 46,000 from 15 Nov | 40000 × 14/30 = 18666.666... → 18,666.67; 46000 × 16/30 = 24533.333... → 24,533.33 | 43,200.00 |
+| Increment mid-month (proposed policy, not active) | 40,000 to 14 Nov, 46,000 from 15 Nov | today: `PAYROLL_MIDPERIOD_SALARY_CHANGE_UNCONFIRMED`; under `segment_proration`: 40000 × 14/30 = 18,666.67 and 46000 × 16/30 = 24,533.33 | 43,200.00 if confirmed |
 | Reimbursement + deduction | Full month 30,000; approved transport claims 650.00 and 1,200.00; approved deduction adjustment 500.00 | 30000 + 650 + 1200 - 500 | 31,350.00 |
 
 ## 7. Reporting lines
@@ -336,6 +341,7 @@ Stored in `settings` (DATA-MODEL section 1). Changing a key needs `settings.<sco
 | `approvals.hide_reviewer` | hr | bool | false | FR-ESS-007 |
 | `payroll.anomaly_threshold_percent` | payroll | int | 20 | 6.5 |
 | `payroll.allow_self_approval` | payroll | bool | true | D-007 |
+| `payroll.midperiod_salary_change_policy` | payroll | `null` or `segment_proration` | null (unset, blocks) | 6.3 |
 | `reimbursements.review_threshold` | payroll | money string | `"5000.00"` | 6.5 |
 | `reimbursements.max_claim_age_days` | payroll | int | 60 | claims older than this are rejected at submit |
 | `documents.max_upload_mb` | technical | int | 10 | uploads (ADR-0009) |
@@ -351,3 +357,4 @@ Stored in `settings` (DATA-MODEL section 1). Changing a key needs `settings.<sco
 4. Should weekend or holiday work earn compensatory leave automatically? v1 assumes no: HR grants it manually.
 5. Does a transport claim need a receipt above some amount? v1 makes the receipt optional at every amount.
 6. Should approved but unpaid reimbursement claims of a separated employee be paid in an off-cycle run? v1 includes them in the final regular run only if approved before it is calculated.
+7. How is a salary change that takes effect in the middle of a month paid? Proposed: `segment_proration` (6.3). Until decided, such runs cannot be calculated.

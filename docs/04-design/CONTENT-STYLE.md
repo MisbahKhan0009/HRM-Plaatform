@@ -96,22 +96,32 @@ The API returns `application/problem+json` with a stable `code` (ARCHITECTURE.md
 | `ACCOUNT_SUSPENDED` | Sign-in page | "We couldn't sign you in. If you think this is wrong, contact HR." |
 | `CSRF_ORIGIN_MISMATCH` | Inline alert | "We couldn't verify this request. Reload the page and try again." |
 | `FORBIDDEN` | Inline alert | "You don't have permission to do this. Ask HR if you think you should." |
-| `SELF_APPROVAL_NOT_ALLOWED` | Inline alert | "You can't approve your own request. It's waiting for another approver." |
+| `SELF_APPROVAL_FORBIDDEN` | Inline alert | "You can't approve your own request. It's waiting for another approver." |
 | `NOT_FOUND` | 404 page or inline | "We couldn't find that page." (Same text for records the user can't access.) |
 | `VERSION_CONFLICT` | Inline alert, data reloads | "Someone else changed this while you were editing. We've loaded the latest version. Review it and try again." |
-| `INVALID_STATE_TRANSITION` | Inline alert, data reloads | "This <record> is now <status>, so you can't <action> it." |
-| `DUPLICATE` | The field in `errors[].path` | "<Value> is already in use." (employee code, work email, department code, holiday date) |
+| `INVALID_TRANSITION` | Inline alert, data reloads | "This <record> is now <status>, so you can't <action> it." |
+| `EMAIL_TAKEN` | Email field | "Someone already signs in with this email." |
+| `WORK_EMAIL_TAKEN` | Work email field | "Another employee already has this work email." |
+| `EMPLOYEE_ALREADY_LINKED` | Inline alert in the invite dialog | "This employee already has a sign-in account." (or "This account is already linked to an employee.") |
+| `DEPARTMENT_CODE_TAKEN` | Code field | "Another department already uses this code." |
+| `DUPLICATE` | The field in `errors[].path` | "<Value> is already in use." (employee code, holiday date, cheque number) |
 | `IDEMPOTENCY_KEY_REUSED`, `IDEMPOTENCY_IN_PROGRESS` | Toast | "This action is already being processed. Refresh in a moment." |
 | `IDEMPOTENCY_KEY_REQUIRED` | Not user-facing (client bug); generic error | see `INTERNAL_ERROR` |
-| `PAYROLL_LOCKED` | Inline alert | "<Month YYYY> payroll is locked. Add an adjustment to the next run instead." |
+| `PAYROLL_RUN_LOCKED` | Inline alert | "<Month YYYY> payroll is locked. Add an adjustment to the next run instead." |
+| `PAYROLL_MISSING_SALARY_STRUCTURE` | Run page, Validation tab (one row per employee from `errors[]`) | "<Name> has no approved salary structure for this period. Add one, then recalculate." |
+| `PAYROLL_NEGATIVE_NET` | Validation tab | "<Name>'s net pay is below zero. Check their deductions and adjustments." |
+| `PAYROLL_CURRENCY_MISMATCH` | Validation tab | "<Name> has an amount that isn't in BDT. Correct it, then recalculate." |
+| `PAYROLL_MIDPERIOD_SALARY_CHANGE_UNCONFIRMED` | Inline alert on Calculate | "<Name>'s salary changes during <Month YYYY>. Set the mid-period salary rule in payroll settings before calculating." |
+| `PAYMENT_AMOUNT_MISMATCH` | Payment form or Reconciliation tab | Payment: "This would pay more than <name>'s net pay of <৳ amount>." Reconciliation: "Payments don't match net pay yet. Check the highlighted employees." |
 | `PAYROLL_RUN_EXISTS` | Create dialog | "A regular run for <Month YYYY> already exists." with link "Open it" |
-| `PAYROLL_VALIDATION_FAILED` | Run page, Validation tab | "Fix <n> blocking issues before submitting." |
 | `SELF_APPROVAL_NOTE_REQUIRED` | Justification field | "Explain why you're approving your own run (at least 20 characters)." |
+| `SELF_MANAGER` | Manager field | "An employee can't be their own manager." |
 | `REPORTING_CYCLE` | Manager field | "<Name> already reports to this employee, so they can't be their manager." |
 | `ALREADY_CHECKED_IN` | Check-in panel | "You're already checked in." |
 | `NOT_CHECKED_IN` | Check-in panel | "You haven't checked in today, so you can't check out. Request a correction if you forgot." |
-| `LEAVE_OVERLAP` | Date fields | "You already have leave on <dates>." |
-| `LEAVE_INSUFFICIENT_BALANCE` | Date fields | "You have <n> days of <leave type> available. Shorten the request or choose another type." |
+| `OVERLAPPING_LEAVE` | Date fields | "You already have leave on <dates>." |
+| `INVALID_DATE` | The date field in `errors[].path` | Message by `errors[].code`, for example "Choose a date on or after <joining date>." or "Corrections can only be requested for the last <n> days." |
+| `INSUFFICIENT_BALANCE` | Date fields | "You have <n> days of <leave type> available. Shorten the request or choose another type." |
 | `LEAVE_NOT_ELIGIBLE` | Leave type field | "You aren't eligible for <leave type> yet." |
 | `LEAVE_NO_WORKING_DAYS` | Date fields | "These dates are all weekends or holidays." |
 | `FILE_TOO_LARGE` | Upload row | "This file is <size>. The limit is 10 MB." |

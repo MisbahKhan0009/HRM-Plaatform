@@ -177,6 +177,10 @@ Field `code` values are the Zod issue code or a custom code from `@hrm/contracts
 
 Adding a code is additive; renaming or removing one is a breaking change.
 
+### Payroll blocking codes
+
+When `submit` finds blocking validation flags, the top-level `code` is the first present in this order: `PAYROLL_MISSING_SALARY_STRUCTURE`, `PAYROLL_NEGATIVE_NET`, `PAYROLL_CURRENCY_MISMATCH`. `errors` lists every blocking item across all employees as `{ "path": "/items/<payrollItemId>", "code": "<flag>", "message": "..." }`, so the UI shows all problems at once.
+
 ## 8. Optimistic locking
 
 Every mutable resource has an integer `version`. `PATCH` bodies and transition actions on editable resources include the `version` the client last read. The repository updates `WHERE id = $1 AND version = $2` and increments it; zero rows updated returns `409 VERSION_CONFLICT`. The UI then reloads and shows the user what changed (`docs/06-frontend/FORMS-AND-VALIDATION.md`).
@@ -231,6 +235,3 @@ Every response: `X-Request-Id`, `Cache-Control: no-store` (all API data is priva
 - Inputs are strict Zod objects (`.strict()`): unknown properties return `400`.
 - Text inputs are trimmed; empty strings become `null` only where the DTO says so.
 
-### Payroll blocking codes
-
-When `submit` finds blocking validation flags, the top-level `code` is the first present in this order: `PAYROLL_MISSING_SALARY_STRUCTURE`, `PAYROLL_NEGATIVE_NET`, `PAYROLL_CURRENCY_MISMATCH`. `errors` lists every blocking item across all employees as `{ "path": "/items/<payrollItemId>", "code": "<flag>", "message": "..." }`, so the UI shows all problems at once.

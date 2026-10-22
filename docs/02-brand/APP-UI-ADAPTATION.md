@@ -30,6 +30,8 @@ Status colours. The brand has `ok`/`bad`. The app adds **warning** (pending, exp
 | `warn-tint` | #2A2112 | #FFF6E5 | warn text on tint: 8.55:1 · 5.90:1 | Warning badge/background |
 | `ok` / `bad` | brand values | brand values | 10.22 / 7.81 on Ink · 5.33 / 6.57 on Paper | Approved/paid · rejected/error |
 
+| `control-border` | #70747B | #858585 | ≥ 3.5:1 on `ground`/`surface` in both themes (WCAG 1.4.11) | Input, select and checkbox borders. Brand `line`/`line-strong` are too faint for controls |
+
 Status is **never colour alone** (NFR-UX-003): every badge has a word, and an icon where space allows.
 
 Standard status mapping: Draft = neutral (`text-2` on `ground-2`) · Pending/Submitted = `warn` · Approved/Active/Paid = `ok` · Rejected/Failed/Separated = `bad` · Locked/Archived = neutral + lock icon · Info = `accent-tint`.
