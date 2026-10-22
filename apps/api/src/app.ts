@@ -10,6 +10,7 @@ import { approvalRoutes } from './modules/approvals/approvals.routes';
 import { documentRoutes } from './modules/documents/documents.routes';
 import { healthRoutes } from './modules/health/health.routes';
 import { organizationRoutes } from './modules/organization/organization.routes';
+import { reportRoutes } from './modules/reports/reports.routes';
 import type { AppEnv } from './types';
 
 export const app = new OpenAPIHono<AppEnv>();
@@ -34,6 +35,7 @@ app.route('/api/v1', authRoutes);
 app.route('/api/v1', approvalRoutes);
 app.route('/api/v1', organizationRoutes);
 app.route('/api/v1', documentRoutes);
+app.route('/api/v1', reportRoutes);
 
 // Better Auth serves the rest of /auth/* (sign-in, passkeys, TOTP, sessions); our routes above match first.
 app.on(['GET', 'POST'], '/api/v1/auth/*', (c) => c.var.deps.auth().handler(c.req.raw));

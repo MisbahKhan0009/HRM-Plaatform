@@ -38,7 +38,11 @@ async function insertDocument(
 }
 
 async function run(at: Date = AT) {
-  const deps = createDeps(env, fixedClock(at), { requestId: 'test-job', ipAddress: null, userAgent: null });
+  const deps = createDeps(env as unknown as Env, fixedClock(at), {
+    requestId: 'test-job',
+    ipAddress: null,
+    userAgent: null,
+  });
   const today = addDays(TODAY, Math.round((at.getTime() - AT.getTime()) / 86_400_000));
   const ctx: DailyContext = { deps, companyId: f.companyId, today, yesterday: addDays(today, -1) };
   try {

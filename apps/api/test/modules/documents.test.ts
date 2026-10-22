@@ -26,7 +26,8 @@ const pdf = (name = 'contract.pdf'): FilePart => ({ bytes: PDF, name, type: 'app
 function upload(path: string, cookie: string, fields: Record<string, string>, file?: FilePart) {
   const form = new FormData();
   for (const [k, v] of Object.entries(fields)) form.append(k, v);
-  if (file) form.append('file', new File([file.bytes as BlobPart], file.name, { type: file.type }));
+  if (file)
+    form.append('file', new File([file.bytes as Uint8Array<ArrayBuffer>], file.name, { type: file.type }));
   return exports.default.fetch(
     new Request(`${ORIGIN}${path}`, {
       method: 'POST',
@@ -71,7 +72,7 @@ beforeAll(async () => {
   colleague = await f.signIn({ employee: true, strong: false });
   nobody = await f.signIn({ strong: false });
   other = await setupCompany('Other Docs Co');
-}, 60_000);
+});
 
 /** Uploads are limited to 20 per 10 minutes per user, so HR uploads rotate through fresh HR users. */
 let uploads = 0;

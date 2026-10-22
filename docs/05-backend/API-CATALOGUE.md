@@ -227,15 +227,17 @@ All reports enforce the same scopes as their source lists (FR-REP-006). Response
 
 | Method | Path | Permission | Filters |
 |---|---|---|---|
-| GET | `/reports/headcount` | `report.hr` | `asOf`, `departmentId`, grouping |
+| GET | `/reports/headcount` | `report.hr` | `asOf`, `departmentId`, `groupBy` (`department`, `position`, `status`) |
 | GET | `/reports/directory` | `report.hr`, `report.team` | `departmentId`, `status` |
 | GET | `/reports/attendance` | `report.hr`, `report.team` | `from`, `to`, `departmentId`, `employeeId` |
 | GET | `/reports/leave` | `report.hr`, `report.team` | `year`, `from`, `to`, `leaveTypeId`, `departmentId` |
 | GET | `/reports/payroll-register` | `report.payroll` | `runId` |
-| GET | `/reports/payroll-deductions` | `report.payroll` | `runId` or `year` |
+| GET | `/reports/payroll-deductions` | `report.payroll` | exactly one of `runId` or `year`; `year` counts runs that are `approved` or later |
 | GET | `/reports/payment-reconciliation` | `report.payroll` | `runId` |
-| GET | `/reports/reimbursements` | `report.payroll`, `report.hr` | `from`, `to`, `status` |
-| POST | `/reports/exports` | the report's permission | `{ report, filters, rowCount }`; audit only |
+| GET | `/reports/reimbursements` | `report.payroll`, `report.hr` | `from`, `to` (expense date, required), `status`; `draft` claims never appear |
+| POST | `/reports/exports` | the report's permission | `{ report, format?, filters, rowCount }`; audit only; `204` |
+
+`report.team` limits `directory`, `attendance` and `leave` to the caller's direct and indirect reports. `from`/`to` ranges are at most 366 days. Report responses are `{ data, page }`; headcount, payroll and reimbursement reports add a `summary` with totals over the whole result, computed in SQL. `report` in `POST /reports/exports` is one of `headcount`, `directory`, `attendance`, `leave`, `payroll_register`, `payroll_deductions`, `payment_reconciliation`, `reimbursements`; payroll reports are audited in the `payroll` category, the others in `business`.
 
 ## 13. Audit and health
 

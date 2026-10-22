@@ -8,4 +8,5 @@ export * from './health';
 export * from './organization';
 export * from './permissions';
 export * from './primitives';
+export * from './reports';
 export * from './settings';
