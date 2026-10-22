@@ -5,6 +5,7 @@ import { Link } from '@tanstack/react-router';
 import type { ComponentType } from 'react';
 import { api } from '../../lib/api/client';
 import { formatRelative } from '../../lib/format';
+import { TeamTodayWidget, TodayAttendanceWidget } from '../attendance/widgets';
 
 export interface DashboardWidget {
   key: string;
@@ -72,5 +73,7 @@ function ApprovalsWidget({ primary }: { me: CurrentUser; primary: boolean }) {
  * widget with a primary action keeps the primary style.
  */
 export const DASHBOARD_WIDGETS: DashboardWidget[] = [
+  { key: 'attendance-today', any: ['attendance.check_in.own'], span: 6, Component: TodayAttendanceWidget },
   { key: 'approvals', any: ['approval.inbox'], span: 6, Component: ApprovalsWidget },
+  { key: 'team-today', any: ['attendance.read.team'], span: 6, Component: TeamTodayWidget },
 ];

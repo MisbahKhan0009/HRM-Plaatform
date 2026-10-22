@@ -434,6 +434,33 @@ describe('corrections', () => {
     expect((await json<Problem>(res)).code).toBe('INVALID_TRANSITION');
   });
 
+  it('returns one correction to the requester, the manager and HR', async () => {
+    for (const u of [emp, mgr, hr]) {
+      const res = await call('GET', `${P}/corrections/${pending.id}`, { cookie: u.cookie });
+      expect(res.status).toBe(200);
+      expect(await json<Correction>(res)).toMatchObject({
+        id: pending.id,
+        status: 'approved',
+        employee: { id: emp.employeeId },
+      });
+    }
+  });
+
+  it('returns 404 for a correction outside the caller scope (IDOR) and 403 without access', async () => {
+    for (const u of [mgr2, loner]) {
+      expect((await call('GET', `${P}/corrections/${pending.id}`, { cookie: u.cookie })).status).toBe(404);
+    }
+    expect((await call('GET', `${P}/corrections/${pending.id}`, { cookie: auditor.cookie })).status).toBe(
+      403,
+    );
+    expect((await call('GET', `${P}/corrections/${pending.id}`)).status).toBe(401);
+  });
+
+  it('returns 400 for a malformed correction id', async () => {
+    const res = await call('GET', `${P}/corrections/not-a-uuid`, { cookie: hr.cookie });
+    expect(res.status).toBe(400);
+  });
+
   it('requires a comment to reject, and lets HR reject on behalf of the manager', async () => {
     const created = await json<Correction>(
       await requestCorrection(
@@ -558,6 +585,17 @@ describe('ids', () => {
       cookie: hr.cookie,
       body: { version: 1 },
     });
+    expect(res.status).toBe(404);
+    expect((await call('GET', `${P}/corrections/${uuidv7()}`, { cookie: hr.cookie })).status).toBe(404);
+  });
+
+  it('hides another company correction from HR (404)', async () => {
+    const [own] = (
+      await json<{ data: { id: string }[] }>(await call('GET', `${P}/corrections`, { cookie: hr.cookie }))
+    ).data;
+    const otherHr = await other.signIn({ roles: ['hr_admin'] });
+    expect(own).toBeDefined();
+    const res = await call('GET', `${P}/corrections/${own?.id}`, { cookie: otherHr.cookie });
     expect(res.status).toBe(404);
   });
 });

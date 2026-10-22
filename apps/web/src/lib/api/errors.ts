@@ -9,7 +9,8 @@ export function useErrorMessage() {
     if (error instanceof ApiError) {
       const key = `errors.${error.code}`;
       if (error.code === 'RATE_LIMITED' && error.retryAfter) {
-        return `Too many attempts. Try again in ${Math.max(1, Math.ceil(error.retryAfter / 60))} minutes.`;
+        const minutes = Math.max(1, Math.ceil(error.retryAfter / 60));
+        return `Too many attempts. Try again in ${minutes} minute${minutes === 1 ? '' : 's'}.`;
       }
       if (i18n.exists(key)) return t(key, { requestId: error.requestId ?? 'unknown' });
     }
