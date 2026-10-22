@@ -1,7 +1,7 @@
 /**
  * Browser-side document builders (D-037): payslip PDF (pdf-lib) and CSV/XLSX exports.
  * They run in the browser so the Worker stays within its 10 ms CPU budget (ADR-0009).
- * The PDF and XLSX builders land with the payroll and reports modules (Stage 8).
+ * The payslip PDF builder lives in `@hrm/documents/payslip` so the web app can import it lazily at click time.
  */
 
 /** Builds RFC 4180 CSV. Cells starting with = + - @ are prefixed with ' to stop formula injection. */
