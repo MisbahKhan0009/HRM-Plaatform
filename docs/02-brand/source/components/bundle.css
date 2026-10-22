@@ -1,0 +1,102 @@
+/* Big-Matrix Solutions components. Values follow brand-guidelines.html; colours, type and radii come from tokens.css. */
+
+body { margin: 0; font-family: var(--font-body); background: var(--ground); color: var(--text); -webkit-font-smoothing: antialiased; }
+
+/* Theme-scoped glow strengths: the nearest [data-theme] wins. */
+:root, [data-theme="ink"] { --bm-glow-a: var(--glow-ink); --bm-glow-b: var(--glow-2-ink); }
+[data-theme="paper"] { --bm-glow-a: var(--glow-paper); --bm-glow-b: var(--glow-2-paper); }
+
+/* Button: 600 15px/1, 14px × 20px, 6px corners, arrow at the end. */
+.bm-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--font-body); font-size: 15px; font-weight: 600; line-height: 1;
+  padding: 14px 20px;
+  border: 1px solid transparent; border-radius: var(--bm-r);
+  text-decoration: none; cursor: pointer;
+}
+.bm-btn:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offset: var(--focus-offset); }
+.bm-btn-primary { background: var(--action); color: var(--on-action); box-shadow: var(--shadow-primary); }
+.bm-btn-primary:hover { background: var(--action-hover); }
+.bm-btn-secondary { background: var(--ground); color: var(--text); border-color: var(--line-strong); }
+.bm-btn-secondary:hover { border-color: var(--text); }
+.bm-btn-text { background: none; color: var(--link); padding-inline: 4px; }
+
+/* Eyebrow pill: 500 12px/1 mono, +16% tracking, 9px × 16px, line-strong border, 7px red dot. */
+.bm-eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 500; line-height: 1;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--text); background: var(--ground);
+  padding: 9px 16px;
+  border: 1px solid var(--line-strong); border-radius: var(--bm-r-pill);
+}
+.bm-eyebrow-dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+
+/* Red emphasis word: the one gradient. Solid red where background-clip text is unsupported. */
+.bm-em { font-style: normal; color: var(--bm-accent); }
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .bm-em {
+    background-image: var(--bm-gradient-emphasis, linear-gradient(98deg, #f4564e 0%, #ec362e 34%, #c62519 100%));
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent; -webkit-text-fill-color: transparent;
+    -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  }
+}
+
+/* Red tick: a 2px dash, 12 to 20px wide. */
+.bm-tick { display: inline-block; flex: none; width: 16px; height: 2px; background: var(--accent); vertical-align: middle; }
+.bm-url { display: inline-flex; align-items: center; gap: 12px; font-family: var(--font-mono); font-size: 13px; font-weight: 500; line-height: 1; color: var(--text-2); }
+
+/* Card: surface, line border, 10px corners, 20px padding. */
+.bm-card {
+  display: grid; gap: 10px; align-content: start; min-width: 0;
+  background: var(--surface); color: var(--text);
+  border: 1px solid var(--line); border-radius: var(--bm-r-lg);
+  padding: 20px;
+}
+
+/* Stat bar: equal cells, line-strong outline and dividers, a 20px tick sitting on the top edge of each cell. */
+.bm-statbar {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
+  max-width: 620px;
+  background: var(--ground); border: 1px solid var(--line-strong); border-radius: var(--bm-r-lg);
+}
+.bm-stat { position: relative; display: grid; gap: 4px; padding: 18px 20px; min-width: 0; }
+.bm-stat + .bm-stat { border-left: 1px solid var(--line-strong); }
+.bm-stat::before { content: ""; position: absolute; top: -1px; left: 20px; width: 20px; height: 2px; background: var(--accent); }
+.bm-stat-value {
+  font-family: var(--font-display); font-weight: 600; font-size: 28px; line-height: 1;
+  letter-spacing: -.03em; font-variant-numeric: tabular-nums; color: var(--text);
+}
+.bm-stat-label {
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 500; line-height: 1.3;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--text-3);
+}
+
+/* Dot grid: a regular grid of 1px-radius dots. Needs a positioned parent. */
+.bm-dotgrid {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image: radial-gradient(var(--grid-dot) var(--grid-dot-radius), transparent 1.5px);
+  background-size: var(--grid-pitch) var(--grid-pitch);
+}
+.bm-dotgrid-wide { background-size: var(--grid-pitch-small-image) var(--grid-pitch-small-image); }
+/* Presentation scale: 1920 × 1080 slides, projectors, big screens. */
+.bm-dotgrid-slide {
+  background-image: radial-gradient(var(--grid-dot-slide) var(--grid-dot-radius-slide), transparent calc(var(--grid-dot-radius-slide) + 0.5px));
+  background-size: var(--grid-pitch-slide) var(--grid-pitch-slide);
+}
+
+/* Red glow: a 2:1 Matrix Red ellipse centred 82% across, just above the top edge, fading out at 64% of its radius;
+   optional second glow centred below the bottom-left corner. Scales with the parent's width. Needs a positioned parent. */
+.bm-glow { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.bm-glow::before, .bm-glow-2::after { content: ""; position: absolute; transform: translate(-50%, -50%); }
+.bm-glow::before {
+  left: 82%; top: -4%; width: 234%; aspect-ratio: 2 / 1;
+  background: radial-gradient(closest-side, var(--bm-accent), transparent 64%);
+  opacity: var(--bm-glow-a);
+}
+.bm-glow-2::after {
+  left: 6%; top: 115%; width: 162%; aspect-ratio: 9 / 5;
+  background: radial-gradient(closest-side, var(--bm-accent), transparent 70%);
+  opacity: var(--bm-glow-b);
+}
