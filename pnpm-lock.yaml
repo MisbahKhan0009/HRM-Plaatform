@@ -206,6 +206,9 @@ importers:
       '@hrm/config':
         specifier: workspace:*
         version: link:../../packages/config
+      tsx:
+        specifier: 'catalog:'
+        version: 4.23.15
       typescript:
         specifier: 'catalog:'
         version: 6.0.3

@@ -4,12 +4,12 @@ packages:
   - e2e
 
 catalog:
+  '@axe-core/playwright': ^4.10.0
   '@better-auth/passkey': ^1.7.10
   '@biomejs/biome': ^2.0.0
   '@cloudflare/vitest-plugin': ^1.4.0
   '@date-fns/tz': ^1.5.0
   '@hono/zod-openapi': ^1.6.0
-  '@axe-core/playwright': ^4.10.0
   '@hookform/resolvers': ^5.9.1
   '@playwright/test': 1.55.0
   '@simplewebauthn/browser': ^13.0.0

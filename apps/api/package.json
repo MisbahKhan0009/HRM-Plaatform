@@ -8,7 +8,8 @@
     "build": "wrangler deploy --dry-run --env production --outdir dist",
     "typecheck": "wrangler types --check --strict-vars=false --env-file .dev.vars.example && tsc -p tsconfig.json",
     "types": "wrangler types --strict-vars=false --env-file .dev.vars.example",
-    "test": "vitest run"
+    "test": "vitest run",
+    "openapi": "tsx scripts/openapi.ts"
   },
   "dependencies": {
     "@hono/zod-openapi": "catalog:",
@@ -26,6 +27,7 @@
     "@better-auth/utils": "0.5.0",
     "@cloudflare/vitest-plugin": "catalog:",
     "@hrm/config": "workspace:*",
+    "tsx": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:",
     "wrangler": "catalog:"
