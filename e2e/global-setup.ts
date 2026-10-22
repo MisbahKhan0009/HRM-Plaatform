@@ -64,6 +64,23 @@ export default async function globalSetup() {
         workEmail: u.email,
       });
       employeeIds.set(u.key, employeeId);
+      // An approved salary for payroll journeys (E2E-08); fake amounts.
+      await db.insert(schema.salaryStructures).values({
+        id: uuidv7(),
+        companyId,
+        employeeId,
+        grossAmount: `${40_000 + employeeIds.size * 1_000}.00`,
+        effectiveFrom: '2024-01-01',
+        status: 'approved',
+        reason: 'E2E',
+        approvedAt: new Date(),
+      });
+    }
+    // A privileged role must hold a strong factor to pass the enrolment gate (USER-FLOWS 1.3); E2E-08 needs it.
+    if (u.key === 'payroll') {
+      await db
+        .insert(schema.twoFactors)
+        .values({ id: uuidv7(), userId, secret: 'e2e-placeholder', backupCodes: '[]', verified: true });
     }
   }
   await sql.end();

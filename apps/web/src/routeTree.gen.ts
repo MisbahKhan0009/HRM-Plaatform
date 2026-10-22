@@ -21,13 +21,20 @@ import { Route as authSignInVerifyRouteImport } from './routes/(auth)/sign-in/ve
 import { Route as AppApprovalsIndexRouteImport } from './routes/_app/approvals/index'
 import { Route as AppApprovalsApprovalIdRouteImport } from './routes/_app/approvals/$approvalId'
 import { Route as AppMeIndexRouteImport } from './routes/_app/me/index'
+import { Route as AppMeCompensationRouteImport } from './routes/_app/me/compensation'
 import { Route as AppMePreferencesRouteImport } from './routes/_app/me/preferences'
 import { Route as AppMeSecurityRouteImport } from './routes/_app/me/security'
+import { Route as AppPayrollIndexRouteImport } from './routes/_app/payroll/index'
+import { Route as AppPayrollAdjustmentsRouteImport } from './routes/_app/payroll/adjustments'
+import { Route as AppPayrollSalaryStructuresRouteImport } from './routes/_app/payroll/salary-structures'
+import { Route as AppPayslipsIndexRouteImport } from './routes/_app/payslips/index'
+import { Route as AppPayslipsPayslipIdRouteImport } from './routes/_app/payslips/$payslipId'
 import { Route as AppSettingsCompanyRouteImport } from './routes/_app/settings/company'
 import { Route as AppSettingsDepartmentsRouteImport } from './routes/_app/settings/departments'
 import { Route as AppSettingsHolidaysRouteImport } from './routes/_app/settings/holidays'
 import { Route as AppSettingsPositionsRouteImport } from './routes/_app/settings/positions'
 import { Route as AppSettingsWorkSchedulesRouteImport } from './routes/_app/settings/work-schedules'
+import { Route as AppPayrollRunsRunIdRouteImport } from './routes/_app/payroll/runs.$runId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -88,6 +95,11 @@ const AppMeIndexRoute = AppMeIndexRouteImport.update({
   path: '/me/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppMeCompensationRoute = AppMeCompensationRouteImport.update({
+  id: '/me/compensation',
+  path: '/me/compensation',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppMePreferencesRoute = AppMePreferencesRouteImport.update({
   id: '/me/preferences',
   path: '/me/preferences',
@@ -96,6 +108,32 @@ const AppMePreferencesRoute = AppMePreferencesRouteImport.update({
 const AppMeSecurityRoute = AppMeSecurityRouteImport.update({
   id: '/me/security',
   path: '/me/security',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPayrollIndexRoute = AppPayrollIndexRouteImport.update({
+  id: '/payroll/',
+  path: '/payroll/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPayrollAdjustmentsRoute = AppPayrollAdjustmentsRouteImport.update({
+  id: '/payroll/adjustments',
+  path: '/payroll/adjustments',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPayrollSalaryStructuresRoute =
+  AppPayrollSalaryStructuresRouteImport.update({
+    id: '/payroll/salary-structures',
+    path: '/payroll/salary-structures',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppPayslipsIndexRoute = AppPayslipsIndexRouteImport.update({
+  id: '/payslips/',
+  path: '/payslips/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPayslipsPayslipIdRoute = AppPayslipsPayslipIdRouteImport.update({
+  id: '/payslips/$payslipId',
+  path: '/payslips/$payslipId',
   getParentRoute: () => AppRoute,
 } as any)
 const AppSettingsCompanyRoute = AppSettingsCompanyRouteImport.update({
@@ -124,6 +162,11 @@ const AppSettingsWorkSchedulesRoute =
     path: '/work-schedules',
     getParentRoute: () => AppSettingsRouteRoute,
   } as any)
+const AppPayrollRunsRunIdRoute = AppPayrollRunsRunIdRouteImport.update({
+  id: '/payroll/runs/$runId',
+  path: '/payroll/runs/$runId',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -134,8 +177,12 @@ export interface FileRoutesByFullPath {
   '/sign-in/two-factor': typeof authSignInTwoFactorRoute
   '/sign-in/verify': typeof authSignInVerifyRoute
   '/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
+  '/me/compensation': typeof AppMeCompensationRoute
   '/me/preferences': typeof AppMePreferencesRoute
   '/me/security': typeof AppMeSecurityRoute
+  '/payroll/adjustments': typeof AppPayrollAdjustmentsRoute
+  '/payroll/salary-structures': typeof AppPayrollSalaryStructuresRoute
+  '/payslips/$payslipId': typeof AppPayslipsPayslipIdRoute
   '/settings/company': typeof AppSettingsCompanyRoute
   '/settings/departments': typeof AppSettingsDepartmentsRoute
   '/settings/holidays': typeof AppSettingsHolidaysRoute
@@ -144,6 +191,9 @@ export interface FileRoutesByFullPath {
   '/sign-in/': typeof authSignInIndexRoute
   '/approvals/': typeof AppApprovalsIndexRoute
   '/me/': typeof AppMeIndexRoute
+  '/payroll/': typeof AppPayrollIndexRoute
+  '/payslips/': typeof AppPayslipsIndexRoute
+  '/payroll/runs/$runId': typeof AppPayrollRunsRunIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -154,8 +204,12 @@ export interface FileRoutesByTo {
   '/sign-in/two-factor': typeof authSignInTwoFactorRoute
   '/sign-in/verify': typeof authSignInVerifyRoute
   '/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
+  '/me/compensation': typeof AppMeCompensationRoute
   '/me/preferences': typeof AppMePreferencesRoute
   '/me/security': typeof AppMeSecurityRoute
+  '/payroll/adjustments': typeof AppPayrollAdjustmentsRoute
+  '/payroll/salary-structures': typeof AppPayrollSalaryStructuresRoute
+  '/payslips/$payslipId': typeof AppPayslipsPayslipIdRoute
   '/settings/company': typeof AppSettingsCompanyRoute
   '/settings/departments': typeof AppSettingsDepartmentsRoute
   '/settings/holidays': typeof AppSettingsHolidaysRoute
@@ -164,6 +218,9 @@ export interface FileRoutesByTo {
   '/sign-in': typeof authSignInIndexRoute
   '/approvals': typeof AppApprovalsIndexRoute
   '/me': typeof AppMeIndexRoute
+  '/payroll': typeof AppPayrollIndexRoute
+  '/payslips': typeof AppPayslipsIndexRoute
+  '/payroll/runs/$runId': typeof AppPayrollRunsRunIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -176,8 +233,12 @@ export interface FileRoutesById {
   '/(auth)/sign-in/two-factor': typeof authSignInTwoFactorRoute
   '/(auth)/sign-in/verify': typeof authSignInVerifyRoute
   '/_app/approvals/$approvalId': typeof AppApprovalsApprovalIdRoute
+  '/_app/me/compensation': typeof AppMeCompensationRoute
   '/_app/me/preferences': typeof AppMePreferencesRoute
   '/_app/me/security': typeof AppMeSecurityRoute
+  '/_app/payroll/adjustments': typeof AppPayrollAdjustmentsRoute
+  '/_app/payroll/salary-structures': typeof AppPayrollSalaryStructuresRoute
+  '/_app/payslips/$payslipId': typeof AppPayslipsPayslipIdRoute
   '/_app/settings/company': typeof AppSettingsCompanyRoute
   '/_app/settings/departments': typeof AppSettingsDepartmentsRoute
   '/_app/settings/holidays': typeof AppSettingsHolidaysRoute
@@ -186,6 +247,9 @@ export interface FileRoutesById {
   '/(auth)/sign-in/': typeof authSignInIndexRoute
   '/_app/approvals/': typeof AppApprovalsIndexRoute
   '/_app/me/': typeof AppMeIndexRoute
+  '/_app/payroll/': typeof AppPayrollIndexRoute
+  '/_app/payslips/': typeof AppPayslipsIndexRoute
+  '/_app/payroll/runs/$runId': typeof AppPayrollRunsRunIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -198,8 +262,12 @@ export interface FileRouteTypes {
     | '/sign-in/two-factor'
     | '/sign-in/verify'
     | '/approvals/$approvalId'
+    | '/me/compensation'
     | '/me/preferences'
     | '/me/security'
+    | '/payroll/adjustments'
+    | '/payroll/salary-structures'
+    | '/payslips/$payslipId'
     | '/settings/company'
     | '/settings/departments'
     | '/settings/holidays'
@@ -208,6 +276,9 @@ export interface FileRouteTypes {
     | '/sign-in/'
     | '/approvals/'
     | '/me/'
+    | '/payroll/'
+    | '/payslips/'
+    | '/payroll/runs/$runId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -218,8 +289,12 @@ export interface FileRouteTypes {
     | '/sign-in/two-factor'
     | '/sign-in/verify'
     | '/approvals/$approvalId'
+    | '/me/compensation'
     | '/me/preferences'
     | '/me/security'
+    | '/payroll/adjustments'
+    | '/payroll/salary-structures'
+    | '/payslips/$payslipId'
     | '/settings/company'
     | '/settings/departments'
     | '/settings/holidays'
@@ -228,6 +303,9 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/approvals'
     | '/me'
+    | '/payroll'
+    | '/payslips'
+    | '/payroll/runs/$runId'
   id:
     | '__root__'
     | '/'
@@ -239,8 +317,12 @@ export interface FileRouteTypes {
     | '/(auth)/sign-in/two-factor'
     | '/(auth)/sign-in/verify'
     | '/_app/approvals/$approvalId'
+    | '/_app/me/compensation'
     | '/_app/me/preferences'
     | '/_app/me/security'
+    | '/_app/payroll/adjustments'
+    | '/_app/payroll/salary-structures'
+    | '/_app/payslips/$payslipId'
     | '/_app/settings/company'
     | '/_app/settings/departments'
     | '/_app/settings/holidays'
@@ -249,6 +331,9 @@ export interface FileRouteTypes {
     | '/(auth)/sign-in/'
     | '/_app/approvals/'
     | '/_app/me/'
+    | '/_app/payroll/'
+    | '/_app/payslips/'
+    | '/_app/payroll/runs/$runId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -347,6 +432,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMeIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/me/compensation': {
+      id: '/_app/me/compensation'
+      path: '/me/compensation'
+      fullPath: '/me/compensation'
+      preLoaderRoute: typeof AppMeCompensationRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/me/preferences': {
       id: '/_app/me/preferences'
       path: '/me/preferences'
@@ -359,6 +451,41 @@ declare module '@tanstack/react-router' {
       path: '/me/security'
       fullPath: '/me/security'
       preLoaderRoute: typeof AppMeSecurityRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/payroll/': {
+      id: '/_app/payroll/'
+      path: '/payroll'
+      fullPath: '/payroll/'
+      preLoaderRoute: typeof AppPayrollIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/payroll/adjustments': {
+      id: '/_app/payroll/adjustments'
+      path: '/payroll/adjustments'
+      fullPath: '/payroll/adjustments'
+      preLoaderRoute: typeof AppPayrollAdjustmentsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/payroll/salary-structures': {
+      id: '/_app/payroll/salary-structures'
+      path: '/payroll/salary-structures'
+      fullPath: '/payroll/salary-structures'
+      preLoaderRoute: typeof AppPayrollSalaryStructuresRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/payslips/': {
+      id: '/_app/payslips/'
+      path: '/payslips'
+      fullPath: '/payslips/'
+      preLoaderRoute: typeof AppPayslipsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/payslips/$payslipId': {
+      id: '/_app/payslips/$payslipId'
+      path: '/payslips/$payslipId'
+      fullPath: '/payslips/$payslipId'
+      preLoaderRoute: typeof AppPayslipsPayslipIdRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/settings/company': {
@@ -396,6 +523,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsWorkSchedulesRouteImport
       parentRoute: typeof AppSettingsRouteRoute
     }
+    '/_app/payroll/runs/$runId': {
+      id: '/_app/payroll/runs/$runId'
+      path: '/payroll/runs/$runId'
+      fullPath: '/payroll/runs/$runId'
+      preLoaderRoute: typeof AppPayrollRunsRunIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -422,20 +556,34 @@ interface AppRouteChildren {
   AppSettingsRouteRoute: typeof AppSettingsRouteRouteWithChildren
   AppDashboardRoute: typeof AppDashboardRoute
   AppApprovalsApprovalIdRoute: typeof AppApprovalsApprovalIdRoute
+  AppMeCompensationRoute: typeof AppMeCompensationRoute
   AppMePreferencesRoute: typeof AppMePreferencesRoute
   AppMeSecurityRoute: typeof AppMeSecurityRoute
+  AppPayrollAdjustmentsRoute: typeof AppPayrollAdjustmentsRoute
+  AppPayrollSalaryStructuresRoute: typeof AppPayrollSalaryStructuresRoute
+  AppPayslipsPayslipIdRoute: typeof AppPayslipsPayslipIdRoute
   AppApprovalsIndexRoute: typeof AppApprovalsIndexRoute
   AppMeIndexRoute: typeof AppMeIndexRoute
+  AppPayrollIndexRoute: typeof AppPayrollIndexRoute
+  AppPayslipsIndexRoute: typeof AppPayslipsIndexRoute
+  AppPayrollRunsRunIdRoute: typeof AppPayrollRunsRunIdRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppSettingsRouteRoute: AppSettingsRouteRouteWithChildren,
   AppDashboardRoute: AppDashboardRoute,
   AppApprovalsApprovalIdRoute: AppApprovalsApprovalIdRoute,
+  AppMeCompensationRoute: AppMeCompensationRoute,
   AppMePreferencesRoute: AppMePreferencesRoute,
   AppMeSecurityRoute: AppMeSecurityRoute,
+  AppPayrollAdjustmentsRoute: AppPayrollAdjustmentsRoute,
+  AppPayrollSalaryStructuresRoute: AppPayrollSalaryStructuresRoute,
+  AppPayslipsPayslipIdRoute: AppPayslipsPayslipIdRoute,
   AppApprovalsIndexRoute: AppApprovalsIndexRoute,
   AppMeIndexRoute: AppMeIndexRoute,
+  AppPayrollIndexRoute: AppPayrollIndexRoute,
+  AppPayslipsIndexRoute: AppPayslipsIndexRoute,
+  AppPayrollRunsRunIdRoute: AppPayrollRunsRunIdRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

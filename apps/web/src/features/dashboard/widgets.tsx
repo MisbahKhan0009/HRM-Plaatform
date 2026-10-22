@@ -5,6 +5,7 @@ import { Link } from '@tanstack/react-router';
 import type { ComponentType } from 'react';
 import { api } from '../../lib/api/client';
 import { formatRelative } from '../../lib/format';
+import { LatestPayslipWidget, PayrollStatusWidget } from '../payroll/widgets';
 
 export interface DashboardWidget {
   key: string;
@@ -73,4 +74,6 @@ function ApprovalsWidget({ primary }: { me: CurrentUser; primary: boolean }) {
  */
 export const DASHBOARD_WIDGETS: DashboardWidget[] = [
   { key: 'approvals', any: ['approval.inbox'], span: 6, Component: ApprovalsWidget },
+  { key: 'latestPayslip', any: ['payslip.read.own'], span: 6, Component: LatestPayslipWidget },
+  { key: 'payrollStatus', any: ['payroll.read.all'], span: 6, Component: PayrollStatusWidget },
 ];
