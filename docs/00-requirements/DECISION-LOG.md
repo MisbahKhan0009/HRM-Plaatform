@@ -44,3 +44,14 @@ in ADRs, docs and code comments (e.g. `see D-001`).
 
 - Company name, logo, brand colours (needed for the brand guide).
 - Document retention periods (before go-live).
+
+## Stage 2 — stack decisions
+
+| ID | Decision | Record |
+|---|---|---|
+| D-026 | Backend: TypeScript + Hono + Zod/OpenAPI on Workers | ADR-0001 |
+| D-027 | Database: PostgreSQL on Neon via Hyperdrive, Drizzle ORM | ADR-0003 |
+| D-028 | Frontend: React SPA (Vite) + TanStack + shadcn/ui | ADR-0005 |
+| D-029 | Auth: Better Auth | ADR-0004 |
+| D-030 | Email: Cloudflare Email Service | ADR-0007 |
+| D-031 | Monitoring: Sentry + Workers Logs | ADR-0008 |
