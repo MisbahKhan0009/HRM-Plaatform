@@ -1,0 +1,35 @@
+{
+  "name": "@hrm/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@hrm/contracts": "workspace:*",
+    "@hrm/i18n": "workspace:*",
+    "@hrm/ui": "workspace:*",
+    "@tanstack/react-query": "catalog:",
+    "@tanstack/react-router": "catalog:",
+    "i18next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-i18next": "catalog:"
+  },
+  "devDependencies": {
+    "@hrm/config": "workspace:*",
+    "@tailwindcss/vite": "catalog:",
+    "@tanstack/router-plugin": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

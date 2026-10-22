@@ -1,0 +1,22 @@
+{
+  "name": "@hrm/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./theme.css": "./src/theme.css",
+    "./brand.css": "./src/brand.css"
+  },
+  "scripts": {
+    "tokens": "node scripts/build-tokens.mjs",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@hrm/config": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

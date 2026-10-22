@@ -53,9 +53,9 @@ pnpm install
 
 ```sh
 cp apps/api/.dev.vars.example apps/api/.dev.vars
-docker compose up -d postgres          # local Postgres 16 on port 5432
+pnpm db:up                             # local Postgres 16 on port 5432 (docker compose service `db`)
 pnpm --filter @hrm/db db:migrate       # apply migrations
-pnpm --filter @hrm/db db:seed          # synthetic company, users and employees
+pnpm --filter @hrm/db db:seed          # synthetic company, users and employees (arrives in Stage 8)
 ```
 
 `.dev.vars` is gitignored. Locally, the mailer writes emails to the console instead of calling Gmail, and file storage uses Wrangler's local R2 simulation. Never put production credentials in `.dev.vars` (`docs/08-operations/SECRETS.md`).
@@ -66,7 +66,7 @@ pnpm --filter @hrm/db db:seed          # synthetic company, users and employees
 pnpm dev     # Vite dev server for apps/web + wrangler dev for apps/api
 ```
 
-Open the URL printed by Vite. Sign in as a seeded user; the one-time code appears in the API console output. Seeded users cover every role in `docs/03-architecture/SECURITY-MODEL.md` §2.
+Open the URL printed by Vite (`/sign-in`). Alternatively build the SPA (`pnpm --filter @hrm/web build`) and run `pnpm --filter @hrm/api dev` alone: the Worker then serves both, exactly like production. From Stage 8: sign in as a seeded user; the one-time code appears in the API console output. Seeded users cover every role in `docs/03-architecture/SECURITY-MODEL.md` §2.
 
 Checks before every PR:
 
@@ -74,7 +74,8 @@ Checks before every PR:
 pnpm lint
 pnpm typecheck
 pnpm test
-pnpm e2e        # needs Playwright browsers; CI runs it anyway
+pnpm deps:check # dependency rules (MONOREPO.md §2)
+pnpm e2e        # from Stage 8; needs Playwright browsers
 ```
 
 ## 7. Your first change

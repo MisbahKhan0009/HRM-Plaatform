@@ -62,7 +62,7 @@ apps/api/
 │   ├── modules/             # One folder per domain module (see below)
 │   ├── jobs/                # outbox processor, leave accrual, year-end, expiry reminders
 │   └── lib/                 # db client, R2 helpers, pagination, idempotency, problem+json errors, logger
-└── test/                    # API integration tests (vitest-pool-workers + real Postgres)
+└── test/                    # API integration tests (vitest-plugin + real Postgres)
 ```
 
 Modules: `accounts`, `organization`, `employees`, `attendance`, `leave`, `payroll`, `reimbursements`, `documents`, `approvals`, `notifications`, `reports`, `audit`, `settings`.

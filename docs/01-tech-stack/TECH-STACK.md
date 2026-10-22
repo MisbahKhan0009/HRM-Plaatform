@@ -24,7 +24,7 @@ Hard constraints: D-024 (everything on Cloudflare Workers), **D-032 (free tiers 
 | Observability | **Sentry Developer (free)** + Workers Logs | 5k errors/month, 1 seat | 0008 |
 | Backups | Nightly `pg_dump` (GitHub Actions) → encrypted (`age`) → R2 | Actions free minutes | 0003 |
 | Monorepo | pnpm workspaces + Turborepo | OSS | Stage 4 |
-| Testing | Vitest (+ `@cloudflare/vitest-pool-workers`), Testing Library, Playwright, axe-core | OSS | 0008 |
+| Testing | Vitest (+ `@cloudflare/vitest-plugin`), Testing Library, Playwright, axe-core | OSS | 0008 |
 | CI/CD | GitHub Actions → `wrangler deploy` | unlimited (public repo, D-043) | 0008 |
 
 ## Environments
@@ -38,3 +38,11 @@ Hard constraints: D-024 (everything on Cloudflare Workers), **D-032 (free tiers 
 
 ## Monthly cost: **$0**
 Free-tier limits and how we stay within them are tracked in ADR-0009.
+
+## Versions and supply-chain rules (Stage 7)
+
+- Versions are declared once in the `catalog` of `pnpm-workspace.yaml`; packages use `"catalog:"`. Exact versions are pinned in `pnpm-lock.yaml`.
+- `minimumReleaseAge: 10080`: pnpm never installs a release younger than 7 days, so a compromised release has time to be caught before it reaches us.
+- Only `esbuild` and `workerd` may run install scripts (`onlyBuiltDependencies`).
+- TypeScript is held on 6.0.x (the last JavaScript-based compiler). TypeScript 7 (native) is evaluated separately before adoption.
+- Vitest is held on 4.1.x because `@cloudflare/vitest-plugin` (the renamed `vitest-pool-workers`) supports it.

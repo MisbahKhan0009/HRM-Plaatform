@@ -1,0 +1,22 @@
+// Cloudflare Worker: serves the React SPA (static assets) and the /api/v1 API from one origin (ADR-0002).
+// Runs on Workers Free (ADR-0009): 10 ms CPU per request, no paid bindings.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "hrm",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "assets": {
+    "directory": "../web/dist",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "observability": { "enabled": true },
+  "vars": { "APP_ENV": "local", "APP_VERSION": "0.0.0" }
+  // Added in later stages (docs/08-operations/ENVIRONMENTS.md):
+  //   hyperdrive  -> HYPERDRIVE (Neon), with localConnectionString for `wrangler dev`
+  //   r2_buckets  -> FILES (private)
+  //   triggers    -> crons: outbox retry + daily dispatcher (ARCHITECTURE.md §4)
+  //   env.staging / env.production with their own names and bindings
+}

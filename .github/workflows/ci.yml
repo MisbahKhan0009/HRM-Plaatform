@@ -1,0 +1,59 @@
+# Runs on every pull request and on main (docs/08-operations/CI-CD.md).
+# Third-party actions are pinned to full commit SHAs (gha-security-review).
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TURBO_TELEMETRY_DISABLED: "1"
+  CI: "true"
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: hrm
+          POSTGRES_PASSWORD: hrm
+          POSTGRES_DB: hrm
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U hrm" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Lint and format
+        run: pnpm lint
+      - name: Dependency rules
+        run: pnpm deps:check
+      - name: Typecheck, test, build
+        run: pnpm turbo run typecheck test build
+      - name: Worker bundle budget
+        run: node scripts/check-worker-size.mjs
+      - name: Database migrations apply cleanly
+        env:
+          DATABASE_URL: postgres://hrm:hrm@localhost:5432/hrm
+        run: |
+          pnpm --filter @hrm/db db:migrate
+          pnpm --filter @hrm/db db:check

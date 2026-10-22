@@ -7,7 +7,7 @@ Status: **Accepted**, 2026-10-22. Describes the four environments, what each run
 | | local | CI | staging | production |
 |---|---|---|---|---|
 | Purpose | Development | Automated checks on every PR | Integration, UAT, release candidate | Real use |
-| Worker | `wrangler dev` (workerd on the laptop) | `vitest-pool-workers` (workerd in the runner) | `hrm-staging` | `hrm-prod` |
+| Worker | `wrangler dev` (workerd on the laptop) | `vitest-plugin` (workerd in the runner) | `hrm-staging` | `hrm-prod` |
 | URL | `http://localhost:8787` | — | `https://hrm-staging.<account-subdomain>.workers.dev` | `https://hrm-prod.<account-subdomain>.workers.dev` |
 | Database | Postgres in Docker (`docker compose up db`) | Postgres service container | Neon branch `staging` | Neon branch `main` |
 | DB access from Worker | `localConnectionString` for Hyperdrive | direct | Hyperdrive config `hrm-staging-db` | Hyperdrive config `hrm-prod-db` |

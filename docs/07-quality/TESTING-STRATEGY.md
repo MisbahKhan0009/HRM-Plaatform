@@ -9,7 +9,7 @@ Every tool listed is free and open source (D-032). Sources: SRS §11, ADR-0008, 
 | Tool | Version policy | Used for |
 |---|---|---|
 | Vitest | pinned in `packages/config` | Unit and integration tests in every package |
-| `@cloudflare/vitest-pool-workers` | pinned | API tests that run inside the Workers runtime (`workerd`), with real bindings (R2 via Miniflare, Hyperdrive pointed at a test Postgres) |
+| `@cloudflare/vitest-plugin` | pinned | API tests that run inside the Workers runtime (`workerd`), with real bindings (R2 via Miniflare, Hyperdrive pointed at a test Postgres) |
 | Testing Library (`@testing-library/react`, `user-event`) | pinned | React component and feature tests in `apps/web` and `packages/ui` |
 | fast-check | pinned | Property-based tests for money, dates, leave and payroll rules (`packages/domain`) |
 | Playwright | pinned; uses the Chromium, Firefox and WebKit builds Playwright ships | End-to-end tests in `e2e/` |
@@ -28,7 +28,7 @@ Neon branches are **not** used for CI. Each CI run gets a throwaway Postgres ser
 | `apps/api` `*.repository.ts` | Integration | Postgres container | Queries that filter by scope get a test with records outside the scope |
 | `apps/api` `*.policy.ts` | Unit, table-driven | nothing | One row per permission × scope from `SECURITY-MODEL.md` §4 |
 | `apps/api` `*.service.ts` | Integration: transaction, audit row, outbox row, state transitions, idempotency | Postgres container | Every allowed and every rejected transition in `DOMAIN-MODEL.md` §5 |
-| `apps/api` `*.routes.ts` | API tests through `SELF.fetch` in `vitest-pool-workers` | Worker runtime + Postgres | Status codes, problem+json body, auth required, DTO shape per role |
+| `apps/api` `*.routes.ts` | API tests through `SELF.fetch` in `vitest-plugin` | Worker runtime + Postgres | Status codes, problem+json body, auth required, DTO shape per role |
 | `apps/api` OpenAPI | Contract test: generated spec matches the routes and validates sample responses | Worker runtime | Runs on every PR (SRS §8.7) |
 | `apps/api/src/jobs` | Integration: run twice and assert the same end state (idempotent) | Postgres container | Every job |
 | `packages/ui` | Component tests: states (default, hover, focus, disabled, error), keyboard behaviour, both themes | jsdom | Every exported component |

@@ -1,0 +1,32 @@
+{
+  "app": { "name": "Big-Matrix HRM" },
+  "theme": { "ink": "Ink", "paper": "Paper", "label": "Theme" },
+  "auth": {
+    "signIn": {
+      "title": "Sign in",
+      "email": "Work email",
+      "sendCode": "Email me a sign-in code",
+      "passkey": "Sign in with a passkey"
+    }
+  },
+  "status": {
+    "draft": "Draft",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "withdrawn": "Withdrawn",
+    "cancellation_pending": "Cancellation pending",
+    "cancelled": "Cancelled",
+    "submitted": "Submitted",
+    "calculated": "Calculated",
+    "returned": "Returned",
+    "locked": "Locked",
+    "paid": "Paid",
+    "reconciled": "Reconciled"
+  },
+  "errors": {
+    "NOT_FOUND": "We couldn't find that. It may have moved, or you may not have access.",
+    "UNAUTHENTICATED": "Please sign in again.",
+    "INTERNAL_ERROR": "Something went wrong on our side. Try again in a moment."
+  }
+}

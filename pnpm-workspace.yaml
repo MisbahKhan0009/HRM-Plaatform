@@ -1,0 +1,46 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Supply-chain guard: never install a version published less than 7 days ago.
+minimumReleaseAge: 10080
+
+# Only these packages may run install scripts.
+onlyBuiltDependencies:
+  - esbuild
+  - workerd
+
+# One version of each shared dependency across the monorepo.
+catalog:
+  "@biomejs/biome": ^2.0.0
+  "@cloudflare/vitest-plugin": ^1.4.0
+  "@date-fns/tz": ^1.5.0
+  "@hono/zod-openapi": ^1.6.0
+  "@tailwindcss/vite": ^4.3.0
+  "@tanstack/react-query": ^5.100.0
+  "@tanstack/react-router": ^1.170.0
+  "@tanstack/router-plugin": ^1.168.0
+  "@types/node": ^22.0.0
+  "@types/react": ^19.0.0
+  "@types/react-dom": ^19.0.0
+  "@vitejs/plugin-react": ^6.0.0
+  better-auth: ^1.7.0
+  date-fns: ^4.4.0
+  decimal.js: ^10.6.0
+  dependency-cruiser: ^18.0.0
+  drizzle-kit: ^0.31.0
+  drizzle-orm: ^0.45.0
+  fast-check: ^4.10.0
+  hono: ^4.13.0
+  i18next: ^26.0.0
+  postgres: ^3.4.0
+  react: ^19.2.0
+  react-dom: ^19.2.0
+  react-i18next: ^17.0.0
+  tailwindcss: ^4.3.0
+  turbo: ^2.11.0
+  typescript: ~6.0.2
+  vite: ^8.0.0
+  vitest: ~4.1.0
+  wrangler: ^4.140.0
+  zod: ^4.6.0

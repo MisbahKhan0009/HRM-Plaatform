@@ -1,0 +1,26 @@
+{
+  "name": "@hrm/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "typecheck": "wrangler types --check && tsc -p tsconfig.json",
+    "types": "wrangler types",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hono/zod-openapi": "catalog:",
+    "@hrm/contracts": "workspace:*",
+    "hono": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "catalog:",
+    "@hrm/config": "workspace:*",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "wrangler": "catalog:"
+  }
+}
