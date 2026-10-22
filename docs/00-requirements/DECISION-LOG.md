@@ -42,7 +42,6 @@ in ADRs, docs and code comments (e.g. `see D-001`).
 
 ## Still open
 
-- Company name, logo, brand colours (needed for the brand guide).
 - Document retention periods (before go-live).
 
 ## Stage 2 — stack decisions
@@ -66,3 +65,5 @@ in ADRs, docs and code comments (e.g. `see D-001`).
 | D-035 | **No company domain.** App served at a free `*.workers.dev` address; email sent through a dedicated company **Gmail account via the Gmail API** (free, ~500/day) | ADR-0007 |
 | D-036 | No Cloudflare Queues; async work uses a **Postgres outbox table + Cron Trigger** (every minute) | ADR-0002 |
 | D-037 | PDF payslips and XLSX/CSV exports are **generated in the browser** from immutable server data, keeping Worker CPU under the free limit | ADR-0006 |
+| D-038 | Company & brand: **Big-Matrix Solutions** design system (owner's design-system artifact), snapshot in `docs/02-brand/source/` | docs/02-brand |
+| D-039 | AI skills: only free third-party skills from GitHub / skills.sh, reviewed before commit; no self-made skills | docs/SKILLS.md |

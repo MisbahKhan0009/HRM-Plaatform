@@ -25,4 +25,5 @@ This is the master sequence for building the HRM platform. Each stage has an
 - [x] SRS v1.0 received — `docs/00-requirements/SRS-v1.0.md`
 - [x] Stage 1 — Requirements analysis: decisions D-001…D-025 recorded in `docs/00-requirements/DECISION-LOG.md`
 - [x] Stage 2 — Tech stack selection: `docs/01-tech-stack/TECH-STACK.md` + ADR-0001…0009 (revised for $0 cost, D-032)
-- [ ] Stage 3 — AI tooling & skills setup (next)
+- [x] Stage 3 — AI tooling & skills: 39 free skills in `.claude/skills/`, inventory `docs/SKILLS.md`; brand source snapshot `docs/02-brand/source/`
+- [ ] Stage 4 — Monorepo structure plan (next)
