@@ -193,7 +193,9 @@ export function UserRowActions({
   };
 
   const s = user.status;
-  const canChange = !isSelf && s !== 'deactivated';
+  // Only a system admin (role.manage) may change a system admin's account (C13); the API enforces the same.
+  const protectedTarget = user.roles.includes('system_admin') && !canAssignRoles;
+  const canChange = !isSelf && s !== 'deactivated' && !protectedTarget;
   return (
     <>
       <MenuRoot>

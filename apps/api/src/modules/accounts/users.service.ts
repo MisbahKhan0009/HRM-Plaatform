@@ -257,6 +257,10 @@ export async function changeUserStatus(
   await deps.db.transaction(async (tx) => {
     const user = await repo.lockUser(tx, auth.companyId, id);
     if (!user) throw notFound();
+    policy.actOnAccount(
+      auth,
+      (await repo.explicitRoles(tx, id)).map((r) => r.code),
+    );
     if (!t.from.includes(user.status)) throw invalidTransition(user.status, t.verb);
     const updated = await repo.updateUser(tx, id, input.version, {
       status: t.to,
@@ -292,6 +296,10 @@ export async function resetAuth(deps: Deps, auth: AuthContext, id: string, input
   const outboxIds = await deps.db.transaction(async (tx) => {
     const user = await repo.lockUser(tx, auth.companyId, id);
     if (!user) throw notFound();
+    policy.actOnAccount(
+      auth,
+      (await repo.explicitRoles(tx, id)).map((r) => r.code),
+    );
     if (user.status !== 'active' && user.status !== 'suspended')
       throw ruleViolation('Only active or suspended accounts have sign-in methods to reset.');
     const updated = await repo.updateUser(tx, id, input.version, {

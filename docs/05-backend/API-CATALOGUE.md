@@ -42,10 +42,10 @@ Account recovery for users who lost their passkey and authenticator is an HR/adm
 | POST | `/users/invitations` | `user.manage`, Strong; also `role.manage` when `roleCodes` is not empty | Create user in `invited`, link optional `employeeId`, explicit `roleCodes`, email invite (7-day link); `409 EMAIL_TAKEN` (case-insensitive), `409 EMPLOYEE_ALREADY_LINKED` | `InviteUserInput` → `UserDetail` |
 | POST | `/users/{id}/invitations/resend` | `user.manage` | New token, old one revoked; `invited` users only | `UserDetail` |
 | GET | `/users/{id}` | `user.manage` | | `UserDetail` |
-| POST | `/users/{id}/suspend` | `user.manage`, Fresh | `active` → `suspended`, revokes sessions; body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
-| POST | `/users/{id}/reactivate` | `user.manage`, Fresh | `suspended` → `active`; body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
-| POST | `/users/{id}/deactivate` | `user.manage`, Fresh | `invited`, `active` or `suspended` → `deactivated`, revokes sessions and open invitations; body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
-| POST | `/users/{id}/reset-auth` | `user.manage`, Fresh | Removes passkeys + TOTP, revokes sessions, emails a sign-in link; audited; `active` or `suspended` users only (`422` otherwise); body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
+| POST | `/users/{id}/suspend` | `user.manage`, Fresh; a `system_admin` target also needs `role.manage` (D-048) | `active` → `suspended`, revokes sessions; body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
+| POST | `/users/{id}/reactivate` | `user.manage`, Fresh; a `system_admin` target also needs `role.manage` (D-048) | `suspended` → `active`; body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
+| POST | `/users/{id}/deactivate` | `user.manage`, Fresh; a `system_admin` target also needs `role.manage` (D-048) | `invited`, `active` or `suspended` → `deactivated`, revokes sessions and open invitations; body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
+| POST | `/users/{id}/reset-auth` | `user.manage`, Fresh; a `system_admin` target also needs `role.manage` (D-048) | Removes passkeys + TOTP, revokes sessions, emails a sign-in link; audited; `active` or `suspended` users only (`422` otherwise); body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
 | POST | `/users/{id}/roles` | `role.manage`, Fresh | Replace explicit roles `{ roleCodes: [], version }` (user version); derived roles rejected (`400`) | `ReplaceUserRolesInput` → `UserDetail` |
 | GET | `/roles` | `role.manage` or `settings.read` | Roles with permissions | `Role` |
 | PATCH | `/roles/{id}` | `role.manage`, Fresh | Change name/description/permissions (full set) with `version`; derived roles are editable but never assignable; removing `role.manage` from a role the caller holds is refused (`422`) | `UpdateRoleInput` → `Role` |
