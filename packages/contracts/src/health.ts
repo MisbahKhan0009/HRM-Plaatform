@@ -61,3 +61,35 @@ export const JobRunResultSchema = z.object({
   error: z.string().nullable(),
 });
 export type JobRunResult = z.infer<typeof JobRunResultSchema>;
+
+const jobRunStatusSchema = z.enum(['running', 'succeeded', 'failed']);
+
+/** `GET /admin/jobs`: every daily step in dispatcher order with its latest run for the caller's company. */
+export const JobListSchema = z.object({
+  data: z.array(
+    z.object({
+      job: z.string(),
+      /** Null when the step never ran for this company. */
+      lastRun: z
+        .object({
+          runKey: z.string(),
+          status: jobRunStatusSchema,
+          startedAt: z.string(),
+          finishedAt: z.string().nullable(),
+          items: z.number().int(),
+        })
+        .nullable(),
+    }),
+  ),
+});
+export type JobList = z.infer<typeof JobListSchema>;
+
+/**
+ * `POST /admin/outbox/retry`: `reset` failed messages became due now; up to `processing` of them are sent after the
+ * response. Dead messages are never retried.
+ */
+export const OutboxRetryResultSchema = z.object({
+  reset: z.number().int(),
+  processing: z.number().int(),
+});
+export type OutboxRetryResult = z.infer<typeof OutboxRetryResultSchema>;

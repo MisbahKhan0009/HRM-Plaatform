@@ -2,10 +2,10 @@ import { createRoute } from '@hono/zod-openapi';
 import {
   ClaimActionInputSchema,
   ClaimListQuerySchema,
+  ClaimListSchema,
   CreateClaimInputSchema,
   DecisionInputSchema,
   IdParamSchema,
-  paginated,
   ReimbursementClaimSchema,
   RejectInputSchema,
   UpdateClaimInputSchema,
@@ -29,7 +29,7 @@ reimbursementRoutes.openapi(
     'x-permission': 'reimbursement.read.all | reimbursement.review.team | reimbursement.request.own',
     request: { query: ClaimListQuerySchema },
     responses: {
-      200: jsonContent(paginated(ReimbursementClaimSchema), 'Claims in your scope'),
+      200: jsonContent(ClaimListSchema, 'Claims in your scope'),
       ...problemResponses(400, 401, 403),
     },
   }),

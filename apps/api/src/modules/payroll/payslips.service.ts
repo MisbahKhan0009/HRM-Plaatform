@@ -73,7 +73,10 @@ export async function getPayslip(deps: Deps, auth: AuthContext, id: string): Pro
   });
 
   const snap = view.item.snapshot as PayrollSnapshot;
-  const company = await repo.findCompany(deps.db, auth.companyId);
+  const [company, payment] = await Promise.all([
+    repo.findCompany(deps.db, auth.companyId),
+    repo.paidPaymentOf(deps.db, view.item.id),
+  ]);
   return {
     id: view.payslip.id,
     company: {
@@ -108,6 +111,9 @@ export async function getPayslip(deps: Deps, auth: AuthContext, id: string): Pro
     },
     ruleVersion: snap.ruleVersion,
     paymentStatus: view.item.paymentStatus as PayslipData['paymentStatus'],
+    payment: payment
+      ? { method: payment.method, paidOn: payment.paidOn, chequeNumber: payment.chequeNumber }
+      : null,
     publishedAt: view.payslip.publishedAt.toISOString(),
     firstViewedAt: isoOrNull(firstViewedAt),
   };

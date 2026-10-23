@@ -84,10 +84,11 @@ export const leaveQueries = {
       queryKey: ['leave', 'request', id],
       queryFn: () => api.get<LeaveRequestDto>(`/leave/requests/${id}`),
     }),
-  calendar: (from: string, to: string) =>
+  /** `departmentId` is honoured for `leave.read.all` readers only (API-CATALOGUE §6). */
+  calendar: (from: string, to: string, departmentId?: string) =>
     queryOptions({
-      queryKey: ['leave', 'calendar', { from, to }],
-      queryFn: () => api.get<LeaveCalendar>('/leave/calendar', { query: { from, to } }),
+      queryKey: ['leave', 'calendar', { from, to, departmentId }],
+      queryFn: () => api.get<LeaveCalendar>('/leave/calendar', { query: { from, to, departmentId } }),
     }),
   /** Advisory preview (FORMS-AND-VALIDATION §2): never retried, never blocks submit. */
   preview: (input: CreateLeaveRequestInput) =>

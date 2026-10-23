@@ -16,6 +16,7 @@ const {
   employmentEvents,
   approvalRequests,
   companies,
+  users,
 } = schema;
 
 /**
@@ -31,6 +32,10 @@ function inScope(column: AnyPgColumn, scope: RequestScope): SQL | undefined {
 const bump = <T extends { version: unknown }>(t: T) => sql`${t.version} + 1`;
 const employeeName = sql<string>`coalesce(${employees.preferredName}, ${employees.firstName}) || ' ' || ${employees.lastName}`;
 const employeeRef = { employeeCode: employees.employeeCode, employeeName };
+
+/** A user's display name by id, as a scalar subquery (works under `FOR UPDATE OF` the outer table). */
+const userName = (column: AnyPgColumn) =>
+  sql<string | null>`(SELECT ${users.name} FROM ${users} WHERE ${users.id} = ${column})`;
 
 async function count(
   db: Queryable,
@@ -203,11 +208,21 @@ export async function closePeriod(tx: Tx, id: string, by: string, now: Date) {
 // Runs ---------------------------------------------------------------------------------------------------------------
 
 export type RunRow = typeof payrollRuns.$inferSelect;
-export type RunView = { run: RunRow; period: PeriodRow };
+export type RunView = {
+  run: RunRow;
+  period: PeriodRow;
+  preparedByName: string | null;
+  approvedByName: string | null;
+};
 
 function selectRuns(db: Queryable) {
   return db
-    .select({ run: payrollRuns, period: payrollPeriods })
+    .select({
+      run: payrollRuns,
+      period: payrollPeriods,
+      preparedByName: userName(payrollRuns.preparedBy),
+      approvedByName: userName(payrollRuns.approvedBy),
+    })
     .from(payrollRuns)
     .innerJoin(payrollPeriods, eq(payrollPeriods.id, payrollRuns.payrollPeriodId));
 }
@@ -581,6 +596,48 @@ function selectPayments(db: Queryable) {
     .innerJoin(employees, eq(employees.id, payrollItems.employeeId));
 }
 
+/** Payments of one run, by employee code and newest first (API-CATALOGUE §8). */
+export async function listRunPayments(
+  db: Queryable,
+  runId: string,
+  filters: { status?: string[] },
+  limit: number,
+  offset: number,
+) {
+  const where = and(
+    eq(payrollItems.payrollRunId, runId),
+    filters.status ? inArray(payrollPayments.status, filters.status as PaymentRow['status'][]) : undefined,
+  );
+  const [rows, [total]] = await Promise.all([
+    selectPayments(db)
+      .where(where)
+      .orderBy(asc(employees.employeeCode), desc(payrollPayments.createdAt), desc(payrollPayments.id))
+      .limit(limit)
+      .offset(offset),
+    db
+      .select({ n: sql<number>`count(*)::int` })
+      .from(payrollPayments)
+      .innerJoin(payrollItems, eq(payrollItems.id, payrollPayments.payrollItemId))
+      .where(where),
+  ]);
+  return { rows, total: total?.n ?? 0 };
+}
+
+/** The item's `paid` payment, if any (D-042: at most one). */
+export async function paidPaymentOf(db: Queryable, itemId: string) {
+  const [row] = await db
+    .select({
+      method: payrollPayments.method,
+      paidOn: payrollPayments.paidOn,
+      chequeNumber: payrollPayments.chequeNumber,
+    })
+    .from(payrollPayments)
+    .where(and(eq(payrollPayments.payrollItemId, itemId), eq(payrollPayments.status, 'paid')))
+    .orderBy(desc(payrollPayments.createdAt))
+    .limit(1);
+  return row ?? null;
+}
+
 export async function insertPayment(tx: Tx, values: typeof payrollPayments.$inferInsert) {
   await tx.insert(payrollPayments).values(values);
 }
@@ -783,11 +840,20 @@ export async function findCompany(db: Queryable, companyId: string) {
 // Adjustments --------------------------------------------------------------------------------------------------------
 
 export type AdjustmentRow = typeof payrollAdjustments.$inferSelect;
-export type AdjustmentView = { adjustment: AdjustmentRow; employeeCode: string; employeeName: string };
+export type AdjustmentView = {
+  adjustment: AdjustmentRow;
+  employeeCode: string;
+  employeeName: string;
+  createdByName: string | null;
+};
 
 function selectAdjustments(db: Queryable) {
   return db
-    .select({ adjustment: payrollAdjustments, ...employeeRef })
+    .select({
+      adjustment: payrollAdjustments,
+      ...employeeRef,
+      createdByName: userName(payrollAdjustments.createdBy),
+    })
     .from(payrollAdjustments)
     .innerJoin(employees, eq(employees.id, payrollAdjustments.employeeId));
 }

@@ -118,26 +118,11 @@ export const employeeQueries = {
       queryKey: [...employeeQueries.all(), 'profile-changes', p],
       queryFn: () => api.get<Page<ProfileChangeRequest>>('/profile-change-requests', { query: { ...p } }),
     }),
-  /**
-   * One profile change request. The API has no `GET /profile-change-requests/{id}`, so this pages through the list
-   * (pending first, where review requests are) and answers 404 when the id is not in the caller's scope.
-   */
+  /** One profile change request: HR reads any, employees their own; anything else is 404. */
   profileChange: (id: string) =>
     queryOptions({
       queryKey: [...employeeQueries.all(), 'profile-change', id],
-      queryFn: async () => {
-        for (const status of ['pending', undefined]) {
-          for (let page = 1; page <= 20; page++) {
-            const res = await api.get<Page<ProfileChangeRequest>>('/profile-change-requests', {
-              query: { page, pageSize: 100, status },
-            });
-            const found = res.data.find((r) => r.id === id);
-            if (found) return found;
-            if (page >= res.page.totalPages) break;
-          }
-        }
-        throw new ApiError(404, 'NOT_FOUND', 'Not found', [], null, null);
-      },
+      queryFn: () => api.get<ProfileChangeRequest>(`/profile-change-requests/${id}`),
     }),
   /** `employees.required_fields` when the caller may read settings; null means "use the catalogue default". */
   requiredFields: () =>

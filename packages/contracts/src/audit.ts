@@ -99,7 +99,9 @@ export const AUDIT_ACTIONS = [
   'report.exported',
   'job.failed',
   'job.run_requested',
+  'job.listed',
   'outbox.message_dead',
+  'outbox.retry_requested',
 ] as const;
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
 

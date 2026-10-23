@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { csvEnum, VersionSchema } from './common';
-import { IsoDateSchema, MoneySchema, PageQuerySchema } from './primitives';
+import { IsoDateSchema, MoneySchema, PageMetaSchema, PageQuerySchema } from './primitives';
 
 // Reimbursement claims (API-CATALOGUE §7, D-020, FR-REIM-001…004, DOMAIN-MODEL 5.5)
 
@@ -85,3 +85,18 @@ export const ClaimListQuerySchema = PageQuerySchema.extend({
   to: IsoDateSchema.optional(),
 }).strict();
 export type ClaimListQuery = z.infer<typeof ClaimListQuerySchema>;
+
+/** Company-wide totals for `reimbursement.read.all` readers; independent of the list filters. */
+export const ClaimListSummarySchema = z.object({
+  /** Approved claims not yet included in a locked payroll run. */
+  approvedNotIncluded: z.object({ count: z.number().int(), amount: MoneySchema }),
+});
+export type ClaimListSummary = z.infer<typeof ClaimListSummarySchema>;
+
+/** `GET /reimbursement-claims`: the page, plus `summary` when the caller holds `reimbursement.read.all`. */
+export const ClaimListSchema = z.object({
+  data: z.array(ReimbursementClaimSchema),
+  page: PageMetaSchema,
+  summary: ClaimListSummarySchema.optional(),
+});
+export type ClaimList = z.infer<typeof ClaimListSchema>;

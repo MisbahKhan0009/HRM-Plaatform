@@ -1,4 +1,5 @@
 import type {
+  ClaimList,
   ClaimStatus,
   CreateClaimInput,
   DocumentDetail,
@@ -8,8 +9,6 @@ import type {
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../lib/api/client';
 import { upload } from '../../lib/api/upload';
-
-type Page<T> = { data: T[]; page: { number: number; size: number; totalItems: number; totalPages: number } };
 
 export interface ClaimListParams {
   page: number;
@@ -26,7 +25,8 @@ export const claimQueries = {
   list: (p: ClaimListParams) =>
     queryOptions({
       queryKey: [...claimQueries.all(), 'list', p],
-      queryFn: () => api.get<Page<ReimbursementClaim>>('/reimbursement-claims', { query: { ...p } }),
+      // `summary` is present for `reimbursement.read.all` readers only.
+      queryFn: () => api.get<ClaimList>('/reimbursement-claims', { query: { ...p } }),
     }),
   detail: (id: string) =>
     queryOptions({

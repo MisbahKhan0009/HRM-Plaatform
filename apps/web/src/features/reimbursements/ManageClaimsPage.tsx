@@ -1,5 +1,14 @@
 import { claimStatusValues, type EmployeeBasic } from '@hrm/contracts';
-import { Button, EmptyState, Input, LoadingBlock, Pagination, Select, TableContainer } from '@hrm/ui';
+import {
+  Button,
+  EmptyState,
+  Input,
+  LoadingBlock,
+  Pagination,
+  Select,
+  StatBar,
+  TableContainer,
+} from '@hrm/ui';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { getRouteApi, useNavigate } from '@tanstack/react-router';
 import { Receipt } from 'lucide-react';
@@ -8,6 +17,7 @@ import { LoadError } from '../../components/load-error';
 import { PageHeader } from '../../components/page-header';
 import { api } from '../../lib/api/client';
 import { useCan } from '../../lib/auth/me';
+import { formatMoney } from '../../lib/format';
 import { claimQueries } from './api';
 import { ClaimsTable } from './ClaimsTable';
 
@@ -42,6 +52,24 @@ export function ManageClaimsPage() {
         title="Claims"
         description="Transport claims from every employee. Open a claim to review it."
       />
+      {list.data?.summary ? (
+        <StatBar
+          stats={[
+            {
+              label: 'Approved, not yet in payroll',
+              value: list.data.summary.approvedNotIncluded.count.toLocaleString('en-US'),
+            },
+            {
+              label: 'Amount waiting for payroll',
+              value: (
+                <span className="font-mono tabular-nums">
+                  {formatMoney(list.data.summary.approvedNotIncluded.amount.amount)}
+                </span>
+              ),
+            },
+          ]}
+        />
+      ) : null}
       <TableContainer
         toolbar={
           <>

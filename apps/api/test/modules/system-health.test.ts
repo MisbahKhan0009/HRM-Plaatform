@@ -3,7 +3,7 @@ import { and, eq } from 'drizzle-orm';
 import { beforeAll, describe, expect, it } from 'vitest';
 import type { DailyStep } from '../../src/jobs/dispatcher';
 import { DAILY_STEPS } from '../../src/jobs/steps';
-import { call, type Fixture, json, setupCompany, type TestUser } from '../harness';
+import { call, eventually, type Fixture, json, setupCompany, type TestUser } from '../harness';
 
 let f: Fixture;
 let admin: TestUser;
@@ -181,5 +181,86 @@ describe('POST /admin/jobs/{job}/run', () => {
 
   it('is the last daily step', () => {
     expect(DAILY_STEPS.at(-1)?.job).toBe('maintenance.prune');
+  });
+});
+
+describe('GET /admin/jobs', () => {
+  type Jobs = {
+    data: { job: string; lastRun: { runKey: string; status: string; items: number } | null }[];
+  };
+
+  it('lists every daily step in dispatcher order with its last run for the caller’s company', async () => {
+    const res = await call('GET', '/api/v1/admin/jobs', { cookie: admin.cookie });
+    expect(res.status).toBe(200);
+    const body = await json<Jobs>(res);
+    expect(body.data.map((j) => j.job)).toEqual(DAILY_STEPS.map((s) => s.job));
+    // maintenance.prune ran above for this company only.
+    expect(body.data.find((j) => j.job === 'maintenance.prune')?.lastRun).toMatchObject({
+      runKey: '2026-06-01',
+      status: 'succeeded',
+    });
+    const otherAdmin = await other.signIn({ roles: ['system_admin'] });
+    const theirs = await json<Jobs>(await call('GET', '/api/v1/admin/jobs', { cookie: otherAdmin.cookie }));
+    expect(theirs.data.find((j) => j.job === 'maintenance.prune')?.lastRun).toBeNull();
+    const audit = await f.db
+      .select()
+      .from(schema.auditLogs)
+      .where(and(eq(schema.auditLogs.companyId, f.companyId), eq(schema.auditLogs.action, 'job.listed')));
+    expect(audit[0]).toMatchObject({ category: 'technical', actorUserId: admin.userId });
+  });
+
+  it('is not public, and needs system.health.read', async () => {
+    expect((await call('GET', '/api/v1/admin/jobs')).status).toBe(401);
+    expect((await call('GET', '/api/v1/admin/jobs', { cookie: hr.cookie })).status).toBe(403);
+  });
+});
+
+describe('POST /admin/outbox/retry', () => {
+  it('makes failed messages due now, leaves dead ones and other companies alone, and sends them', async () => {
+    const later = new Date(Date.now() + 3_600_000);
+    const failedIds = [uuidv7(), uuidv7()];
+    const deadId = uuidv7();
+    const otherId = uuidv7();
+    const base = { topic: 'email.auth_reset', payload: {}, attempts: 1, nextAttemptAt: later } as const;
+    await f.db
+      .insert(schema.outboxMessages)
+      .values([
+        ...failedIds.map((id) => ({ ...base, id, companyId: f.companyId, status: 'failed' as const })),
+        { ...base, id: deadId, companyId: f.companyId, status: 'dead' as const },
+        { ...base, id: otherId, companyId: other.companyId, status: 'failed' as const },
+      ]);
+    const res = await call('POST', '/api/v1/admin/outbox/retry', { cookie: admin.cookie });
+    expect(res.status).toBe(200);
+    expect(await json(res)).toEqual({ reset: 2, processing: 2 });
+
+    const row = async (id: string) =>
+      (await f.db.select().from(schema.outboxMessages).where(eq(schema.outboxMessages.id, id)))[0];
+    // After commit each reset message is claimed again (one more attempt), whatever the send outcome.
+    for (const id of failedIds) await eventually(async () => ((await row(id))?.attempts ?? 0) >= 2);
+    expect(await row(deadId)).toMatchObject({ status: 'dead', attempts: 1 });
+    expect((await row(deadId))?.nextAttemptAt.getTime()).toBe(later.getTime());
+    expect(await row(otherId)).toMatchObject({ status: 'failed', attempts: 1 });
+    expect((await row(otherId))?.nextAttemptAt.getTime()).toBe(later.getTime());
+
+    const audit = await f.db
+      .select()
+      .from(schema.auditLogs)
+      .where(
+        and(
+          eq(schema.auditLogs.companyId, f.companyId),
+          eq(schema.auditLogs.action, 'outbox.retry_requested'),
+        ),
+      );
+    expect(audit).toHaveLength(1);
+    expect(audit[0]).toMatchObject({ category: 'technical', metadata: { reset: 2 } });
+  });
+
+  it('needs system.health.read and settings.technical.manage on a strong session', async () => {
+    expect((await call('POST', '/api/v1/admin/outbox/retry')).status).toBe(401);
+    expect((await call('POST', '/api/v1/admin/outbox/retry', { cookie: hr.cookie })).status).toBe(403);
+    const weak = await f.signIn({ roles: ['system_admin'], strong: false });
+    const res = await call('POST', '/api/v1/admin/outbox/retry', { cookie: weak.cookie });
+    expect(res.status).toBe(403);
+    expect((await json(res)).code).toBe('MFA_REQUIRED');
   });
 });

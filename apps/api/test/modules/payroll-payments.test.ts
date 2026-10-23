@@ -285,6 +285,66 @@ describe('PAY-11 payments and reconciliation', () => {
   });
 });
 
+describe('GET /payroll/runs/{id}/payments', () => {
+  type Listed = {
+    data: (Payment & {
+      payrollItemId: string;
+      employee: { id: string; employeeCode: string; name: string };
+      method: string;
+      paidOn: string;
+      acknowledgedByName: string | null;
+      cancelledReason: string | null;
+      createdAt: string;
+    })[];
+    page: { totalItems: number };
+  };
+
+  it('lists every payment of the run with employee, method, money string and status', async () => {
+    const res = await ok<Listed>(get(s.director, `/payroll/runs/${run.id}/payments?pageSize=100`));
+    expect(res.page.totalItems).toBe(4);
+    const byItem = (id: string) => res.data.filter((p) => p.payrollItemId === id);
+    expect(byItem(items.a.id)).toEqual([
+      expect.objectContaining({
+        method: 'cash',
+        amount: m('52650.00'),
+        paidOn: '2027-04-02',
+        acknowledgedByName: 'Asha A',
+        status: 'paid',
+        employee: expect.objectContaining({ id: a.employeeId, employeeCode: items.a.employee.employeeCode }),
+      }),
+    ]);
+    expect(byItem(items.b.id)[0]).toMatchObject({ method: 'cheque', chequeNumber: '004512', status: 'paid' });
+    // E-C: the bounced cheque and the cash payment that replaced it, newest first.
+    expect(byItem(items.c.id).map((p) => [p.status, p.method, p.cancelledReason])).toEqual([
+      ['paid', 'cash', null],
+      ['failed', 'cheque', 'Cheque bounced'],
+    ]);
+    expect(typeof res.data[0]?.createdAt).toBe('string');
+    const failed = await ok<Listed>(get(s.po, `/payroll/runs/${run.id}/payments?status=failed`));
+    expect(failed.data.map((p) => p.payrollItemId)).toEqual([items.c.id]);
+    const paged = await ok<Listed>(get(s.po, `/payroll/runs/${run.id}/payments?pageSize=1&page=2`));
+    expect(paged.data).toHaveLength(1);
+    expect(paged.page.totalItems).toBe(4);
+  });
+
+  it('validates the query', async () => {
+    expect((await get(s.po, `/payroll/runs/${run.id}/payments?status=bogus`)).status).toBe(400);
+    expect((await get(s.po, `/payroll/runs/${run.id}/payments?pageSize=500`)).status).toBe(400);
+    expect((await get(s.po, '/payroll/runs/not-a-uuid/payments')).status).toBe(400);
+  });
+
+  it('needs payroll.read.all', async () => {
+    expect((await get(a, `/payroll/runs/${run.id}/payments`)).status).toBe(403);
+  });
+
+  it('returns 404 for an unknown run or another company’s run', async () => {
+    expect((await get(s.po, `/payroll/runs/${items.a.id}/payments`)).status).toBe(404);
+    const other = await scenario('Payroll payments other Co');
+    const theirs = await runTo(other, 2027, 3, 'draft');
+    expect((await get(s.po, `/payroll/runs/${theirs.id}/payments`)).status).toBe(404);
+  });
+});
+
 describe('payments import (CSV)', () => {
   let apr: Run;
   let codes: Record<'a' | 'b' | 'c', string>;
@@ -427,6 +487,7 @@ describe('publish payslips and read them (US-PAY-009)', () => {
       runNumber: string;
       period: { year: number; month: number; daysInPeriod: number };
       paymentStatus: string;
+      payment: { method: string; paidOn: string; chequeNumber: string | null } | null;
     }>(get(a, `/payroll/payslips/${id}`));
     expect(data.lines.map((l) => [l.code, l.amount.amount])).toEqual([
       ['base_salary', '52000.00'],
@@ -439,6 +500,7 @@ describe('publish payslips and read them (US-PAY-009)', () => {
       paymentStatus: 'paid',
     });
     expect(data.firstViewedAt).not.toBeNull();
+    expect(data.payment).toEqual({ method: 'cash', paidOn: '2027-04-02', chequeNumber: null });
     await ok(get(a, `/payroll/payslips/${id}`));
     const views = (await auditFor(s.f.db, id)).filter((x) => x.action === 'payslip.viewed');
     expect(views).toHaveLength(1);
@@ -455,6 +517,9 @@ describe('publish payslips and read them (US-PAY-009)', () => {
   it('lists all payslips for payslip.read.all with filters', async () => {
     const all = await ok<{ data: Slip[] }>(get(s.po, `/payroll/payslips?employeeId=${b.employeeId}`));
     expect(all.data.map((x) => x.employee.id)).toEqual([b.employeeId]);
+    const slip = await ok<{ payment: unknown }>(get(s.po, `/payroll/payslips/${all.data[0]?.id}`));
+    // the paid cheque payment; E-C's bounced cheque would not count
+    expect(slip.payment).toEqual({ method: 'cheque', paidOn: '2027-04-02', chequeNumber: '004512' });
     expect((await ok<{ data: Slip[] }>(get(s.po, '/payroll/payslips?year=2026'))).data).toEqual([]);
   });
 });

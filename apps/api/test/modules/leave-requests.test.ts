@@ -199,12 +199,33 @@ describe('POST /leave/requests', () => {
   });
 
   it('returns 422 INVALID_DATE for a range spanning two leave years and for a past start', async () => {
+    type Problem = { code: string; errors: { path: string; code: string }[] };
     const spans = await create(bob, { startDate: '2026-12-30', endDate: '2027-01-06' });
     expect(spans.status).toBe(422);
-    expect((await json(spans)).code).toBe('INVALID_DATE');
+    expect(await json<Problem>(spans)).toMatchObject({
+      code: 'INVALID_DATE',
+      errors: [{ path: '/endDate', code: 'invalid_date' }],
+    });
     const past = await create(bob, { startDate: '2026-05-20', endDate: '2026-05-20' });
     expect(past.status).toBe(422);
-    expect((await json(past)).code).toBe('INVALID_DATE');
+    expect(await json<Problem>(past)).toMatchObject({
+      code: 'INVALID_DATE',
+      errors: [{ path: '/startDate' }],
+    });
+    const preview = await call('POST', '/api/v1/leave/requests/preview', {
+      cookie: bob.cookie,
+      now: NOW,
+      body: { leaveTypeId: types.CL, startDate: '2026-05-20', endDate: '2026-05-20' },
+    });
+    expect(preview.status).toBe(422);
+    expect((await json<Problem>(preview)).errors[0]?.path).toBe('/startDate');
+    const beforeJoining = await create(hr, {
+      employeeId: (await f.signIn({ employee: { joiningDate: '2026-09-01' }, strong: false })).employeeId,
+      startDate: '2026-08-02',
+      endDate: '2026-08-02',
+    });
+    expect(beforeJoining.status).toBe(422);
+    expect((await json<Problem>(beforeJoining)).errors[0]?.path).toBe('/startDate');
   });
 
   it('returns 422 LEAVE_NOT_ELIGIBLE before the policy eligibility date (AL after 365 days)', async () => {
@@ -576,5 +597,103 @@ describe('GET /leave/calendar', () => {
       cookie: manager.cookie,
     });
     expect(res.status).toBe(400);
+  });
+});
+
+describe('GET /leave/types eligibility for the caller', () => {
+  type Types = { data: { code: string; eligible?: boolean }[] };
+  const eligibility = async (user: TestUser) => {
+    const res = await call('GET', '/api/v1/leave/types', { cookie: user.cookie, now: NOW });
+    expect(res.status).toBe(200);
+    return Object.fromEntries((await json<Types>(res)).data.map((t) => [t.code, t.eligible]));
+  };
+
+  it('marks each type eligible by the rule create uses (AL after 365 days of service)', async () => {
+    expect(await eligibility(bob)).toMatchObject({ CL: true, SL: true, AL: true });
+    const newcomer = await f.signIn({ employee: { joiningDate: '2026-03-01' }, strong: false });
+    expect(await eligibility(newcomer)).toMatchObject({ CL: true, AL: false });
+    // the same newcomer is refused by create for AL
+    const res = await create(newcomer, {
+      leaveTypeId: types.AL,
+      startDate: '2026-06-07',
+      endDate: '2026-06-07',
+    });
+    expect((await json(res)).code).toBe('LEAVE_NOT_ELIGIBLE');
+  });
+
+  it('marks every type ineligible for an employee outside the eligible statuses', async () => {
+    const leaver = await f.signIn({ employee: { status: 'separated' }, strong: false });
+    expect(Object.values(await eligibility(leaver)).every((e) => e === false)).toBe(true);
+  });
+
+  it('omits eligible for a caller without an employee record', async () => {
+    const admin = await f.signIn({ roles: ['system_admin'] });
+    const res = await call('GET', '/api/v1/leave/types', { cookie: admin.cookie, now: NOW });
+    const body = await json<Types>(res);
+    expect(body.data.length).toBeGreaterThan(0);
+    expect(body.data.every((t) => !('eligible' in t))).toBe(true);
+  });
+
+  it('returns 400 for a bad query and 401 without a session', async () => {
+    expect(
+      (await call('GET', '/api/v1/leave/types?includeInactive=maybe', { cookie: bob.cookie })).status,
+    ).toBe(400);
+    expect((await call('GET', '/api/v1/leave/types')).status).toBe(401);
+  });
+});
+
+describe('GET /leave/calendar?departmentId', () => {
+  type Cal = { data: { employeeId: string }[] };
+  const URL = '/api/v1/leave/calendar?from=2026-06-01&to=2026-07-31';
+  let sales: string;
+
+  beforeAll(async () => {
+    sales = crypto.randomUUID();
+    await f.db
+      .insert(schema.departments)
+      .values({ id: sales, companyId: f.companyId, code: 'SALES', name: 'Sales' });
+    await f.db
+      .update(schema.employees)
+      .set({ departmentId: sales })
+      .where(eq(schema.employees.id, alice.employeeId as string));
+  });
+
+  it('narrows the calendar to one department for leave.read.all readers', async () => {
+    const all = await json<Cal>(await call('GET', URL, { cookie: hr.cookie, now: NOW }));
+    expect(new Set(all.data.map((e) => e.employeeId)).size).toBeGreaterThan(1);
+    const res = await call('GET', `${URL}&departmentId=${sales}`, { cookie: hr.cookie, now: NOW });
+    expect(res.status).toBe(200);
+    const body = await json<Cal>(res);
+    expect(body.data.length).toBeGreaterThan(0);
+    expect(new Set(body.data.map((e) => e.employeeId))).toEqual(new Set([alice.employeeId]));
+  });
+
+  it('ignores the filter for team readers and employees', async () => {
+    const plain = await json<Cal>(await call('GET', URL, { cookie: manager.cookie, now: NOW }));
+    const filtered = await json<Cal>(
+      await call('GET', `${URL}&departmentId=${crypto.randomUUID()}`, { cookie: manager.cookie, now: NOW }),
+    );
+    expect(filtered.data).toEqual(plain.data);
+  });
+
+  it('returns 400 for a departmentId that is not a UUID', async () => {
+    const res = await call('GET', `${URL}&departmentId=sales`, { cookie: hr.cookie, now: NOW });
+    expect(res.status).toBe(400);
+  });
+
+  it('returns 403 to a caller without any leave read or own access', async () => {
+    const admin = await f.signIn({ roles: ['system_admin'] });
+    const res = await call('GET', `${URL}&departmentId=${sales}`, { cookie: admin.cookie, now: NOW });
+    expect(res.status).toBe(403);
+  });
+
+  it('shows nothing for another company’s department', async () => {
+    const theirs = crypto.randomUUID();
+    await other.db
+      .insert(schema.departments)
+      .values({ id: theirs, companyId: other.companyId, code: 'SALES', name: 'Sales' });
+    const res = await call('GET', `${URL}&departmentId=${theirs}`, { cookie: hr.cookie, now: NOW });
+    expect(res.status).toBe(200);
+    expect((await json<Cal>(res)).data).toEqual([]);
   });
 });

@@ -1,5 +1,5 @@
 import { schema, uuidv7 } from '@hrm/db';
-import { addDays, toBusinessDate } from '@hrm/domain';
+import { addDays, Decimal, toBusinessDate } from '@hrm/domain';
 import { and, eq } from 'drizzle-orm';
 import { beforeAll, describe, expect, it } from 'vitest';
 import {
@@ -453,5 +453,83 @@ describe('GET /reimbursement-claims', () => {
         ),
       );
     expect(row).toBeUndefined();
+  });
+});
+
+describe('GET /reimbursement-claims summary', () => {
+  type ClaimPage = {
+    data: Claim[];
+    summary?: { approvedNotIncluded: { count: number; amount: { amount: string; currency: string } } };
+  };
+
+  const approvedClaim = (companyId: string, employeeId: string, amount: string) => ({
+    id: uuidv7(),
+    companyId,
+    claimNumber: `RC-S${uuidv7().slice(-8)}`,
+    employeeId,
+    expenseDate: addDays(today(), -2),
+    amount,
+    description: 'Transport to the bank',
+    status: 'approved',
+    submittedAt: new Date(),
+    decidedAt: new Date(),
+  });
+
+  it('adds approved-not-included totals for reimbursement.read.all, independent of filters', async () => {
+    await f.db
+      .insert(schema.reimbursementClaims)
+      .values([
+        approvedClaim(f.companyId, peer.employeeId as string, '120.50'),
+        approvedClaim(f.companyId, employee.employeeId as string, '79.50'),
+      ]);
+    const theirEmployee = await other.employee({});
+    await f.db
+      .insert(schema.reimbursementClaims)
+      .values(approvedClaim(other.companyId, theirEmployee, '9999.00'));
+    const rows = await f.db
+      .select({ amount: schema.reimbursementClaims.amount })
+      .from(schema.reimbursementClaims)
+      .where(
+        and(
+          eq(schema.reimbursementClaims.companyId, f.companyId),
+          eq(schema.reimbursementClaims.status, 'approved'),
+        ),
+      );
+    const total = rows.reduce((sum, r) => sum.plus(r.amount), new Decimal(0));
+    const expected = { count: rows.length, amount: { amount: total.toFixed(2), currency: 'BDT' } };
+
+    const res = await call('GET', '/api/v1/reimbursement-claims?status=draft', { cookie: hr.cookie });
+    expect(res.status).toBe(200);
+    const page = await json<ClaimPage>(res);
+    expect(page.data.every((c) => c.status === 'draft')).toBe(true);
+    expect(page.summary?.approvedNotIncluded).toEqual(expected);
+    expect(page.summary?.approvedNotIncluded.amount.amount).toMatch(/^\d+\.\d{2}$/);
+  });
+
+  it('omits the summary for team reviewers and employees', async () => {
+    for (const user of [manager, employee]) {
+      const page = await json<ClaimPage>(
+        await call('GET', '/api/v1/reimbursement-claims', { cookie: user.cookie }),
+      );
+      expect(page.summary).toBeUndefined();
+    }
+  });
+
+  it('returns 400 for a bad filter and 403 without claim access', async () => {
+    expect(
+      (await call('GET', '/api/v1/reimbursement-claims?status=nope', { cookie: hr.cookie })).status,
+    ).toBe(400);
+    expect((await call('GET', '/api/v1/reimbursement-claims', { cookie: plain.cookie })).status).toBe(403);
+  });
+
+  it('counts only the caller’s company', async () => {
+    const otherHr = await other.signIn({ roles: ['hr_admin'] });
+    const page = await json<ClaimPage>(
+      await call('GET', '/api/v1/reimbursement-claims', { cookie: otherHr.cookie }),
+    );
+    expect(page.summary?.approvedNotIncluded).toEqual({
+      count: 1,
+      amount: { amount: '9999.00', currency: 'BDT' },
+    });
   });
 });

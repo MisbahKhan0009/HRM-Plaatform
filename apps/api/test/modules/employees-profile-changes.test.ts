@@ -212,3 +212,47 @@ describe('withdraw and list', () => {
     ).toBe(400);
   });
 });
+
+describe('GET /profile-change-requests/{id}', () => {
+  it('returns the request to its employee and to HR', async () => {
+    const me = await f.signIn({ employee: true, strong: false });
+    const pcr = await json<Pcr>(await request(me, { preferredName: 'Mitu' }));
+    for (const user of [me, hr]) {
+      const res = await call('GET', `/api/v1/profile-change-requests/${pcr.id}`, { cookie: user.cookie });
+      expect(res.status).toBe(200);
+      expect(await json<Pcr>(res)).toMatchObject({
+        id: pcr.id,
+        status: 'pending',
+        employee: { id: me.employeeId },
+        changes: { preferredName: { from: null, to: 'Mitu' } },
+      });
+    }
+  });
+
+  it('returns 400 for an id that is not a UUID', async () => {
+    const res = await call('GET', '/api/v1/profile-change-requests/not-a-uuid', { cookie: hr.cookie });
+    expect(res.status).toBe(400);
+  });
+
+  it('returns 403 without the review permission or an own-request permission', async () => {
+    const me = await f.signIn({ employee: true, strong: false });
+    const pcr = await json<Pcr>(await request(me, { preferredName: 'Shila' }));
+    const nobody = await f.signIn({ strong: false });
+    const res = await call('GET', `/api/v1/profile-change-requests/${pcr.id}`, { cookie: nobody.cookie });
+    expect(res.status).toBe(403);
+  });
+
+  it('returns 404 for another employee’s request and for another company’s request', async () => {
+    const me = await f.signIn({ employee: true, strong: false });
+    const colleague = await f.signIn({ employee: true, strong: false });
+    const pcr = await json<Pcr>(await request(me, { preferredName: 'Lina' }));
+    expect(
+      (await call('GET', `/api/v1/profile-change-requests/${pcr.id}`, { cookie: colleague.cookie })).status,
+    ).toBe(404);
+    const other = await setupCompany('Other Profile Co');
+    const otherHr = await other.signIn({ roles: ['hr_admin'] });
+    expect(
+      (await call('GET', `/api/v1/profile-change-requests/${pcr.id}`, { cookie: otherHr.cookie })).status,
+    ).toBe(404);
+  });
+});

@@ -1,5 +1,5 @@
 import type { Holiday, LeaveCalendarEntry } from '@hrm/contracts';
-import { Alert, Button, cn, EmptyState, LoadingBlock } from '@hrm/ui';
+import { Alert, Button, cn, EmptyState, LoadingBlock, Select } from '@hrm/ui';
 import { useQuery } from '@tanstack/react-query';
 import { getRouteApi, Link, useNavigate } from '@tanstack/react-router';
 import { CalendarRange, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -28,19 +28,23 @@ function describe(e: LeaveCalendarEntry) {
 // SCREEN-INVENTORY 4.4: month grid on desktop, agenda by day on mobile. Shows exactly what the API returns: types only
 // for leave readers and one's own entries, colleagues' approved leave only when the company setting allows it.
 export function LeaveCalendarPage() {
-  const { month } = route.useSearch();
+  const { month, departmentId: requestedDepartment } = route.useSearch();
   const navigate = useNavigate({ from: '/leave/calendar' });
   const errorMessage = useErrorMessage();
   const isReader = useCan('leave.read.all', 'leave.read.team');
+  // The department filter applies to company-wide readers only; the API ignores it for everyone else.
+  const canFilter = useCan('leave.read.all');
+  const departmentId = canFilter ? requestedDepartment : undefined;
+  const departments = useQuery({ ...orgQueries.departments(), enabled: canFilter });
   const { from, to } = monthBounds(month);
-  const cal = useQuery(leaveQueries.calendar(from, to));
+  const cal = useQuery(leaveQueries.calendar(from, to, departmentId));
   const holidays = useQuery(orgQueries.holidays(Number(month.slice(0, 4))));
   const days = monthDays(month);
   const holidayOn = new Map<string, Holiday>(
     (holidays.data ?? []).filter((h) => h.date >= from && h.date <= to).map((h) => [h.date, h]),
   );
   const [y, m] = month.split('-').map(Number) as [number, number];
-  const go = (delta: number) => void navigate({ search: { month: shiftMonth(month, delta) } });
+  const go = (delta: number) => void navigate({ search: { month: shiftMonth(month, delta), departmentId } });
   const thisMonth = todayIso().slice(0, 7);
 
   return (
@@ -67,10 +71,25 @@ export function LeaveCalendarPage() {
           <Button
             variant="text"
             className="ml-2"
-            onClick={() => void navigate({ search: { month: thisMonth } })}
+            onClick={() => void navigate({ search: { month: thisMonth, departmentId } })}
           >
             This month
           </Button>
+        ) : null}
+        {canFilter ? (
+          <Select
+            aria-label="Department"
+            className="w-48"
+            value={departmentId ?? ''}
+            onChange={(e) => void navigate({ search: { month, departmentId: e.target.value || undefined } })}
+          >
+            <option value="">All departments</option>
+            {departments.data?.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </Select>
         ) : null}
         <div className="ml-auto flex flex-wrap items-center gap-4 text-sm text-text-2">
           <span className="inline-flex items-center gap-2">
@@ -103,7 +122,7 @@ export function LeaveCalendarPage() {
         <EmptyState
           icon={CalendarRange}
           variant="no-results"
-          title={`Nobody is on leave in ${formatMonth(y, m)}`}
+          title={`Nobody${departmentId ? ' in this department' : ''} is on leave in ${formatMonth(y, m)}`}
           description="Approved and pending leave appears here."
         />
       ) : (

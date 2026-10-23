@@ -68,6 +68,8 @@ Metadata conventions:
 | `report.exported` | business / payroll | Report name, filters, row count (FR-REP-005) |
 | `job.failed`, `outbox.message_dead` | technical | Background failures |
 | `job.run_requested` | technical | An admin re-ran a daily step (`POST /admin/jobs/{job}/run`); job, run key, date |
+| `job.listed` | technical | An admin opened the job list (`GET /admin/jobs`); number of steps |
+| `outbox.retry_requested` | technical | An admin made failed outbox messages due now (`POST /admin/outbox/retry`); number reset |
 
 A new audited action is added to this table and to the `AuditAction` union in `@hrm/contracts` in the same PR.
 

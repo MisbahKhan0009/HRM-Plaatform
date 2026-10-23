@@ -1,16 +1,17 @@
-import type {
-  AdjustLeaveBalanceInput,
-  BalancesQuery,
-  CreateLeavePolicyInput,
-  CreateLeaveTypeInput,
-  LeaveCalendar,
-  LeaveCalendarEntry,
-  LeaveCalendarQuery,
-  LedgerQuery,
-  UpdateLeaveTypeInput,
+import {
+  type AdjustLeaveBalanceInput,
+  type BalancesQuery,
+  type CreateLeavePolicyInput,
+  type CreateLeaveTypeInput,
+  type LeaveCalendar,
+  type LeaveCalendarEntry,
+  type LeaveCalendarQuery,
+  type LedgerQuery,
+  P,
+  type UpdateLeaveTypeInput,
 } from '@hrm/contracts';
 import { uuidv7 } from '@hrm/db';
-import { balanceDelta, canConsume, Decimal, leaveYearOf, toBusinessDate } from '@hrm/domain';
+import { balanceDelta, canConsume, Decimal, isEligibleOn, leaveYearOf, toBusinessDate } from '@hrm/domain';
 import { changes, recordAudit } from '../../lib/audit';
 import type { AuthContext } from '../../lib/auth-context';
 import { withDbErrors } from '../../lib/db-errors';
@@ -31,10 +32,34 @@ const who = (auth: AuthContext, now: Date) => ({ updatedBy: auth.userId, updated
 
 const TYPE_CONSTRAINTS = { leave_types_code_uq: { code: 'DUPLICATE', path: '/code' } } as const;
 
-/** Active types with the policy in force today (any session). */
+/**
+ * Active types with the policy in force today (any session). With an employee record, each type also says whether
+ * that employee is eligible today, by the rule `POST /leave/requests` applies (BUSINESS-RULES 3.1, 5.1).
+ */
 export async function listTypes(deps: Deps, auth: AuthContext, includeInactive: boolean) {
-  const rows = await repo.listTypesWithPolicy(deps.db, auth.companyId, today(deps), includeInactive);
-  return rows.map((r) => toLeaveType(r.type, r.policy));
+  const date = today(deps);
+  const [rows, employee] = await Promise.all([
+    repo.listTypesWithPolicy(deps.db, auth.companyId, date, includeInactive),
+    auth.employeeId ? repo.findEmployee(deps.db, auth.companyId, auth.employeeId) : null,
+  ]);
+  return rows.map((r) => {
+    const dto = toLeaveType(r.type, r.policy);
+    if (!employee) return dto;
+    const eligible =
+      r.type.isActive &&
+      r.policy !== null &&
+      isEligibleOn(
+        {
+          status: employee.status,
+          joiningDate: employee.joiningDate,
+          separationDate: employee.separationDate,
+          eligibleStatuses: r.policy.eligibleStatuses,
+          eligibilityAfterDays: r.policy.eligibilityAfterDays,
+        },
+        date,
+      );
+    return { ...dto, eligible };
+  });
 }
 
 async function getType(deps: Deps, auth: AuthContext, id: string) {
@@ -300,7 +325,9 @@ export async function calendar(deps: Deps, auth: AuthContext, q: LeaveCalendarQu
   const own = policy.ownEmployee(auth);
   if (!readScope && !own) throw forbidden();
   const scope = readScope ?? auth.scopeOwn();
-  for (const r of await repo.calendarEntries(deps.db, scope, q, active)) {
+  // The department filter is for company-wide readers; team readers and employees keep their own view.
+  const departmentId = q.departmentId && auth.can(P.leave.read.all) ? q.departmentId : undefined;
+  for (const r of await repo.calendarEntries(deps.db, scope, q, active, departmentId)) {
     seen.add(r.id);
     out.push(full(r));
   }

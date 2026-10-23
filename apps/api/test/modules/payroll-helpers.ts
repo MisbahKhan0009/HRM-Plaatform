@@ -13,6 +13,11 @@ export const m = (amount: string) => ({ amount, currency: 'BDT' });
 export type Run = {
   id: string;
   runNumber: string;
+  period: { id: string };
+  preparedBy: string | null;
+  preparedByName: string | null;
+  approvedBy: string | null;
+  approvedByName: string | null;
   status: string;
   version: number;
   selfApproved: boolean;
