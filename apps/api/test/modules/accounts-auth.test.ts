@@ -84,6 +84,30 @@ describe('session rules', () => {
     expect(res.status).toBe(401);
   });
 
+  it('keeps an active session alive: each request moves the idle window', async () => {
+    const u = await f.signIn({ employee: true, strong: false });
+    const [session] = await f.db
+      .select({ id: schema.sessions.id })
+      .from(schema.sessions)
+      .where(eq(schema.sessions.userId, u.userId));
+    const at = (h: number) => new Date(Date.now() + h * 3_600_000);
+    expect(
+      (await call('GET', '/api/v1/auth/me', { cookie: u.cookie, now: at(5).toISOString() })).status,
+    ).toBe(200);
+    // The activity time is written after the response (deferred); wait for it.
+    await eventually(async () => {
+      const [row] = await f.db
+        .select({ updatedAt: schema.sessions.updatedAt })
+        .from(schema.sessions)
+        .where(eq(schema.sessions.id, session?.id ?? ''));
+      return row && row.updatedAt.getTime() >= at(4.9).getTime();
+    });
+    // 10 h after sign-in but 5 h after the last request: inside the 8 h default idle window.
+    expect(
+      (await call('GET', '/api/v1/auth/me', { cookie: u.cookie, now: at(10).toISOString() })).status,
+    ).toBe(200);
+  });
+
   it('rejects state changes from another origin', async () => {
     const u = await f.signIn({ employee: true, strong: false });
     const res = await call('PATCH', '/api/v1/auth/me/preferences', {

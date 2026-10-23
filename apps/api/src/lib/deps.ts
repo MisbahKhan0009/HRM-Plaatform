@@ -1,7 +1,7 @@
 import { type Auth, createAuth } from '@hrm/auth';
 import { createDb, type Db, schema, uuidv7 } from '@hrm/db';
 import { type Mailer, renderEmail } from '@hrm/mailer';
-import { and, sql as dsql, eq } from 'drizzle-orm';
+import { and, eq, lt } from 'drizzle-orm';
 import { recordAudit } from './audit';
 import type { Clock } from './clock';
 import { selectMailer } from './mailer';
@@ -127,5 +127,6 @@ export async function touchSession(db: Db, sessionId: string, now: Date) {
   await db
     .update(schema.sessions)
     .set({ updatedAt: now })
-    .where(and(eq(schema.sessions.id, sessionId), dsql`${schema.sessions.updatedAt} < ${now}`));
+    // lt() encodes the Date through the column type; a raw template would send Date.toString(), which Postgres rejects.
+    .where(and(eq(schema.sessions.id, sessionId), lt(schema.sessions.updatedAt, now)));
 }
