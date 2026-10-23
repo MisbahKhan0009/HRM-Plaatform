@@ -96,6 +96,12 @@ export function PayrollRunPage({
           <>
             {RUN_TYPE_LABEL[run.runType]} run · {formatDateRange(run.period.startDate, run.period.endDate)}
             {run.calculatedAt ? <> · Calculated {formatDateTime(run.calculatedAt)}</> : null}
+            {run.preparedByName || run.approvedByName ? (
+              <>
+                <br />
+                Prepared by {run.preparedByName ?? '—'} · Approved by {run.approvedByName ?? '—'}
+              </>
+            ) : null}
           </>
         }
         actions={

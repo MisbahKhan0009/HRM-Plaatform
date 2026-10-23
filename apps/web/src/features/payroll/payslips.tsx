@@ -326,8 +326,19 @@ export function PayslipPage({ payslipId }: { payslipId: string }) {
             { label: 'Days paid', value: `${data.daysEmployed} of ${data.period.daysInPeriod}` },
             {
               label: 'Payment',
-              value: <StatusLabel status={data.paymentStatus} label={PAYMENT_LABEL[data.paymentStatus]} />,
+              value: data.payment ? (
+                data.payment.method === 'cheque' ? (
+                  <span>
+                    Cheque <span className="font-mono">No. {data.payment.chequeNumber}</span>
+                  </span>
+                ) : (
+                  'Cash'
+                )
+              ) : (
+                <StatusLabel status={data.paymentStatus} label={PAYMENT_LABEL[data.paymentStatus]} />
+              ),
             },
+            ...(data.payment ? [{ label: 'Paid on', value: formatDate(data.payment.paidOn) }] : []),
             { label: 'Published', value: formatDate(todayIso(new Date(data.publishedAt))) },
           ]}
         />

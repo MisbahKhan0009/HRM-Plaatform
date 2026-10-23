@@ -26,7 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { PageHeader } from '../../components/page-header';
 import { useErrorMessage } from '../../lib/api/errors';
-import { useCan } from '../../lib/auth/me';
+import { useCan, useMe } from '../../lib/auth/me';
 import { formatMoney, formatMonth, formatRelative } from '../../lib/format';
 import { applyServerErrors, FormError, FormField, useZodForm } from '../../lib/forms';
 import { type AdjustmentListParams, payrollQueries, useCreateAdjustment, useDecideAdjustment } from './api';
@@ -349,8 +349,12 @@ function DecisionDialog({
 }) {
   const decide = useDecideAdjustment();
   const errorMessage = useErrorMessage();
+  const me = useMe();
   const [text, setText] = useState('');
-  const [needsNote, setNeedsNote] = useState(false);
+  // D-007: approving an adjustment you created needs a written note; ask for it up front.
+  const [needsNote, setNeedsNote] = useState(
+    decision === 'approve' && Boolean(me && adjustment.createdByUserId === me.user.id),
+  );
   const [fieldError, setFieldError] = useState<string | undefined>();
   const [error, setError] = useState<string | null>(null);
   const name = adjustment.employee.name;
@@ -401,7 +405,9 @@ function DecisionDialog({
           ? 'The preparer will see your comment.'
           : needsNote
             ? "You created this adjustment. Approving it yourself is allowed but flagged for review. Explain why another approver isn't available."
-            : `${amount} ${adjustment.type} for ${name}, applied in ${periodLabel}.`
+            : `${amount} ${adjustment.type} for ${name}, applied in ${periodLabel}.${
+                adjustment.createdByName ? ` Created by ${adjustment.createdByName}.` : ''
+              }`
       }
       footer={
         <>

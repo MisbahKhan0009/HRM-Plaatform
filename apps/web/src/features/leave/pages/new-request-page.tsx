@@ -126,6 +126,8 @@ export function NewLeaveRequestPage() {
   const balances: LeaveBalance[] =
     (forOther ? (employee ? otherBalances.data?.data : undefined) : ownBalances.data?.data) ?? [];
   const type: LeaveType | undefined = types.data?.find((t) => t.id === values.leaveTypeId);
+  // `eligible` is the caller's own eligibility; on behalf, the server checks the chosen employee on submit.
+  const ineligible = forOther ? [] : (types.data?.filter((t) => t.eligible === false) ?? []);
 
   const body = useDebouncedValue(previewBody(values, onBehalf));
   const preview = useQuery({
@@ -161,7 +163,7 @@ export function NewLeaveRequestPage() {
       );
       await navigate({ to: '/leave/requests/$requestId', params: { requestId: created.id } });
     } catch (err) {
-      // INVALID_DATE carries no field pointer (notice period, joining date, leave year): show it on the start date.
+      // INVALID_DATE names `/startDate` or `/endDate` (applyServerErrors places it); without a pointer, use the start.
       if (err instanceof ApiError && err.code === 'INVALID_DATE' && !err.errors.length) {
         form.setError('startDate', { type: 'server', message: errorMessage(err) });
         return;
@@ -253,6 +255,11 @@ export function NewLeaveRequestPage() {
             control={form.control}
             name="leaveTypeId"
             label="Leave type"
+            hint={
+              ineligible.length
+                ? `Greyed-out types aren't available to you yet: ${ineligible.map((t) => t.name).join(', ')}. Eligibility depends on your status and length of service.`
+                : undefined
+            }
             render={(p) => (
               <Select
                 {...p}
@@ -265,10 +272,11 @@ export function NewLeaveRequestPage() {
                 <option value="">Choose a leave type</option>
                 {types.data?.map((t) => {
                   const b = balances.find((x) => x.leaveTypeId === t.id);
+                  const notEligible = ineligible.includes(t);
                   return (
-                    <option key={t.id} value={t.id}>
+                    <option key={t.id} value={t.id} disabled={notEligible}>
                       {t.name}
-                      {b ? ` · ${formatDays(b.available)} left` : ''}
+                      {notEligible ? ' · not eligible yet' : b ? ` · ${formatDays(b.available)} left` : ''}
                     </option>
                   );
                 })}

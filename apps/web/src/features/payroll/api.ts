@@ -116,17 +116,21 @@ export const payrollQueries = {
           query: { entityType: 'payroll_run', entityId, from, to, pageSize: 100 },
         }),
     }),
-  /**
-   * Payment ids for the Payments tab. The API has no payment list yet, so recorded and cancelled payments are read
-   * from the payroll audit trail (`audit.read.payroll`).
-   */
-  paymentEvents: (from: string, to: string) =>
+  /** Every `paid` payment of the run (`GET /payroll/runs/{id}/payments`), across pages. */
+  paidPayments: (runId: string) =>
     queryOptions({
-      queryKey: [...P, 'payment-events', from, to],
-      queryFn: () =>
-        api.get<Page<AuditLogEntry>>('/audit-logs', {
-          query: { entityType: 'payroll_payment', category: 'payroll', from, to, pageSize: 100 },
-        }),
+      queryKey: [...P, 'runs', runId, 'payments', 'paid'],
+      queryFn: async () => {
+        const all: PayrollPayment[] = [];
+        for (let page = 1; page <= 50; page++) {
+          const res = await api.get<Page<PayrollPayment>>(`/payroll/runs/${runId}/payments`, {
+            query: { status: 'paid', page, pageSize: 100 },
+          });
+          all.push(...res.data);
+          if (page >= res.page.totalPages) break;
+        }
+        return all;
+      },
     }),
   adjustments: (p: AdjustmentListParams) =>
     queryOptions({

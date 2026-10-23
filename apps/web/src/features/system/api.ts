@@ -1,4 +1,4 @@
-import type { HealthDetails, JobRunResult, RunJobInput } from '@hrm/contracts';
+import type { HealthDetails, JobList, JobRunResult, OutboxRetryResult, RunJobInput } from '@hrm/contracts';
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../lib/api/client';
 
@@ -9,6 +9,12 @@ export const systemQueries = {
       queryKey: [...systemQueries.all(), 'health'],
       queryFn: () => api.get<HealthDetails>('/health/details'),
       refetchInterval: 60_000,
+    }),
+  /** Every daily step with its last run (`GET /admin/jobs`), for the "Run job" dialog. */
+  jobs: () =>
+    queryOptions({
+      queryKey: [...systemQueries.all(), 'jobs'],
+      queryFn: () => api.get<JobList>('/admin/jobs'),
     }),
 };
 
@@ -21,11 +27,14 @@ export function useRunJob() {
   });
 }
 
-/**
- * Daily steps the dispatcher runs (JOBS-AND-OUTBOX §3). The API lists only jobs that have run, so steps that never
- * ran are added from this list to keep them runnable by hand.
- */
-export const DAILY_JOBS = ['attendance.close_day', 'maintenance.prune'] as const;
+/** `POST /admin/outbox/retry`: failed messages become due now; the first 20 are sent right away. */
+export function useRetryOutbox() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.post<OutboxRetryResult>('/admin/outbox/retry'),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: systemQueries.all() }),
+  });
+}
 
 /** Seconds → `45 s`, `12 min`, `3 h`, `2 days`. */
 export function formatAge(seconds: number) {

@@ -173,6 +173,7 @@ function RunsTable({
             <TH>Status</TH>
             <TH numeric>Employees</TH>
             <TH numeric>Net pay</TH>
+            <TH>Prepared · approved</TH>
           </tr>
         </THead>
         <TBody>
@@ -216,6 +217,9 @@ function RunRow({ run }: { run: PayrollRun }) {
       </TD>
       <TD numeric>{run.employeeCount ?? '—'}</TD>
       <TD numeric>{run.totals ? <Money amount={run.totals.net.amount} /> : '—'}</TD>
+      <TD className="whitespace-nowrap">
+        {run.preparedByName ?? '—'} · {run.approvedByName ?? '—'}
+      </TD>
     </TR>
   );
 }

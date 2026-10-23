@@ -20,15 +20,16 @@ import {
   THead,
   TR,
 } from '@hrm/ui';
+import { useQuery } from '@tanstack/react-query';
 import { History } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { StepUpCancelledError } from '../../lib/api/client';
 import { useErrorMessage } from '../../lib/api/errors';
 import { formatDateTime, todayIso } from '../../lib/format';
 import { applyServerErrors, FormError, FormField, useZodForm } from '../../lib/forms';
-import { DAILY_JOBS, formatAge, formatRunDuration, useRunJob } from './api';
+import { formatAge, formatRunDuration, systemQueries, useRunJob } from './api';
 
 const count = (n: number) => n.toLocaleString('en-US');
 
@@ -176,13 +177,20 @@ const OUTCOME: Record<JobRunResult['outcome'], string> = {
 };
 
 /** `POST /admin/jobs/{job}/run` (JOBS-AND-OUTBOX §4); a key that already succeeded is skipped, not repeated. */
-export function RunJobDialog({ health, onClose }: { health: HealthDetails; onClose: () => void }) {
+export function RunJobDialog({ onClose }: { onClose: () => void }) {
   const run = useRunJob();
   const errorMessage = useErrorMessage();
   const [formError, setFormError] = useState<string | null>(null);
   const [result, setResult] = useState<JobRunResult | null>(null);
-  const jobs = [...new Set([...DAILY_JOBS, ...health.jobs.map((j) => j.job)])].sort();
-  const form = useZodForm(RunJobFormSchema, { job: jobs[0] ?? '', date: todayIso() } as never);
+  // Every daily step in dispatcher order, including steps that never ran (`GET /admin/jobs`).
+  const list = useQuery(systemQueries.jobs());
+  const jobs = list.data?.data.map((j) => j.job) ?? [];
+  const form = useZodForm(RunJobFormSchema, { job: '', date: todayIso() } as never);
+  const field = (name: string) => name as never;
+  const firstJob = jobs[0];
+  useEffect(() => {
+    if (firstJob && !form.getValues(field('job'))) form.setValue(field('job'), firstJob as never);
+  }, [firstJob, form]);
   const submit = form.handleSubmit(async ({ job, date, runKey }) => {
     setFormError(null);
     setResult(null);
@@ -194,7 +202,6 @@ export function RunJobDialog({ health, onClose }: { health: HealthDetails; onClo
       if (!(err instanceof StepUpCancelledError)) setFormError(applyServerErrors(form, err, errorMessage));
     }
   });
-  const field = (name: string) => name as never;
   return (
     <Dialog
       open
@@ -206,13 +213,19 @@ export function RunJobDialog({ health, onClose }: { health: HealthDetails; onClo
           <Button variant="secondary" onClick={onClose}>
             {result ? 'Close' : 'Cancel'}
           </Button>
-          <Button variant="primary" loading={run.isPending} onClick={() => void submit()}>
+          <Button
+            variant="primary"
+            loading={run.isPending}
+            disabled={!jobs.length}
+            onClick={() => void submit()}
+          >
             Run job
           </Button>
         </>
       }
     >
       <FormError message={formError} />
+      {list.isError ? <Alert tone="bad">{errorMessage(list.error)}</Alert> : null}
       {result ? (
         <Alert
           tone={result.outcome === 'failed' ? 'bad' : result.outcome === 'skipped' ? 'info' : 'ok'}
@@ -231,7 +244,12 @@ export function RunJobDialog({ health, onClose }: { health: HealthDetails; onClo
           name={field('job')}
           label="Job"
           render={(p) => (
-            <Select {...p} onChange={(e) => p.onChange(e.target.value)} className="font-mono">
+            <Select
+              {...p}
+              onChange={(e) => p.onChange(e.target.value)}
+              className="font-mono"
+              disabled={list.isPending}
+            >
               {jobs.map((j) => (
                 <option key={j} value={j}>
                   {j}

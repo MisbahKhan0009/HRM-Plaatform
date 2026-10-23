@@ -15,13 +15,14 @@ export const Route = createFileRoute('/_app/leave/calendar')({
       .refine(isMonth)
       .default(thisMonth)
       .catch(() => thisMonth()),
+    departmentId: z.uuid().optional().catch(undefined),
   }),
   beforeLoad: ({ context }) =>
     requireAny(context.queryClient, ['leave.read.team', 'leave.read.all', 'leave.request.own']),
   loaderDeps: ({ search }) => search,
   loader: ({ context, deps }) => {
     const { from, to } = monthBounds(deps.month);
-    void context.queryClient.prefetchQuery(leaveQueries.calendar(from, to));
+    void context.queryClient.prefetchQuery(leaveQueries.calendar(from, to, deps.departmentId));
   },
   component: LeaveCalendarPage,
 });

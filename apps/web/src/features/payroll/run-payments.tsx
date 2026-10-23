@@ -1,10 +1,4 @@
-import type {
-  AuditLogEntry,
-  PaymentImportResult,
-  PayrollItem,
-  PayrollPayment,
-  PayrollRun,
-} from '@hrm/contracts';
+import type { PaymentImportResult, PayrollItem, PayrollPayment, PayrollRun } from '@hrm/contracts';
 import {
   Alert,
   Button,
@@ -33,7 +27,7 @@ import { Upload, Wallet } from 'lucide-react';
 import { useState } from 'react';
 import { z } from 'zod';
 import { useErrorMessage } from '../../lib/api/errors';
-import { canAny, useCan, useMe } from '../../lib/auth/me';
+import { useCan } from '../../lib/auth/me';
 import { formatDate, formatMoney, todayIso } from '../../lib/format';
 import { applyServerErrors, FormError, FormField, useZodForm } from '../../lib/forms';
 import { payrollQueries, useCancelPayment, useImportPayments, useRecordPayment } from './api';
@@ -42,49 +36,11 @@ import { MONEY_INPUT, sumMoney, toDecimal } from './money';
 
 const PAGE = 100;
 
-/** A payment the screen knows the id of, so it can be cancelled. */
-interface KnownPayment {
-  id: string;
-  method: string;
-  chequeNumber: string | null;
-  paidOn: string | null;
-  cancelled: boolean;
-}
-
-// Payments recorded from this browser tab; the audit trail covers the rest after a reload.
-const sessionPayments = new Map<string, KnownPayment>();
-
-/**
- * Latest payment per item. The API has no payment list, so ids come from `payroll_payment.*` audit events (readers
- * with `audit.read.payroll`) plus payments recorded in this tab.
- */
-function usePayments(run: PayrollRun) {
-  const me = useMe();
-  const canAudit = canAny(me, ['audit.read.payroll', 'audit.read.all']);
-  const to = todayIso();
-  const from = (run.lockedAt ?? run.updatedAt).slice(0, 10);
-  const events = useQuery({ ...payrollQueries.paymentEvents(from < to ? from : to, to), enabled: canAudit });
-  const byItem = new Map<string, KnownPayment>();
-  const cancelled = new Set(
-    (events.data?.data ?? []).filter((e) => e.action === 'payroll_payment.cancelled').map((e) => e.entityId),
-  );
-  // Newest first from the API: keep the first recorded event per item.
-  for (const e of (events.data?.data ?? []) as AuditLogEntry[]) {
-    const m = e.metadata ?? {};
-    if (e.action !== 'payroll_payment.recorded' || m.payrollRunId !== run.id || !e.entityId) continue;
-    const itemId = String(m.payrollItemId);
-    if (byItem.has(itemId)) continue;
-    byItem.set(itemId, {
-      id: e.entityId,
-      method: String(m.method ?? ''),
-      chequeNumber: typeof m.chequeNumber === 'string' ? m.chequeNumber : null,
-      paidOn: null,
-      cancelled: cancelled.has(e.entityId),
-    });
-  }
-  for (const [itemId, p] of sessionPayments) {
-    if (!byItem.has(itemId) || byItem.get(itemId)?.cancelled) byItem.set(itemId, p);
-  }
+/** The `paid` payment per item: what the row shows and what "Cancel payment" acts on (D-042: at most one). */
+function usePaidPayments(run: PayrollRun) {
+  const payments = useQuery(payrollQueries.paidPayments(run.id));
+  const byItem = new Map<string, PayrollPayment>();
+  for (const p of payments.data ?? []) if (!byItem.has(p.payrollItemId)) byItem.set(p.payrollItemId, p);
   return byItem;
 }
 
@@ -95,9 +51,9 @@ export function PaymentsTab({ run }: { run: PayrollRun }) {
     ...payrollQueries.items(run.id, { page, pageSize: PAGE }),
     enabled: Boolean(run.totals),
   });
-  const payments = usePayments(run);
+  const payments = usePaidPayments(run);
   const [recording, setRecording] = useState<PayrollItem | null>(null);
-  const [cancelling, setCancelling] = useState<{ item: PayrollItem; payment: KnownPayment } | null>(null);
+  const [cancelling, setCancelling] = useState<{ item: PayrollItem; payment: PayrollPayment } | null>(null);
   const [importing, setImporting] = useState(false);
   const editable = canPay && run.status === 'locked';
 
@@ -142,6 +98,7 @@ export function PaymentsTab({ run }: { run: PayrollRun }) {
                   <TH>Employee</TH>
                   <TH numeric>Net pay</TH>
                   <TH>Method</TH>
+                  <TH>Paid on</TH>
                   <TH>Status</TH>
                   <TH>
                     <span className="sr-only">Actions</span>
@@ -151,7 +108,7 @@ export function PaymentsTab({ run }: { run: PayrollRun }) {
               <TBody>
                 {items.data.data.map((i) => {
                   const p = payments.get(i.id);
-                  const live = p && !p.cancelled && i.paymentStatus === 'paid' ? p : null;
+                  const live = p && i.paymentStatus === 'paid' ? p : null;
                   return (
                     <TR key={i.id}>
                       <TD>
@@ -168,6 +125,7 @@ export function PaymentsTab({ run }: { run: PayrollRun }) {
                             : 'Cash'
                           : '—'}
                       </TD>
+                      <TD className="whitespace-nowrap">{live ? formatDate(live.paidOn) : '—'}</TD>
                       <TD>
                         <StatusLabel status={i.paymentStatus} />
                       </TD>
@@ -259,7 +217,7 @@ function RecordPaymentDialog({
   const confirm = async () => {
     if (!review) return;
     try {
-      const payment: PayrollPayment = await record.mutateAsync({
+      await record.mutateAsync({
         payrollItemId: item.id,
         method: review.method,
         amount: { amount: toDecimal(review.amount), currency: 'BDT' },
@@ -267,13 +225,6 @@ function RecordPaymentDialog({
         ...(review.method === 'cheque' ? { chequeNumber: review.chequeNumber } : {}),
         ...(review.reference ? { reference: review.reference } : {}),
         ...(review.acknowledgedByName ? { acknowledgedByName: review.acknowledgedByName } : {}),
-      });
-      sessionPayments.set(item.id, {
-        id: payment.id,
-        method: payment.method,
-        chequeNumber: payment.chequeNumber,
-        paidOn: payment.paidOn,
-        cancelled: false,
       });
       notify.success(`Payment recorded for ${name}`);
       onClose();
@@ -402,7 +353,7 @@ function CancelPaymentDialog({
   onClose,
 }: {
   item: PayrollItem;
-  payment: KnownPayment;
+  payment: PayrollPayment;
   onClose: () => void;
 }) {
   const cancel = useCancelPayment();
@@ -418,7 +369,6 @@ function CancelPaymentDialog({
     }
     try {
       await cancel.mutateAsync({ paymentId: payment.id, reason: reason.trim(), outcome });
-      sessionPayments.delete(item.id);
       notify.success('Payment cancelled');
       onClose();
     } catch (err) {
