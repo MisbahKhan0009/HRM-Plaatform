@@ -40,7 +40,7 @@ Collected from all Stage 5 documents on 2026-10-22. Each has a **proposed defaul
 | C8 | Transport claim receipt required above an amount? | Optional at every amount | BUSINESS-RULES Q5 |
 | C9 | Will existing employee data be imported from a spreadsheet? Who prepares it? | Yes, via CSV import; HR prepares | SCOPE-V1 |
 | C10 | May an `hr_admin` (`user.manage` without `role.manage`) grant roles when inviting a user? | No: `roleCodes` at invitation also needs `role.manage`, so `user.manage` alone cannot create a more privileged account; HR invites, a system admin assigns roles | API-CATALOGUE §2 |
-| C11 | May `role.manage` grant privileged permissions (payroll, compensation, audit) to roles without strong auth, such as the derived `employee` and `manager` roles? | Allowed and audited (`role.permissions_changed`); the UI warns | API-CATALOGUE §2 |
+| C11 | May `role.manage` grant privileged permissions (payroll, compensation, audit) to roles without strong auth, such as the derived `employee` and `manager` roles? | **Decided: no.** A role without strong auth may hold only the default manager and employee grants; the API refuses others (`422 needs_strong_auth`) | API-CATALOGUE §2 |
 | C12 | Does `audit.read.technical` see the metadata of security events (role grants, invitations, resets)? | No: actor and action only; metadata of technical events only | AUDIT §5 |
 | C13 | May an `hr_admin` (`user.manage`) suspend a `system_admin` or reset their sign-in factors? | **Decided (D-048): no.** Account actions on a `system_admin` need `role.manage`; a system admin can act on HR admins | SECURITY-MODEL §4 |
 

@@ -48,7 +48,7 @@ Account recovery for users who lost their passkey and authenticator is an HR/adm
 | POST | `/users/{id}/reset-auth` | `user.manage`, Fresh; a `system_admin` target also needs `role.manage` (D-048) | Removes passkeys + TOTP, revokes sessions, emails a sign-in link; audited; `active` or `suspended` users only (`422` otherwise); body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
 | POST | `/users/{id}/roles` | `role.manage`, Fresh | Replace explicit roles `{ roleCodes: [], version }` (user version); derived roles rejected (`400`) | `ReplaceUserRolesInput` → `UserDetail` |
 | GET | `/roles` | `role.manage` or `settings.read` | Roles with permissions | `Role` |
-| PATCH | `/roles/{id}` | `role.manage`, Fresh | Change name/description/permissions (full set) with `version`; derived roles are editable but never assignable; removing `role.manage` from a role the caller holds is refused (`422`) | `UpdateRoleInput` → `Role` |
+| PATCH | `/roles/{id}` | `role.manage`, Fresh | Change name/description/permissions (full set) with `version`; derived roles are editable but never assignable; removing `role.manage` from a role the caller holds is refused (`422`); a role without strong auth may only hold `WEAK_ROLE_PERMISSIONS` (the default manager and employee grants), anything else is `422` `needs_strong_auth` (C11) | `UpdateRoleInput` → `Role` |
 | GET | `/permissions` | `role.manage` | Permission catalogue | `Permission` |
 
 Users cannot change their own roles, suspend, reactivate, deactivate or reset their own account (`SELF_APPROVAL_FORBIDDEN`). Other companies' users and roles return `404`. Role changes are audited as `role.granted` and `role.revoked` (per role), `role.permissions_changed` and `role.updated`.

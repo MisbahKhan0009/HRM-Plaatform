@@ -669,6 +669,21 @@ describe('roles and permissions', () => {
     expect((await json<{ name: string }>(res)).name).toBe('Staff');
   });
 
+  it('refuses sensitive permissions on a role without strong auth (422, C11)', async () => {
+    const mgr = (await roles(admin.cookie)).find((r) => r.code === 'manager') as RoleDto;
+    const res = await call('PATCH', `/api/v1/roles/${mgr.id}`, {
+      cookie: admin.cookie,
+      body: { permissions: [...mgr.permissions, 'compensation.read.all'], version: mgr.version },
+    });
+    expect(res.status).toBe(422);
+    const body = await json<{ errors: { code: string; message: string }[] }>(res);
+    expect(body.errors).toEqual([
+      expect.objectContaining({ code: 'needs_strong_auth', message: 'compensation.read.all' }),
+    ]);
+    const after = (await roles(admin.cookie)).find((r) => r.code === 'manager') as RoleDto;
+    expect(after.permissions).not.toContain('compensation.read.all');
+  });
+
   it('refuses to remove role.manage from a role the caller holds (422)', async () => {
     const sys = (await roles(admin.cookie)).find((r) => r.code === 'system_admin') as RoleDto;
     const res = await call('PATCH', `/api/v1/roles/${sys.id}`, {
