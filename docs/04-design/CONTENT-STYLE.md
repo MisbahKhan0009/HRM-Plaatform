@@ -209,7 +209,10 @@ Toasts state what happened, past tense, with the object: "Leave request submitte
 
 Email templates are owned by `docs/05-backend/EMAIL.md`. They follow this voice: subject line states the event and the object ("Leave request approved: 3 to 5 Nov"), the body leads with the outcome, includes one link to the record, and never contains salary amounts, codes for sign-in other than the sign-in email itself, or personal data beyond the recipient's own.
 
-## Open questions (owner)
+## Owner questions (decided, D-049)
+
+All decided on 2026-10-23 (D-049): the default or v1 behaviour written in each item is the decision.
+
 
 - Should times use 12-hour (`9:12 am`, default here) or 24-hour format?
 - Preferred wording for exit types in the separation dialog (see USER-FLOWS.md open questions).

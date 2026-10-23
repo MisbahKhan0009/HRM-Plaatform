@@ -1,6 +1,6 @@
 # Open questions for the owner
 
-**Status 2026-10-22: all proposed defaults ACCEPTED by the owner (D-041…D-043); D3 answered "public" instead of the default.** Still needed from the owner before go-live: C5 retention periods, A7 the named payroll sign-off person, B8 the holiday list, C9 the import data.
+**Status 2026-10-22: all proposed defaults ACCEPTED by the owner (D-041…D-043); D3 answered "public" instead of the default.** **2026-10-23:** remaining questions decided (D-048, D-049). Still needed from the owner before go-live, as people or data rather than decisions: A7 the named payroll sign-off person, B8 the 2027 holiday list, C9 the import spreadsheet.
 
 Collected from all Stage 5 documents on 2026-10-22. Each has a **proposed default**. Accepted answers move to `DECISION-LOG.md` and this list is updated. Items marked **(before build)** block implementation of that feature; the rest can be answered any time before go-live.
 
@@ -34,7 +34,7 @@ Collected from all Stage 5 documents on 2026-10-22. Each has a **proposed defaul
 | C2 | Collect gender? | Optional field, can be hidden | DATA-MODEL Q2 |
 | C3 | Is there a company directory for all employees (name, department, position, work email)? | No in v1 | IA |
 | C4 | Can employees download their own identity documents (NID scans)? | No, HR only | USER-FLOWS |
-| C5 | Document retention period per category | Owner must supply before go-live (legal advice) | X-003 |
+| C5 | Document retention period per category | **Decided (D-049):** no automatic deletion. Documents are kept until a `document.manage` user deletes one with a reason (audited); retention settings stay informational until legal advice sets periods | X-003 |
 | C6 | Expiry reminder window for documents and contracts | 30 days before | USER-STORIES |
 | C7 | Exit types for offboarding | Resignation, termination, end of contract, retirement, other | USER-FLOWS |
 | C8 | Transport claim receipt required above an amount? | Optional at every amount | BUSINESS-RULES Q5 |

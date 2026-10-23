@@ -422,7 +422,10 @@ As a `system_admin`, I see system health. FR-SET-004, NFR-OPS-006.
 - Given I open Health, then I see database reachability, last run and status of each job, outbox backlog and dead messages, and the date of the last successful backup.
 - Given I am a `system_admin`, then the health page shows no employee or salary data.
 
-## Open questions (owner)
+## Owner questions (decided, D-049)
+
+All decided on 2026-10-23 (D-042, D-049): the proposed defaults in `OPEN-QUESTIONS.md` apply.
+
 
 - Reminder window for document and contract expiry (US-DOC-004, US-EMP-006).
 - Validation threshold for net pay change warnings (US-PAY-004).

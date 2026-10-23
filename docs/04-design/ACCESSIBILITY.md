@@ -113,6 +113,9 @@ Every pull request that changes UI:
 
 Before release: a full manual audit of the core flows in USER-FLOWS.md (sign-in, check-in, leave request and approval, claim, payroll run, payslip download) using the installed `web-design-guidelines` skill and the design-skills accessibility audit.
 
-## Open questions (owner)
+## Owner questions (decided, D-049)
+
+All decided on 2026-10-23 (D-049): the default or v1 behaviour written in each item is the decision.
+
 
 - None for policy. Bangla screen-reader support will be verified when Bangla ships (D-003).

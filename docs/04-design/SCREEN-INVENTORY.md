@@ -312,7 +312,10 @@ All settings pages share a layout: settings sub-navigation on the left (top sele
 
 Effective-dated settings (schedules, leave policies) never edit history: saving creates a new version with an effective-from date, shown in a version list.
 
-## Open questions (owner)
+## Owner questions (decided, D-049)
+
+All decided on 2026-10-23 (D-049): the default or v1 behaviour written in each item is the decision.
+
 
 
 - Payslip content beyond the snapshot fields (company address, employee bank details are not collected in v1 since payment is cash or cheque). Confirm the payslip header fields.

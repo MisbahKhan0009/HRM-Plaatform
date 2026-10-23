@@ -220,7 +220,10 @@ Rule: if several widgets could carry a primary button, the first in the table ke
 
 Per `docs/02-brand/APP-UI-ADAPTATION.md` section 2, DotGrid and Glow appear only on: the auth zone pages, the dashboard welcome header (widget 1), empty states, and the 404 and error pages. They never sit behind tables, forms, dialogs or reports.
 
-## Open questions (owner)
+## Owner questions (decided, D-049)
+
+All decided on 2026-10-23 (D-049): the default or v1 behaviour written in each item is the decision.
+
 
 - Should employees see colleagues' names on the leave calendar, or only their own leave and holidays? The default here is own leave only; SRS FR-LEAVE-011 says "subject to permissions".
 - Should the company directory (names, department, position, work email) be visible to all employees? SECURITY-MODEL grants employees `employee.read.own` only, so v1 has no employee-wide directory.

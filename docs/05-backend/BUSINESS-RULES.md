@@ -395,7 +395,13 @@ The import (`POST /employees/import/commit`, FR-EMP-008) is for staff who are al
 - The joining date is required on every row, whatever `employees.required_fields` says. A joining date after today (business date, section 1) is a row error (`date_in_future`): future starters are new hires and go through `POST /employees` and the lifecycle actions.
 - The import grants no leave. The daily `leave.eligibility_grants` step grants the entitlements of imported staff once they are eligible (5.1).
 
-## Open questions (owner)
+## Owner questions (decided, D-049)
+
+All decided on 2026-10-23 (D-049). For each item the v1 behaviour written below is the decision, with these exceptions:
+- **6 and 23:** off-cycle runs pay approved claims and adjustments only, no salary (6.10). A separated employee's claims approved after their final regular run go into an off-cycle run.
+- **21:** the CSV import creates existing staff as `active`, or `probation` when the probation end date is after today, with their historical joining date (section 10).
+- **28:** a cheque that bounces after the run is `paid` is reissued as an approved `addition` adjustment in the next regular run or an off-cycle run; the original payment record stays as it is.
+
 
 1. Leave seed defaults in section 5 (entitlements, eligibility, carry-forward, maximum balance) need owner and adviser confirmation.
 2. Is `separation_date` the last day worked (paid, inclusive) as assumed in 6.2?
