@@ -429,6 +429,7 @@ export const PayslipSummarySchema = z.object({
   employee: EmployeeRefSchema,
   period: z.object({ id: z.uuid(), year: z.number().int(), month: z.number().int() }),
   runNumber: z.string(),
+  runType: PayrollRunTypeSchema,
   netAmount: MoneySchema,
   publishedAt: z.string(),
   firstViewedAt: z.string().nullable(),
@@ -457,6 +458,8 @@ export const PayslipDataSchema = z.object({
     daysInPeriod: z.number().int(),
   }),
   runNumber: z.string(),
+  /** `off_cycle` payslips pay only claims and adjustments: no salary lines and no days (BUSINESS-RULES 6.10). */
+  runType: PayrollRunTypeSchema,
   daysEmployed: z.number().int(),
   lines: z.array(
     z.object({

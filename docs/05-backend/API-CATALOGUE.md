@@ -173,7 +173,7 @@ Users cannot change their own roles, suspend, reactivate, deactivate or reset th
 | GET | `/payroll/runs/{id}` | `payroll.read.all` | | Run + totals + validation summary |
 | GET | `/payroll/runs/{id}/items` | `payroll.read.all` | | List; `?employeeId&flag` |
 | GET | `/payroll/runs/{id}/items/{itemId}` | `payroll.read.all` | | Item + line items + snapshot |
-| POST | `/payroll/runs/{id}/calculate` | `payroll.prepare`, Strong | key | `draft`/`calculated` → `calculated`; replaces items; `off_cycle` runs return `422` until their rules are defined |
+| POST | `/payroll/runs/{id}/calculate` | `payroll.prepare`, Strong | key | `draft`/`calculated` → `calculated`; replaces items; an `off_cycle` run pays only unpaid approved claims and adjustments (BUSINESS-RULES 6.10) and returns `422 BUSINESS_RULE_VIOLATION` when there is nothing to pay |
 | POST | `/payroll/runs/{id}/validate` | `payroll.prepare` | | Re-runs validation, returns flags; no state change |
 | POST | `/payroll/runs/{id}/submit` | `payroll.prepare`, Strong | key | `calculated` → `submitted`; blocked by blocking flags |
 | POST | `/payroll/runs/{id}/return` | `payroll.approve`, Strong | | `calculated`/`submitted` → `returned` → `draft` in one call; `{ reason, version }` |

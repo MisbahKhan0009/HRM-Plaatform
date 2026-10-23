@@ -53,6 +53,25 @@ describe('validationFlags (BUSINESS-RULES 6.5)', () => {
     ['net down more than 20%', { previousNet: '1000.00', net: '799.99' }, ['net_change_over_threshold']],
     ['large reimbursement', { reimbursementAmounts: ['5000.01'] }, ['large_reimbursement']],
     ['reimbursement equal to the threshold', { reimbursementAmounts: ['5000.00'] }, []],
+    [
+      'off-cycle skips structure, joiner, leaver and net-change flags',
+      {
+        runType: 'off_cycle',
+        missingSalaryStructure: true,
+        joiningDate: '2026-11-12',
+        separationDate: '2026-11-20',
+        daysEmployed: 0,
+        previousNet: '1000.00',
+        net: '650.00',
+      },
+      [],
+    ],
+    [
+      'off-cycle keeps the blocking and review flags',
+      { runType: 'off_cycle', net: '-1.00', sourceCurrencies: ['USD'], reimbursementAmounts: ['5000.01'] },
+      ['negative_net', 'currency_mismatch', 'large_reimbursement'],
+    ],
+    ['off-cycle zero net', { runType: 'off_cycle', net: '0.00' }, ['zero_net']],
   ])('%s', (_name, over, expected) => {
     expect(validationFlags(input(over))).toEqual(expected);
   });

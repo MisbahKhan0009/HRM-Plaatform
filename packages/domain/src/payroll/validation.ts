@@ -32,6 +32,11 @@ export interface FlagInput {
   anomalyThresholdPercent: number;
   reimbursementAmounts: readonly string[];
   reimbursementReviewThreshold: string;
+  /**
+   * `off_cycle` items pay only claims and adjustments (BUSINESS-RULES 6.10), so `no_salary_structure`, `joiner`,
+   * `leaver` and `net_change_over_threshold` do not apply. Omitted means `regular`.
+   */
+  runType?: 'regular' | 'off_cycle';
 }
 
 /**
@@ -41,15 +46,17 @@ export interface FlagInput {
 export function validationFlags(input: FlagInput): PayrollFlag[] {
   const flags: PayrollFlag[] = [];
   const net = new Decimal(input.net);
-  if (input.missingSalaryStructure) flags.push('no_salary_structure');
+  const regular = input.runType !== 'off_cycle';
+  if (regular && input.missingSalaryStructure) flags.push('no_salary_structure');
   if (net.isNegative() && !net.isZero()) flags.push('negative_net');
   if (input.sourceCurrencies.some((c) => c !== input.runCurrency)) flags.push('currency_mismatch');
   if (net.isZero()) flags.push('zero_net');
-  if (input.daysEmployed < input.daysInPeriod) {
+  if (regular && input.daysEmployed < input.daysInPeriod) {
     if (input.joiningDate > input.period.start) flags.push('joiner');
     if (input.separationDate !== null && input.separationDate < input.period.end) flags.push('leaver');
   }
   if (
+    regular &&
     input.previousNet !== null &&
     netChangeOverThreshold(input.previousNet, input.net, input.anomalyThresholdPercent)
   )

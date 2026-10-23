@@ -102,6 +102,7 @@ export async function getPayslip(deps: Deps, auth: AuthContext, id: string): Pro
       daysInPeriod: snap.period.daysInPeriod,
     },
     runNumber: view.runNumber,
+    runType: view.runType as PayslipData['runType'],
     daysEmployed: snap.daysEmployed,
     lines: snap.lines.map((l) => ({ kind: l.kind, code: l.code, label: l.label, amount: money(l.amount) })),
     totals: {

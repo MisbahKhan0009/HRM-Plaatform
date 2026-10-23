@@ -100088,6 +100088,13 @@
                           "runNumber": {
                             "type": "string"
                           },
+                          "runType": {
+                            "type": "string",
+                            "enum": [
+                              "regular",
+                              "off_cycle"
+                            ]
+                          },
                           "netAmount": {
                             "type": "object",
                             "properties": {
@@ -100122,6 +100129,7 @@
                           "employee",
                           "period",
                           "runNumber",
+                          "runType",
                           "netAmount",
                           "publishedAt",
                           "firstViewedAt"
@@ -100604,6 +100612,13 @@
                           "runNumber": {
                             "type": "string"
                           },
+                          "runType": {
+                            "type": "string",
+                            "enum": [
+                              "regular",
+                              "off_cycle"
+                            ]
+                          },
                           "netAmount": {
                             "type": "object",
                             "properties": {
@@ -100638,6 +100653,7 @@
                           "employee",
                           "period",
                           "runNumber",
+                          "runType",
                           "netAmount",
                           "publishedAt",
                           "firstViewedAt"
@@ -101144,6 +101160,13 @@
                     "runNumber": {
                       "type": "string"
                     },
+                    "runType": {
+                      "type": "string",
+                      "enum": [
+                        "regular",
+                        "off_cycle"
+                      ]
+                    },
                     "daysEmployed": {
                       "type": "integer"
                     },
@@ -101326,6 +101349,7 @@
                     "employee",
                     "period",
                     "runNumber",
+                    "runType",
                     "daysEmployed",
                     "lines",
                     "totals",
