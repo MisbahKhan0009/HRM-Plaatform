@@ -53,6 +53,7 @@ const SNAPSHOT: PayslipData = {
   },
   ruleVersion: 'payroll-v1',
   paymentStatus: 'paid',
+  payment: { method: 'cheque', paidOn: '2026-09-30', chequeNumber: '004517' },
   publishedAt: '2026-09-30T10:00:00.000Z',
   firstViewedAt: null,
 };
@@ -105,13 +106,15 @@ describe('buildPayslipPdf', () => {
         "Code",
         "EMP-0014",
         "Payment",
-        "Paid",
+        "Cheque No. 004517",
         "Department",
         "Engineering",
-        "Published",
+        "Paid on",
         "30 Sep 2026",
         "Position",
         "Software engineer",
+        "Published",
+        "30 Sep 2026",
         "Currency",
         "BDT",
         "Joined",
@@ -150,6 +153,23 @@ describe('buildPayslipPdf', () => {
     expect(text[0]).toBe('Big-Matrix Solutions');
     expect(text).toContain('No deductions this month');
     expect(text).toContain('BDT 0.00');
+  });
+
+  it('shows cash payments and the payment status while unpaid', async () => {
+    const cash = await extractText(
+      await buildPayslipPdf({
+        ...SNAPSHOT,
+        payment: { method: 'cash', paidOn: '2026-10-02', chequeNumber: null },
+      }),
+    );
+    expect(cash.slice(cash.indexOf('Payment'), cash.indexOf('Payment') + 2)).toEqual(['Payment', 'Cash']);
+    expect(cash[cash.indexOf('Paid on') + 1]).toBe('2 Oct 2026');
+
+    const unpaid = await extractText(
+      await buildPayslipPdf({ ...SNAPSHOT, paymentStatus: 'unpaid', payment: null }),
+    );
+    expect(unpaid[unpaid.indexOf('Payment') + 1]).toBe('Unpaid');
+    expect(unpaid).not.toContain('Paid on');
   });
 
   it('replaces characters the standard font cannot draw instead of failing', async () => {

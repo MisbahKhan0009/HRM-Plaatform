@@ -67,6 +67,13 @@ const PAYMENT_STATUS: Record<PayslipData['paymentStatus'], string> = {
   cancelled: 'Payment cancelled',
 };
 
+/** `Cheque No. 004517` or `Cash` once paid; otherwise the item's payment status. */
+export function paymentLabel(data: PayslipData): string {
+  const p = data.payment;
+  if (!p) return PAYMENT_STATUS[data.paymentStatus];
+  return p.method === 'cheque' ? `Cheque No. ${p.chequeNumber ?? ''}`.trim() : 'Cash';
+}
+
 /** Keeps printable ASCII and Latin-1; anything WinAnsi Helvetica cannot draw becomes `?`. */
 function safe(text: string): string {
   return text
@@ -226,10 +233,10 @@ export async function buildPayslipPdf(
   ];
   const right: [string, string][] = [
     ['Days paid', `${data.daysEmployed} of ${data.period.daysInPeriod}`],
-    ['Payment', PAYMENT_STATUS[data.paymentStatus]],
-    ['Published', formatPdfDate(dhakaDate(data.publishedAt))],
-    ['Currency', 'BDT'],
+    ['Payment', paymentLabel(data)],
   ];
+  if (data.payment) right.push(['Paid on', formatPdfDate(data.payment.paidOn)]);
+  right.push(['Published', formatPdfDate(dhakaDate(data.publishedAt))], ['Currency', 'BDT']);
   if (data.employee.joiningDate) right.push(['Joined', formatPdfDate(data.employee.joiningDate)]);
   if (data.employee.separationDate) right.push(['Left', formatPdfDate(data.employee.separationDate)]);
   rule(ctx, y + 12);
