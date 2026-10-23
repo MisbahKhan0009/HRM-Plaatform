@@ -190,6 +190,9 @@ describe('GET /admin/jobs', () => {
   };
 
   it('lists every daily step in dispatcher order with its last run for the caller’s company', async () => {
+    const auditRows = () =>
+      f.db.select().from(schema.auditLogs).where(eq(schema.auditLogs.companyId, f.companyId));
+    const before = (await auditRows()).length;
     const res = await call('GET', '/api/v1/admin/jobs', { cookie: admin.cookie });
     expect(res.status).toBe(200);
     const body = await json<Jobs>(res);
@@ -202,11 +205,8 @@ describe('GET /admin/jobs', () => {
     const otherAdmin = await other.signIn({ roles: ['system_admin'] });
     const theirs = await json<Jobs>(await call('GET', '/api/v1/admin/jobs', { cookie: otherAdmin.cookie }));
     expect(theirs.data.find((j) => j.job === 'maintenance.prune')?.lastRun).toBeNull();
-    const audit = await f.db
-      .select()
-      .from(schema.auditLogs)
-      .where(and(eq(schema.auditLogs.companyId, f.companyId), eq(schema.auditLogs.action, 'job.listed')));
-    expect(audit[0]).toMatchObject({ category: 'technical', actorUserId: admin.userId });
+    // A routine read: nothing is written to the audit log (AUDIT §1).
+    expect((await auditRows()).length).toBe(before);
   });
 
   it('is not public, and needs system.health.read', async () => {

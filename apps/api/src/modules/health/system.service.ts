@@ -123,16 +123,13 @@ export async function runDailyStep(
   };
 }
 
-/** `GET /admin/jobs` (same permission as `/health/details`): every daily step, in dispatcher order, with its last run. */
+/**
+ * `GET /admin/jobs` (same permission as `/health/details`): every daily step, in dispatcher order, with its last run.
+ * A routine read, so not audited (AUDIT §1).
+ */
 export async function listJobs(deps: Deps, auth: AuthContext): Promise<JobList> {
   requirePermission(auth, P.system.health.read);
   const runs = new Map((await latestRuns(deps, auth.companyId)).map((r) => [r.job, r]));
-  await recordAudit(deps.db, auth.actor, {
-    action: 'job.listed',
-    category: 'technical',
-    entityType: 'job',
-    metadata: { jobs: DAILY_STEPS.length },
-  });
   return {
     data: DAILY_STEPS.map((step) => {
       const r = runs.get(step.job);

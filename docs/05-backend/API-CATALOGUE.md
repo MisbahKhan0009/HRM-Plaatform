@@ -253,6 +253,6 @@ All reports enforce the same scopes as their source lists (FR-REP-006). Response
 | GET | `/health` | public | `{ status: "ok" }` only; no dependency details |
 | GET | `/health/details` | `system.health.read` | DB latency, last `job_runs` per job, outbox counts by status and oldest pending age, email deliveries today (FR-SET-004) |
 | POST | `/admin/jobs/{job}/run` | `system.health.read` + `settings.technical.manage`, Strong | Re-run a daily step `{ runKey?, date? }` (date defaults to today, Asia/Dhaka; the step's calendar check is skipped); returns `outcome` `succeeded`, `skipped` (key already succeeded) or `failed`; `404` for an unknown step; audited `job.run_requested` (JOBS-AND-OUTBOX section 4) |
-| GET | `/admin/jobs` | `system.health.read` | Every daily step in dispatcher order with its last run for the caller's company (`lastRun` null when it never ran); audited `job.listed` |
+| GET | `/admin/jobs` | `system.health.read` | Every daily step in dispatcher order with its last run for the caller's company (`lastRun` null when it never ran); not audited |
 | POST | `/admin/outbox/retry` | `system.health.read` + `settings.technical.manage`, Strong | Sets `next_attempt_at` to now on the company's `failed` messages (`dead` ones stay dead) and sends up to 20 of them after commit; returns `{ reset, processing }`; audited `outbox.retry_requested` |
 | GET | `/openapi.json` | public in staging/local; disabled in production | |
