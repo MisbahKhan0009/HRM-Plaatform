@@ -40,10 +40,10 @@
       "vars": {
         "APP_ENV": "staging",
         "APP_VERSION": "0.0.0",
-        "APP_ORIGIN": "https://hrm-staging.REPLACE-WITH-ACCOUNT-SUBDOMAIN.workers.dev",
+        "APP_ORIGIN": "https://hrm-staging.mkhanmisbah007.workers.dev",
         "MAILER": "gmail"
       },
-      "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "REPLACE-WITH-STAGING-HYPERDRIVE-ID" }],
+      "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "a2e4e43597d54cdbb49f8e3d4357fd65" }],
       "r2_buckets": [{ "binding": "FILES", "bucket_name": "hrm-staging-files" }],
       // Daily dispatcher only; no retry cron in staging (JOBS-AND-OUTBOX §1).
       "triggers": { "crons": ["5 18 * * *"] }
@@ -54,10 +54,10 @@
       "vars": {
         "APP_ENV": "production",
         "APP_VERSION": "0.0.0",
-        "APP_ORIGIN": "https://hrm.REPLACE-WITH-ACCOUNT-SUBDOMAIN.workers.dev",
+        "APP_ORIGIN": "https://hrm.mkhanmisbah007.workers.dev",
         "MAILER": "gmail"
       },
-      "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "REPLACE-WITH-PRODUCTION-HYPERDRIVE-ID" }],
+      "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "994c8cc188cd4b61b39e343af1ffa711" }],
       "r2_buckets": [{ "binding": "FILES", "bucket_name": "hrm-prod-files" }],
       // Outbox retry every 15 min 08:00–20:59 Dhaka Sun–Thu, and the daily dispatcher at 00:05 Dhaka.
       "triggers": { "crons": ["*/15 2-14 * * SUN-THU", "5 18 * * *"] }
