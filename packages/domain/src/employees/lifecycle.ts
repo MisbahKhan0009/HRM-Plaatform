@@ -82,6 +82,48 @@ export function isAllowedStatusChange(from: EmployeeStatus, to: EmployeeStatus):
 /** An effective-dated change applies now when its date is today or earlier, otherwise it is scheduled. */
 export const appliesNow = (effectiveDate: string, today: string) => effectiveDate <= today;
 
+/** One lifecycle step of an imported employee (see `importedEmployment`). */
+export interface ImportedEmploymentStep {
+  action: EmployeeAction;
+  type: EmploymentEventType;
+  effectiveDate: string;
+  changes: EventChanges;
+}
+
+/**
+ * Lifecycle of an imported employee who is already employed (BUSINESS-RULES §10). The steps follow DOMAIN-MODEL §5.2
+ * from `draft`: `start_preboarding`, then `hire` on the joining date (into `probation` when a probation end date is
+ * given), then `confirm` on the probation end date when that date is today or earlier. `joiningDate` must not be after
+ * `today`; the import validation rejects such rows. `status` is the status after the last step.
+ */
+export function importedEmployment(input: {
+  joiningDate: string;
+  probationEndDate: string | null;
+  today: string;
+}): { status: EmployeeStatus; steps: ImportedEmploymentStep[] } {
+  const steps: ImportedEmploymentStep[] = [];
+  let status: EmployeeStatus = 'draft';
+  const step = (action: EmployeeAction, effectiveDate: string, extra: EventChanges = {}) => {
+    const to = nextEmployeeStatus(status, action, { withProbation: Boolean(input.probationEndDate) });
+    if (!to) throw new Error(`import: ${action} is not allowed from ${status}`);
+    steps.push({
+      action,
+      type: ACTION_EVENT_TYPE[action],
+      effectiveDate,
+      changes: { status: { from: status, to }, ...extra },
+    });
+    status = to;
+  };
+  step('start_preboarding', input.joiningDate);
+  step('hire', input.joiningDate, {
+    joiningDate: { from: null, to: input.joiningDate },
+    probationEndDate: { from: null, to: input.probationEndDate },
+  });
+  if (input.probationEndDate && appliesNow(input.probationEndDate, input.today))
+    step('confirm', input.probationEndDate);
+  return { status, steps };
+}
+
 /** Employee columns an employment event may change, in the `changes` JSON of the event (DATA-MODEL §4). */
 export const EVENT_FIELDS = [
   'status',

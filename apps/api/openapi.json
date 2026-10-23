@@ -56657,12 +56657,25 @@
                           },
                           "employeeCode": {
                             "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "draft",
+                              "preboarding",
+                              "probation",
+                              "active",
+                              "notice_period",
+                              "separated",
+                              "archived"
+                            ]
                           }
                         },
                         "required": [
                           "row",
                           "id",
-                          "employeeCode"
+                          "employeeCode",
+                          "status"
                         ]
                       }
                     },

@@ -5,6 +5,7 @@ import {
   type EmployeeAction,
   employeeActions,
   eventUpdates,
+  importedEmployment,
   isAllowedStatusChange,
   keysOnCycles,
   nextEmployeeStatus,
@@ -145,6 +146,77 @@ describe('keysOnCycles (BUSINESS-RULES §7.1)', () => {
           if (i > 0) links.set(String(i), String(p % i));
         });
         expect(keysOnCycles(links).size).toBe(0);
+      }),
+    );
+  });
+});
+
+describe('importedEmployment (BUSINESS-RULES §10)', () => {
+  const today = '2026-03-01';
+
+  it('hires straight into active without a probation end date', () => {
+    const { status, steps } = importedEmployment({
+      joiningDate: '2019-07-01',
+      probationEndDate: null,
+      today,
+    });
+    expect(status).toBe('active');
+    expect(steps.map((s) => `${s.action}:${s.type}@${s.effectiveDate}`)).toEqual([
+      'start_preboarding:status_changed@2019-07-01',
+      'hire:hired@2019-07-01',
+    ]);
+    expect(steps[1]?.changes).toEqual({
+      status: { from: 'preboarding', to: 'active' },
+      joiningDate: { from: null, to: '2019-07-01' },
+      probationEndDate: { from: null, to: null },
+    });
+  });
+
+  it('stays in probation while the probation end date is after today', () => {
+    const { status, steps } = importedEmployment({
+      joiningDate: '2026-01-05',
+      probationEndDate: '2026-07-05',
+      today,
+    });
+    expect(status).toBe('probation');
+    expect(steps.map((s) => s.action)).toEqual(['start_preboarding', 'hire']);
+  });
+
+  it('confirms on the probation end date once it has passed', () => {
+    const { status, steps } = importedEmployment({
+      joiningDate: '2025-01-05',
+      probationEndDate: '2025-07-05',
+      today,
+    });
+    expect(status).toBe('active');
+    expect(steps.map((s) => `${s.type}@${s.effectiveDate}`)).toEqual([
+      'status_changed@2025-01-05',
+      'hired@2025-01-05',
+      'confirmed@2025-07-05',
+    ]);
+  });
+
+  it('walks only allowed transitions and ends in probation exactly when probation ends after today', () => {
+    const day = fc
+      .integer({ min: 0, max: 4000 })
+      .map((n) => new Date(Date.UTC(2016, 0, 1 + n)).toISOString().slice(0, 10));
+    fc.assert(
+      fc.property(day, fc.option(fc.integer({ min: 1, max: 400 })), day, (joiningDate, months, todayArb) => {
+        const t = joiningDate > todayArb ? joiningDate : todayArb;
+        const probationEndDate =
+          months === null
+            ? null
+            : new Date(Date.parse(joiningDate) + months * 86_400_000).toISOString().slice(0, 10);
+        const { status, steps } = importedEmployment({ joiningDate, probationEndDate, today: t });
+        let current: EmployeeStatus = 'draft';
+        for (const s of steps) {
+          expect(s.changes.status?.from).toBe(current);
+          current = s.changes.status?.to as EmployeeStatus;
+          expect(isAllowedStatusChange(s.changes.status?.from as EmployeeStatus, current)).toBe(true);
+          expect(s.effectiveDate <= t).toBe(true);
+        }
+        expect(current).toBe(status);
+        expect(status).toBe(probationEndDate !== null && probationEndDate > t ? 'probation' : 'active');
       }),
     );
   });

@@ -23,23 +23,31 @@ export function redact(value: unknown, depth = 0): unknown {
   return out;
 }
 
+const auditRow = (actor: Actor, event: AuditEvent) => ({
+  id: uuidv7(),
+  companyId: actor.companyId,
+  actorUserId: actor.userId,
+  actorType: actor.type,
+  action: event.action,
+  category: event.category,
+  entityType: event.entityType,
+  entityId: event.entityId ?? null,
+  employeeId: event.employeeId ?? null,
+  requestId: actor.requestId,
+  ipAddress: actor.ipAddress,
+  userAgent: actor.userAgent,
+  metadata: redact(event.metadata ?? {}) as Record<string, unknown>,
+});
+
 /** Writes one audit row in the caller's transaction (AUDIT.md §1): the change and its audit commit together. */
 export async function recordAudit(tx: Queryable, actor: Actor, event: AuditEvent) {
-  await tx.insert(schema.auditLogs).values({
-    id: uuidv7(),
-    companyId: actor.companyId,
-    actorUserId: actor.userId,
-    actorType: actor.type,
-    action: event.action,
-    category: event.category,
-    entityType: event.entityType,
-    entityId: event.entityId ?? null,
-    employeeId: event.employeeId ?? null,
-    requestId: actor.requestId,
-    ipAddress: actor.ipAddress,
-    userAgent: actor.userAgent,
-    metadata: redact(event.metadata ?? {}) as Record<string, unknown>,
-  });
+  await tx.insert(schema.auditLogs).values(auditRow(actor, event));
+}
+
+/** Writes many audit rows in one statement, in the caller's transaction (bulk changes such as the CSV import). */
+export async function recordAudits(tx: Queryable, actor: Actor, events: readonly AuditEvent[]) {
+  if (!events.length) return;
+  await tx.insert(schema.auditLogs).values(events.map((e) => auditRow(actor, e)));
 }
 
 /** `{ field: { from, to } }` for the fields an update actually changed (AUDIT.md §2 metadata conventions). */

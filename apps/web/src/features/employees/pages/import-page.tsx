@@ -117,7 +117,7 @@ export function ImportPage() {
       <PageHeader
         title="Import employees"
         breadcrumb={{ label: 'Employees', to: '/employees' }}
-        description={`Upload a CSV file with up to ${IMPORT_MAX_ROWS} rows. Valid rows are created as Draft; nothing is saved until you import.`}
+        description={`Import existing staff from a CSV file with up to ${IMPORT_MAX_ROWS} rows. Each valid row is created as Active, or as Probation when its probation end date is after today, hired on its joining date. Nothing is saved until you import.`}
       />
       <Card aria-labelledby="h-upload">
         <CardHeader
@@ -149,7 +149,9 @@ export function ImportPage() {
             <FileUp className="size-8 text-text-2" aria-hidden="true" />
             <span className="font-medium">{file ? file.name : 'Choose a CSV file'}</span>
             <span className="text-sm text-text-2">
-              First row: column names. Dates as YYYY-MM-DD; department by code, manager by employee code.
+              First row: column names. Dates as YYYY-MM-DD. Joining date is required and cannot be in the
+              future; add new hires one by one instead. Probation end date only for staff still in probation.
+              Department by code, manager by employee code.
             </span>
           </label>
           {fileError ? (
@@ -332,12 +334,14 @@ function PreviewCard({
 }
 
 function ImportResult({ result, onAgain }: { result: EmployeeImportResult; onAgain: () => void }) {
+  const probation = result.created.filter((c) => c.status === 'probation').length;
   return (
     <div className="flex max-w-5xl flex-col gap-6">
       <PageHeader title="Import finished" breadcrumb={{ label: 'Employees', to: '/employees' }} />
       <StatBar
         stats={[
-          { label: 'Created as Draft', value: result.createdCount },
+          { label: 'Created as Active', value: result.createdCount - probation },
+          { label: 'Created as Probation', value: probation },
           { label: 'Skipped', value: result.skippedCount },
         ]}
       />
