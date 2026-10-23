@@ -13,3 +13,8 @@ updates:
     groups:
       minor-and-patch:
         update-types: [minor, patch]
+    ignore:
+      # Vitest 5 stops the API tests running in the Workers runtime with @cloudflare/vitest-plugin 1.4.3 (the newest
+      # version old enough for minimumReleaseAge). Re-check when a newer plugin passes the release-age gate.
+      - dependency-name: vitest
+        update-types: ["version-update:semver-major"]
