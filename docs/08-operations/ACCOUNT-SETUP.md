@@ -1,6 +1,6 @@
 # Account setup runbook
 
-Status: **Draft.** No step has been run yet. The first person to run it corrects any step that differs from what they see and changes this status line. Dashboards change often; where a menu path differs, follow the provider's current wording.
+Status: **Run once, 2026-10-23.** §2 to §8 were run against the real dashboards and the steps corrected where they differed. Still open: the operations mailbox and a second owner on every account (§0), a dedicated Gmail sender (§5.1), and repository rules (§7.1, §7.2 branch protection). Dashboards change often; where a menu path differs, follow the provider's current wording.
 
 This runbook creates every external account and resource the HRM needs, all on free plans (D-032). It covers creation only. Configuration values go into `ENVIRONMENTS.md`, secret values into the stores listed in `SECRETS.md`, and the first deploy is in `DEPLOYMENT.md`.
 
@@ -203,21 +203,21 @@ pnpm exec wrangler secret list --env staging        # 🟢 names only, values ar
 
 ## 9. Record of accounts
 
-Fill in when done. Store this table in the owner's password manager, **not** in the repository. Only the empty template lives here.
+The table holds names and IDs only, none of which are secret. Logins, passwords, tokens and 2FA recovery codes stay in the owner's password manager (`SECRETS.md` §4).
 
 | Account / resource | Login | Owner 1 | Owner 2 | 2FA on | ID / note |
 |---|---|---|---|---|---|
-| Operations mailbox | | | | ☐ | |
-| Cloudflare account | | | | ☐ | Account ID: |
-| Workers subdomain | — | | | — | `<subdomain>.workers.dev` |
-| R2 buckets | — | | | — | `hrm-staging-files`, `hrm-prod-files`, `hrm-backups` |
-| Neon project | | | | ☐ | Region, Postgres major version: |
-| Hyperdrive | — | | | — | staging ID, prod ID |
-| Gmail sender | | | | ☐ | |
-| Google Cloud project | (Gmail sender) | | | ☐ | project ID |
-| Sentry | | | | ☐ | org slug |
-| GitHub repository | | | | ☐ | public / private |
-| `age` backup key pair | — | | | — | where the private key is stored (§ `BACKUP-AND-RESTORE.md` §2) |
+| Operations mailbox | not created yet | | | ☐ | Accounts below use the owner's own Google account until it exists |
+| Cloudflare account | owner's Google account | Misbah | not named yet | ☐ | Account ID: `281309b986b5c6deebe5d81fbb069486` |
+| Workers subdomain | — | Misbah | | — | `mkhanmisbah007.workers.dev` (shared with the account's other Workers) |
+| R2 buckets | — | Misbah | | — | `hrm-staging-files`, `hrm-prod-files`, `hrm-backups` (APAC, private; lifecycle rules on `hrm-backups`); R2 token `hrm-backups`, CI token `hrm-ci-deploy` |
+| Neon project | owner's Google account | Misbah | not named yet | ☐ | `hrm` (`late-credit-28329566`), AWS Asia Pacific 1 (Singapore), Postgres 16; branches `production` (default) and `staging` |
+| Hyperdrive | — | Misbah | | — | `hrm-staging-db` `a2e4e43597d54cdbb49f8e3d4357fd65`, `hrm-prod-db` `994c8cc188cd4b61b39e343af1ffa711` |
+| Gmail sender | owner's Gmail account (interim) | Misbah | not named yet | ☐ | Replace with a dedicated sender account (§5.1) |
+| Google Cloud project | (Gmail sender) | Misbah | | ☐ | `bigmatrix-hrm`; OAuth app `Big-Matrix HRM` in production (unverified), client `hrm-mailer` |
+| Sentry | owner's Google account | Misbah | | ☐ | org `bms-io`; projects `hrm-api`, `hrm-web`; auth token `hrm-ci-releases` |
+| GitHub repository | `MisbahKhan0009` | Misbah | not named yet | ☐ | `MisbahKhan0009/HRM-Plaatform`, public; environments `staging`, `production`, `restore-drill`, `backups` |
+| `age` backup key pair | — | Misbah | | — | Public key in GitHub secret `BACKUP_AGE_RECIPIENT`; private key in the owner's password manager (`BACKUP-AND-RESTORE.md` §2) |
 
 ## 10. Verify it worked
 
