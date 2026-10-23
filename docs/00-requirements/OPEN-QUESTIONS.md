@@ -42,6 +42,7 @@ Collected from all Stage 5 documents on 2026-10-22. Each has a **proposed defaul
 | C10 | May an `hr_admin` (`user.manage` without `role.manage`) grant roles when inviting a user? | No: `roleCodes` at invitation also needs `role.manage`, so `user.manage` alone cannot create a more privileged account; HR invites, a system admin assigns roles | API-CATALOGUE §2 |
 | C11 | May `role.manage` grant privileged permissions (payroll, compensation, audit) to roles without strong auth, such as the derived `employee` and `manager` roles? | Allowed and audited (`role.permissions_changed`); the UI warns | API-CATALOGUE §2 |
 | C12 | Does `audit.read.technical` see the metadata of security events (role grants, invitations, resets)? | No: actor and action only; metadata of technical events only | AUDIT §5 |
+| C13 | May an `hr_admin` (`user.manage`) suspend a `system_admin` or reset their sign-in factors? | Allowed today and audited; the alternative is to require `role.manage` for actions on users who hold a privileged role | SECURITY-MODEL §4 |
 
 ## D. UI and operations
 | # | Question | Proposed default | Source |

@@ -108,6 +108,22 @@ describe('session rules', () => {
     ).toBe(200);
   });
 
+  it('answers 404 for Better Auth endpoints the app does not use, such as get-totp-uri', async () => {
+    // A weak email-code session must not read the TOTP secret and turn itself into a strong session.
+    const po = await f.signIn({ roles: ['payroll_officer'], strong: false });
+    const res = await call('POST', '/api/v1/auth/two-factor/get-totp-uri', { cookie: po.cookie, body: {} });
+    expect(res.status).toBe(404);
+    expect(
+      (
+        await call('POST', '/api/v1/auth/two-factor/verify-totp', {
+          cookie: po.cookie,
+          body: { code: '123456' },
+        })
+      ).status,
+    ).toBe(404);
+    expect((await call('GET', '/api/v1/auth/get-session', { cookie: po.cookie })).status).toBe(200);
+  });
+
   it('rejects state changes from another origin', async () => {
     const u = await f.signIn({ employee: true, strong: false });
     const res = await call('PATCH', '/api/v1/auth/me/preferences', {

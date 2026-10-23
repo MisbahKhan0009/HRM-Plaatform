@@ -140,6 +140,25 @@ export async function authenticate(c: Parameters<Parameters<typeof createMiddlew
   return null;
 }
 
+/** Better Auth endpoints the web app calls (AUTH-IMPLEMENTATION §3); everything else under /auth answers 404. */
+const BETTER_AUTH_ALLOWED = new Set([
+  '/get-session',
+  '/sign-out',
+  '/list-sessions',
+  '/revoke-session',
+  '/email-otp/send-verification-otp',
+  '/sign-in/email-otp',
+  '/passkey/generate-authenticate-options',
+  '/passkey/verify-authentication',
+  '/passkey/generate-register-options',
+  '/passkey/verify-registration',
+  '/passkey/list-user-passkeys',
+  '/passkey/delete-passkey',
+  '/two-factor/enable',
+  '/two-factor/disable',
+  '/two-factor/generate-backup-codes',
+]);
+
 /** Better Auth routes that change sign-in factors get our checks first (AUTH-IMPLEMENTATION §3.2, §6). */
 async function guardBetterAuth(c: Parameters<typeof authenticate>[0], path: string) {
   const sub = path.slice(`${V1}/auth`.length);
@@ -183,6 +202,12 @@ export const session = () =>
     if (!path.startsWith(V1) || PUBLIC_EXACT.includes(path) || startsWithAny(path, PUBLIC_PREFIXES))
       return next();
     if (path.startsWith(`${V1}/auth/`) && !startsWithAny(path, OWN_AUTH)) {
+      // Only the Better Auth endpoints the app uses are reachable. Others, such as /two-factor/get-totp-uri (which
+      // returns the TOTP secret to any session when passwordless), would let an email-only attacker mint a strong
+      // session.
+      if (!BETTER_AUTH_ALLOWED.has(path.slice(`${V1}/auth`.length))) {
+        return problemResponse(c, 'NOT_FOUND', { title: 'Not found' });
+      }
       const denied = await guardBetterAuth(c, path);
       return denied ?? next();
     }

@@ -108,6 +108,8 @@ Implementation: Better Auth's `hooks.after` in `packages/auth/src/create-auth.ts
 
 The session middleware applies these checks before Better Auth handles `/two-factor/enable`, `/two-factor/disable`, `/two-factor/generate-backup-codes`, `/passkey/generate-register-options`, `/passkey/verify-registration` and `/passkey/delete-passkey`.
 
+Only the Better Auth endpoints the web app calls are reachable; the session middleware answers 404 for every other path under `/api/v1/auth/` (`BETTER_AUTH_ALLOWED` in `apps/api/src/middleware/session.ts`). This matters because `allowPasswordless` lets `/two-factor/get-totp-uri` return the TOTP secret to any session, so an attacker holding only the email inbox could otherwise compute a code and turn a weak session strong. TOTP verification is reached only through `POST /auth/step-up/totp`, which calls Better Auth internally. Add a path to the allow-list only together with a test that a weak session cannot use it to gain strength.
+
 Email OTP sign-in creates a session with `authMethod = 'email_otp'` and no `strongAuthAt`.
 
 ### 3.1 Middleware rules
