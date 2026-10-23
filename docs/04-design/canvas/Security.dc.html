@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Security and preferences · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="payroll" active="none" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <span class="hrm-label" style="flex-grow: 1;">Account · Security &amp; preferences</span>
+      <span class="hrm-avatar" aria-label="Imran Hossain">IH</span>
+    </header>
+
+    <main class="hrm-page">
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <h1 class="hrm-h1">Security &amp; preferences</h1>
+        <p class="hrm-muted" style="margin: 0;">Your role sees payroll data, so you need a passkey or an authenticator app. You have both.</p>
+      </div>
+
+      <nav class="hrm-tabs" aria-label="Account sections">
+        <a class="hrm-tab" href="#profile">Profile</a>
+        <a class="hrm-tab is-active" href="#security" aria-current="page">Security</a>
+        <a class="hrm-tab" href="#preferences">Preferences</a>
+      </nav>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; align-items: start;">
+        <section class="hrm-card" aria-labelledby="pk" style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+            <h2 id="pk" class="hrm-h3">Passkeys</h2>
+            <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}">Add a passkey</x-import>
+          </div>
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column;">
+            <li style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line);"><svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--text-2);"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg><div style="flex-grow: 1;"><div>Office laptop · Windows Hello</div><div class="hrm-faint" style="font-size: 12px;">Added 3 Jan 2026 · last used today</div></div><button class="hrm-btn hrm-btn-text hrm-btn-sm" type="button">Remove</button></li>
+            <li style="display: flex; align-items: center; gap: 12px; padding: 12px 0;"><svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--text-2);"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg><div style="flex-grow: 1;"><div>Phone · Android</div><div class="hrm-faint" style="font-size: 12px;">Added 9 Feb 2026 · last used 18 Oct</div></div><button class="hrm-btn hrm-btn-text hrm-btn-sm" type="button">Remove</button></li>
+          </ul>
+        </section>
+
+        <section class="hrm-card" aria-labelledby="mfa" style="display: flex; flex-direction: column; gap: 16px;">
+          <h2 id="mfa" class="hrm-h3">Authenticator app &amp; recovery</h2>
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line);">
+            <div><div>Authenticator app</div><div class="hrm-faint" style="font-size: 12px;">Used with an email code for the second step</div></div>
+            <span class="hrm-badge tone-ok">On</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+            <div><div>Recovery codes</div><div class="hrm-faint" style="font-size: 12px;"><span class="hrm-mono">8</span> of <span class="hrm-mono">10</span> left</div></div>
+            <button class="hrm-btn hrm-btn-secondary hrm-btn-sm" type="button">Make new codes</button>
+          </div>
+        </section>
+
+        <section class="hrm-card" aria-labelledby="sess" style="display: flex; flex-direction: column; gap: 16px; padding: 0; overflow: hidden;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 20px 24px 0;">
+            <h2 id="sess" class="hrm-h3">Signed-in devices</h2>
+            <button class="hrm-btn hrm-btn-text hrm-btn-sm" type="button">Sign out all others</button>
+          </div>
+          <table class="hrm-table">
+            <thead><tr><th scope="col">Device</th><th scope="col">Last active</th><th scope="col"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Action</span></th></tr></thead>
+            <tbody>
+              <tr><td>Chrome · Windows <span class="hrm-badge tone-info no-dot" style="margin-left: 6px;">This device</span></td><td>Now</td><td></td></tr>
+              <tr><td>Chrome · Android</td><td>18 Oct, 7:12 pm</td><td style="text-align: right;"><button class="hrm-btn hrm-btn-text hrm-btn-sm" type="button">Sign out</button></td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="hrm-card" aria-labelledby="pref" style="display: flex; flex-direction: column; gap: 16px;">
+          <h2 id="pref" class="hrm-h3">Preferences</h2>
+          <fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px;">
+            <legend class="hrm-field-label" style="margin-bottom: 10px;">Theme</legend>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+              <label style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--accent); border-radius: var(--bm-r-lg); cursor: pointer;">
+                <span style="display: block; height: 64px; border-radius: 6px; background: #0f1011; border: 1px solid #2b2d31; position: relative;"><span style="position: absolute; left: 10px; top: 10px; width: 50%; height: 8px; border-radius: 4px; background: #f1f2f3;"></span><span style="position: absolute; left: 10px; top: 26px; width: 30%; height: 8px; border-radius: 4px; background: #d92d22;"></span></span>
+                <span style="display: flex; align-items: center; gap: 8px;"><input class="hrm-check" type="radio" name="theme" checked>Ink · dark (default)</span>
+              </label>
+              <label style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--line-strong); border-radius: var(--bm-r-lg); cursor: pointer;">
+                <span style="display: block; height: 64px; border-radius: 6px; background: #ffffff; border: 1px solid #d4d4d4; position: relative;"><span style="position: absolute; left: 10px; top: 10px; width: 50%; height: 8px; border-radius: 4px; background: #1c1c1c;"></span><span style="position: absolute; left: 10px; top: 26px; width: 30%; height: 8px; border-radius: 4px; background: #d92d22;"></span></span>
+                <span style="display: flex; align-items: center; gap: 8px;"><input class="hrm-check" type="radio" name="theme">Paper · light</span>
+              </label>
+            </div>
+          </fieldset>
+          <div class="hrm-field">
+            <label class="hrm-field-label" for="lang">Language</label>
+            <select id="lang" class="hrm-input hrm-select"><option>English</option><option disabled>বাংলা (coming later)</option></select>
+          </div>
+          <p class="hrm-faint" style="margin: 0; font-size: 13px;">Changes save straight away and follow you to other devices.</p>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1050}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'ink', no: false };
+  }
+}
+</script>
+</body>
+</html>

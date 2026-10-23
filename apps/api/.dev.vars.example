@@ -1,0 +1,6 @@
+# Copy to .dev.vars (gitignored). Local development only: never put production values here (SECRETS.md).
+# Values are added as modules land in Stage 8, for example:
+# BETTER_AUTH_SECRET=generate-with-openssl-rand-base64-32
+# GMAIL_CLIENT_ID=
+# GMAIL_CLIENT_SECRET=
+# GMAIL_REFRESH_TOKEN=

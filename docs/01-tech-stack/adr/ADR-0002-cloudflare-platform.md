@@ -5,7 +5,7 @@
 ## Decision
 - One Worker (`apps/api`) serves `/api/v1/*` and the built SPA via Workers Static Assets → same origin, `SameSite=Lax` HttpOnly cookies, simple CSRF model.
 - **R2** private bucket for documents, receipts and payslips (no public bucket, no public URLs — FR-DOC-008). Downloads go through an authorized endpoint; any signed URL expires ≤ 5 min.
-- **Async work via a transactional outbox** (revised by D-036): business transactions insert rows into an `outbox` table in the same DB transaction; a **Cron Trigger every minute** processes a small batch (send emails, retries with backoff, dead-letter after N attempts). Failures never roll back committed business state (FR-WF-008). No Cloudflare Queues.
+- **Async work via a transactional outbox** (revised by D-036): business transactions insert rows into an `outbox` table in the same DB transaction; the request sends it right after commit via `ctx.waitUntil()`, and a **retry Cron Trigger every 15 minutes during Dhaka working hours** processes a small batch (never a per-minute cron: it would stop Neon scaling to zero, see ARCHITECTURE §4) (send emails, retries with backoff, dead-letter after N attempts). Failures never roll back committed business state (FR-WF-008). No Cloudflare Queues.
 - **Cron Triggers** also run scheduled jobs (leave accrual, year-end carry-forward, document expiry reminders), mostly as SQL so CPU stays low.
 - Runs on the **Workers Free** plan (D-032); see ADR-0009 for limits.
 

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Payroll runs · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="payroll" active="payroll" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <span class="hrm-label" style="flex-grow: 1;">Payroll · Payroll runs</span>
+      <span class="hrm-avatar" aria-label="Imran Hossain">IH</span>
+    </header>
+
+    <main class="hrm-page">
+      <div class="hrm-page-head">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h1 class="hrm-h1">Payroll runs</h1>
+          <p class="hrm-muted" style="margin: 0;">One regular run per month. Locked runs can't be edited; corrections go into a later run as adjustments.</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <select class="hrm-input hrm-select" aria-label="Year" style="width: 110px;"><option>2026</option></select>
+          <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}">Create payroll run</x-import>
+        </div>
+      </div>
+
+      <div class="hrm-table-wrap">
+        <div class="hrm-table-scroll">
+          <table class="hrm-table">
+            <thead><tr><th scope="col">Run</th><th scope="col">Period</th><th scope="col">Type</th><th scope="col">Status</th><th scope="col" class="num">Employees</th><th scope="col" class="num">Net pay (৳)</th><th scope="col">Prepared · approved</th></tr></thead>
+            <tbody>
+              <tr><td><a class="hrm-mono" href="PayrollRun.dc.html">PR-2026-10-01</a></td><td>Oct 2026</td><td>Regular</td><td><span class="hrm-badge tone-warn">Calculated</span></td><td class="num">44</td><td class="num">2,882,686.43</td><td>Imran Hossain · —</td></tr>
+              <tr><td><a class="hrm-mono" href="#r">PR-2026-09-01</a></td><td>Sep 2026</td><td>Regular</td><td><span class="hrm-badge tone-ok">Reconciled</span></td><td class="num">43</td><td class="num">2,841,950.00</td><td>Imran Hossain · Ayesha Siddiqua</td></tr>
+              <tr><td><a class="hrm-mono" href="#r">PR-2026-08-01</a></td><td>Aug 2026</td><td>Regular</td><td><span style="display: inline-flex; gap: 6px;"><span class="hrm-badge tone-ok">Reconciled</span><span class="hrm-badge tone-warn no-dot">Self-approved</span></span></td><td class="num">43</td><td class="num">2,826,300.00</td><td>Imran Hossain · Imran Hossain</td></tr>
+              <tr><td><a class="hrm-mono" href="#r">PR-2026-07-02</a></td><td>Jul 2026</td><td>Off-cycle</td><td><span class="hrm-badge tone-ok">Reconciled</span></td><td class="num">1</td><td class="num">18,500.00</td><td>Imran Hossain · Ayesha Siddiqua</td></tr>
+              <tr><td><a class="hrm-mono" href="#r">PR-2026-07-01</a></td><td>Jul 2026</td><td>Regular</td><td><span class="hrm-badge tone-ok">Reconciled</span></td><td class="num">42</td><td class="num">2,790,120.00</td><td>Imran Hossain · Ayesha Siddiqua</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="hrm-table-foot"><span><span class="hrm-mono">1–5</span> of <span class="hrm-mono">12</span></span><span>Self-approved runs are flagged and keep the approver's written reason.</span></div>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":950}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'ink', no: false };
+  }
+}
+</script>
+</body>
+</html>

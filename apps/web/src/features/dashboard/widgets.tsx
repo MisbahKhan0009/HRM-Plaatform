@@ -1,0 +1,142 @@
+import type { ApprovalSummary, CurrentUser, Permission } from '@hrm/contracts';
+import { Button, Card, CardHeader, LoadingBlock } from '@hrm/ui';
+import { useQuery } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
+import type { ComponentType } from 'react';
+import { api } from '../../lib/api/client';
+import { formatRelative } from '../../lib/format';
+import { TeamTodayWidget, TodayAttendanceWidget } from '../attendance/widgets';
+import { ExpiringDocumentsWidget } from '../documents/ExpiringDocumentsWidget';
+import { PeopleOverviewWidget } from '../employees/widgets';
+import { LeaveBalancesWidget, MyLeaveRequestsWidget, WhoIsOnLeaveWidget } from '../leave/widgets';
+import { LatestPayslipWidget, PayrollStatusWidget } from '../payroll/widgets';
+import { MyClaimsWidget } from '../reimbursements/MyClaimsWidget';
+import { systemQueries } from '../system/api';
+import { healthProblems, SystemHealthSummary } from '../system/health-summary';
+
+export interface DashboardWidget {
+  key: string;
+  /** Any one of these shows the widget (INFORMATION-ARCHITECTURE §5). */
+  any: Permission[];
+  /** Grid span on desktop (12 columns). */
+  span: 4 | 6 | 8 | 12;
+  /** The widget can carry the page's one primary button (INFORMATION-ARCHITECTURE §5 rule). */
+  hasPrimaryAction?: boolean;
+  Component: ComponentType<{ me: CurrentUser; primary: boolean }>;
+}
+
+const SUBJECT_LABEL: Record<string, string> = {
+  leave_request: 'Leave request',
+  attendance_correction: 'Attendance correction',
+  reimbursement_claim: 'Claim',
+  profile_change: 'Profile change',
+  payroll_run: 'Payroll run',
+  payroll_adjustment: 'Payroll adjustment',
+};
+
+function ApprovalsWidget({ primary }: { me: CurrentUser; primary: boolean }) {
+  const inbox = useQuery({
+    queryKey: ['approvals', 'inbox', { page: 1, pageSize: 5 }],
+    queryFn: () =>
+      api.get<{ data: ApprovalSummary[]; page: { totalItems: number } }>('/approvals/inbox', {
+        query: { pageSize: 5 },
+      }),
+  });
+  return (
+    <Card aria-labelledby="w-approvals">
+      <CardHeader
+        id="w-approvals"
+        label="Approvals"
+        title={inbox.data ? `${inbox.data.page.totalItems} waiting` : 'Approvals waiting'}
+        actions={
+          <Button variant={primary ? 'primary' : 'secondary'} size="sm" asChild>
+            <Link to="/approvals">Review approvals</Link>
+          </Button>
+        }
+      />
+      {inbox.data?.data.length ? (
+        <ul className="flex flex-col divide-y divide-line">
+          {inbox.data.data.map((a) => (
+            <li key={a.id} className="flex items-center justify-between gap-3 py-2.5">
+              <div className="min-w-0">
+                <p className="font-mono text-[11px] uppercase tracking-[0.13em] text-text-3">
+                  {SUBJECT_LABEL[a.subjectType]}
+                </p>
+                <p className="truncate">{a.subjectEmployee?.name ?? a.requester.name}</p>
+              </div>
+              <span className="shrink-0 text-sm text-text-2" title={a.createdAt}>
+                {formatRelative(a.createdAt)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-text-2">Nothing is waiting for you.</p>
+      )}
+    </Card>
+  );
+}
+
+/**
+ * Widgets in dashboard order (INFORMATION-ARCHITECTURE §5). Feature modules add theirs here; the first visible
+ * widget with a primary action keeps the primary style.
+ */
+function SystemHealthWidget() {
+  const health = useQuery(systemQueries.health());
+  const problems = health.data ? healthProblems(health.data).length : 0;
+  return (
+    <Card aria-labelledby="w-system">
+      <CardHeader
+        id="w-system"
+        label="System health"
+        title={
+          !health.data ? 'System health' : problems ? 'Something needs attention' : 'Everything is running'
+        }
+        actions={
+          <Button variant="text" asChild>
+            <Link to="/settings/system">System health</Link>
+          </Button>
+        }
+      />
+      {health.data ? (
+        <SystemHealthSummary health={health.data} />
+      ) : health.isError ? (
+        <p className="text-text-2">We couldn't load system health. Try again later.</p>
+      ) : (
+        <LoadingBlock label="system health" rows={3} />
+      )}
+    </Card>
+  );
+}
+
+export const DASHBOARD_WIDGETS: DashboardWidget[] = [
+  {
+    key: 'attendance-today',
+    any: ['attendance.check_in.own'],
+    span: 6,
+    hasPrimaryAction: true,
+    Component: TodayAttendanceWidget,
+  },
+  { key: 'leave-balances', any: ['leave.request.own'], span: 6, Component: LeaveBalancesWidget },
+  { key: 'my-leave-requests', any: ['leave.request.own'], span: 6, Component: MyLeaveRequestsWidget },
+  { key: 'my-claims', any: ['reimbursement.request.own'], span: 6, Component: MyClaimsWidget },
+  { key: 'latest-payslip', any: ['payslip.read.own'], span: 6, Component: LatestPayslipWidget },
+  { key: 'approvals', any: ['approval.inbox'], span: 6, hasPrimaryAction: true, Component: ApprovalsWidget },
+  { key: 'team-today', any: ['attendance.read.team'], span: 6, Component: TeamTodayWidget },
+  {
+    key: 'who-is-on-leave',
+    any: ['leave.read.team', 'leave.read.all'],
+    span: 6,
+    Component: WhoIsOnLeaveWidget,
+  },
+  { key: 'people-overview', any: ['report.hr'], span: 6, Component: PeopleOverviewWidget },
+  { key: 'expiring-documents', any: ['document.read.all'], span: 6, Component: ExpiringDocumentsWidget },
+  {
+    key: 'payroll-status',
+    any: ['payroll.read.all'],
+    span: 6,
+    hasPrimaryAction: true,
+    Component: PayrollStatusWidget,
+  },
+  { key: 'system-health', any: ['system.health.read'], span: 6, Component: SystemHealthWidget },
+];

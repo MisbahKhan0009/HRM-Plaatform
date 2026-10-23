@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Users and roles · Settings · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="admin" active="users" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <nav aria-label="Breadcrumb" style="flex-grow: 1; display: flex; gap: 8px; align-items: center;"><span class="hrm-label">Settings</span><span class="hrm-faint">/</span><span class="hrm-label" style="color: var(--text);">Users</span></nav>
+      <span class="hrm-avatar" aria-label="Shafiq Alam">SA</span>
+    </header>
+
+    <main class="hrm-page" style="max-width: 1320px; flex-direction: row; flex-wrap: wrap; align-items: flex-start;">
+      <div style="flex: 1 1 200px; max-width: 232px;">
+        <dc-import name="SettingsNav" theme="{{theme}}" active="users" hint-size="232px,700px"></dc-import>
+      </div>
+
+      <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 24px;">
+        <div class="hrm-page-head">
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <h1 class="hrm-h1">Users</h1>
+            <p class="hrm-muted" style="margin: 0;">Sign-in accounts. Being a system admin doesn't give access to salary or employee records.</p>
+          </div>
+          <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}">Invite user</x-import>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;">
+          <div class="hrm-table-wrap" style="flex: 999 1 520px; min-width: 0;">
+            <div class="hrm-table-scroll">
+              <table class="hrm-table">
+                <thead><tr><th scope="col">User</th><th scope="col">Roles</th><th scope="col">Strong sign-in</th><th scope="col">Status</th></tr></thead>
+                <tbody>
+                  <tr><td><div style="font-weight: 500;">Ayesha Siddiqua</div><div class="hrm-faint" style="font-size: 12px;">ayesha.siddiqua@big-matrix.com</div></td><td>Director</td><td>Passkey</td><td><span class="hrm-badge tone-ok">Active</span></td></tr>
+                  <tr><td><div style="font-weight: 500;">Farzana Akter</div><div class="hrm-faint" style="font-size: 12px;">farzana.akter@big-matrix.com</div></td><td>HR admin</td><td>Passkey + app</td><td><span class="hrm-badge tone-ok">Active</span></td></tr>
+                  <tr style="background: var(--accent-tint);"><td><div style="font-weight: 600;">Imran Hossain</div><div class="hrm-faint" style="font-size: 12px;">imran.hossain@big-matrix.com</div></td><td>Payroll officer</td><td>Passkey + app</td><td><span class="hrm-badge tone-ok">Active</span></td></tr>
+                  <tr><td><div style="font-weight: 500;">Zahid Rahman</div><div class="hrm-faint" style="font-size: 12px;">zahid.rahman@big-matrix.com</div></td><td>Employee</td><td class="hrm-faint">Not needed</td><td><span class="hrm-badge tone-neutral">Invited</span></td></tr>
+                  <tr><td><div style="font-weight: 500;">Jamal Uddin</div><div class="hrm-faint" style="font-size: 12px;">jamal.uddin@big-matrix.com</div></td><td>Employee</td><td class="hrm-faint">Not needed</td><td><span class="hrm-badge tone-bad">Deactivated</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="hrm-table-foot"><span><span class="hrm-mono">1–5</span> of <span class="hrm-mono">47</span></span><span>Manager and Employee roles come from the employee record.</span></div>
+          </div>
+
+          <aside class="hrm-card" aria-labelledby="roles" style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 16px; border-color: var(--line-strong);">
+            <div style="display: flex; flex-direction: column; gap: 4px;"><span class="hrm-label">Roles</span><h2 id="roles" class="hrm-h3">Imran Hossain</h2></div>
+            <fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px;">
+              <legend class="hrm-field-label" style="margin-bottom: 8px;">Assigned roles</legend>
+              <label style="display: flex; gap: 10px; align-items: center;"><input class="hrm-check" type="checkbox">System admin</label>
+              <label style="display: flex; gap: 10px; align-items: center;"><input class="hrm-check" type="checkbox">HR admin</label>
+              <label style="display: flex; gap: 10px; align-items: center;"><input class="hrm-check" type="checkbox" checked>Payroll officer</label>
+              <label style="display: flex; gap: 10px; align-items: center;"><input class="hrm-check" type="checkbox">Director</label>
+              <label style="display: flex; gap: 10px; align-items: center;"><input class="hrm-check" type="checkbox">Auditor</label>
+            </fieldset>
+            <p class="hrm-faint" style="margin: 0; font-size: 13px;">All of these roles need a passkey or authenticator app. Saving asks you to confirm with your passkey and is recorded in the audit log.</p>
+            <button class="hrm-btn hrm-btn-secondary hrm-btn-block" type="button">Save roles</button>
+            <hr class="hrm-divider">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="hrm-btn hrm-btn-text hrm-btn-sm" type="button">Reset sign-in methods</button>
+              <button class="hrm-btn hrm-btn-destructive hrm-btn-sm" type="button">Suspend</button>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'ink', no: false };
+  }
+}
+</script>
+</body>
+</html>

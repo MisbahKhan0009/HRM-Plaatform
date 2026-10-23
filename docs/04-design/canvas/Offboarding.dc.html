@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Offboarding Sadia Karim · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="hr" active="employees" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <nav aria-label="Breadcrumb" style="flex-grow: 1; display: flex; gap: 8px; align-items: center;"><a class="hrm-label" href="Employees.dc.html" style="text-decoration: none;">Employees</a><span class="hrm-faint">/</span><a class="hrm-label" href="EmployeeProfile.dc.html" style="text-decoration: none;">Sadia Karim</a><span class="hrm-faint">/</span><span class="hrm-label" style="color: var(--text);">Offboarding</span></nav>
+      <span class="hrm-avatar" aria-label="Farzana Akter">FA</span>
+    </header>
+
+    <main class="hrm-page" style="max-width: 1320px;">
+      <div class="hrm-page-head">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;"><h1 class="hrm-h1">Offboarding Sadia Karim</h1><span class="hrm-badge tone-warn">Notice period</span></div>
+          <p class="hrm-muted" style="margin: 0;">ML engineer · Engineering · <span class="hrm-mono">EMP-0022</span> · last working day <strong style="color: var(--text); font-weight: 600;">Sun 15 Nov 2026</strong></p>
+        </div>
+        <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}">Confirm separation</x-import>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 24px; align-items: start;">
+        <section class="hrm-card" aria-labelledby="exit" style="display: flex; flex-direction: column; gap: 16px;">
+          <h2 id="exit" class="hrm-h3">Separation</h2>
+          <dl class="hrm-dl">
+            <dt>Exit type</dt><dd>Resignation</dd>
+            <dt>Notice received</dt><dd>15 Oct 2026</dd>
+            <dt>Last working day</dt><dd>15 Nov 2026 · paid, inclusive</dd>
+            <dt>Sign-in access ends</dt><dd>16 Nov 2026, 12:05 am (automatic)</dd>
+            <dt>Record</dt><dd>Archived after separation. History is kept.</dd>
+          </dl>
+        </section>
+
+        <section class="hrm-card" aria-labelledby="tasks" style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;"><h2 id="tasks" class="hrm-h3">Checklist</h2><span class="hrm-muted" style="font-size: 13px;"><span class="hrm-mono">2</span> of <span class="hrm-mono">5</span> done</span></div>
+          <label style="display: flex; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line);"><input class="hrm-check" type="checkbox" checked><span style="flex-grow: 1;">Resignation letter uploaded</span><span class="hrm-faint" style="font-size: 12px;">HR</span></label>
+          <label style="display: flex; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line);"><input class="hrm-check" type="checkbox" checked><span style="flex-grow: 1;">Handover plan agreed with manager</span><span class="hrm-faint" style="font-size: 12px;">Tanvir Ahmed</span></label>
+          <label style="display: flex; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line);"><input class="hrm-check" type="checkbox"><span style="flex-grow: 1;">Laptop and access card returned</span><span class="hrm-faint" style="font-size: 12px;">HR</span></label>
+          <label style="display: flex; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line);"><input class="hrm-check" type="checkbox"><span style="flex-grow: 1;">Final settlement reviewed</span><span class="hrm-faint" style="font-size: 12px;">Payroll</span></label>
+          <label style="display: flex; gap: 10px; align-items: center; padding: 8px 0;"><input class="hrm-check" type="checkbox"><span style="flex-grow: 1;">Experience certificate issued</span><span class="hrm-faint" style="font-size: 12px;">HR</span></label>
+        </section>
+
+        <section class="hrm-card" aria-labelledby="settle" style="display: flex; flex-direction: column; gap: 16px; grid-column: 1 / -1;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;"><h2 id="settle" class="hrm-h3">Final settlement preview · November 2026</h2><span class="hrm-label">Paid in the November regular run</span></div>
+          <div class="hrm-table-wrap" style="background: var(--ground);">
+            <table class="hrm-table">
+              <thead><tr><th scope="col">Item</th><th scope="col">Basis</th><th scope="col" class="num">Amount</th></tr></thead>
+              <tbody>
+                <tr><td>Base salary</td><td class="hrm-muted">৳ 70,000.00 × 15 / 30 days</td><td class="num">35,000.00</td></tr>
+                <tr><td>Approved transport claims</td><td class="hrm-muted">None waiting</td><td class="num">0.00</td></tr>
+                <tr><td>Adjustments</td><td class="hrm-muted">None</td><td class="num">0.00</td></tr>
+                <tr class="total"><td>Expected net pay</td><td></td><td class="num">35,000.00</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="hrm-alert">
+            <svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--text-2);"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span>Unused leave (Casual 4, Earned 6.5) isn't paid out: leave doesn't affect salary in v1. Any other payment needs an approved adjustment.</span>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1150}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'ink', no: false };
+  }
+}
+</script>
+</body>
+</html>

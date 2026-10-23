@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Payroll run October 2026 · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="payroll" active="payroll" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <nav aria-label="Breadcrumb" style="flex-grow: 1; display: flex; gap: 8px; align-items: center;"><a class="hrm-label" href="#runs" style="text-decoration: none;">Payroll runs</a><span class="hrm-faint">/</span><span class="hrm-label" style="color: var(--text);">October 2026</span></nav>
+      <span class="hrm-avatar" aria-label="Imran Hossain">IH</span>
+    </header>
+
+    <main class="hrm-page" style="max-width: 1320px;">
+      <div class="hrm-page-head">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;"><span class="hrm-label"><span class="hrm-mono">PR-2026-10-01</span> · Regular run · 1–31 Oct 2026</span><span class="hrm-badge tone-warn">Calculated</span></div>
+          <h1 class="hrm-h1">October 2026 payroll</h1>
+          <p class="hrm-muted" style="margin: 0;">Prepared by Imran Hossain. Calculated 22 Oct 2026, 3:18 pm.</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="hrm-btn hrm-btn-secondary" type="button"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>Recalculate</button>
+          <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}">Submit for approval</x-import>
+        </div>
+      </div>
+
+      <ol class="hrm-steps" aria-label="Run progress" style="list-style: none; margin: 0; padding: 0;">
+        <li class="hrm-step is-done">Draft</li>
+        <li class="hrm-step is-current" aria-current="step">Calculated</li>
+        <li class="hrm-step">Submitted</li>
+        <li class="hrm-step">Approved</li>
+        <li class="hrm-step">Locked</li>
+        <li class="hrm-step">Paid</li>
+        <li class="hrm-step">Reconciled</li>
+      </ol>
+
+      <x-import component-from-global-scope="BigMatrix.StatBar" stats="{{totals}}" style="max-width: none;"></x-import>
+
+      <section aria-labelledby="checks" class="hrm-card" style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <h2 id="checks" class="hrm-h3">Validation</h2>
+          <span class="hrm-muted" style="font-size: 13px;"><span class="hrm-mono">0</span> blocking · <span class="hrm-mono">1</span> warning · <span class="hrm-mono">2</span> notes</span>
+        </div>
+        <div class="hrm-alert hrm-alert-warn">
+          <svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <span><strong style="font-weight: 600;">Kamrul Islam (<span class="hrm-mono">EMP-0027</span>):</strong> net pay is 24% higher than September (warning threshold 20%). Reason: 3 transport claims included. Review before submitting.</span>
+        </div>
+        <div class="hrm-alert">
+          <svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--text-2);"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          <span><strong style="font-weight: 600;">Rahim Uddin:</strong> salary changes on 16 Oct. Paid as two parts by calendar days (split-period proration).</span>
+        </div>
+        <div class="hrm-alert">
+          <svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--text-2);"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          <span><strong style="font-weight: 600;">Arif Chowdhury:</strong> joined 20 Oct. First payroll, 12 of 31 days.</span>
+        </div>
+      </section>
+
+      <section aria-label="Run details" style="display: flex; flex-direction: column; gap: 16px;">
+        <nav class="hrm-tabs" aria-label="Run sections">
+          <a class="hrm-tab is-active" href="#items" aria-current="page">Items <span class="hrm-mono hrm-faint" style="margin-left: 6px;">44</span></a>
+          <a class="hrm-tab" href="#validation">Validation <span class="hrm-mono hrm-faint" style="margin-left: 6px;">3</span></a>
+          <a class="hrm-tab" href="#adjustments">Adjustments <span class="hrm-mono hrm-faint" style="margin-left: 6px;">1</span></a>
+          <a class="hrm-tab" href="#payments">Payments</a>
+          <a class="hrm-tab" href="#reconciliation">Reconciliation</a>
+          <a class="hrm-tab" href="#history">History</a>
+        </nav>
+        <div class="hrm-table-wrap">
+          <div class="hrm-table-scroll">
+            <table class="hrm-table">
+              <thead><tr><th scope="col">Employee</th><th scope="col" class="num">Days</th><th scope="col" class="num">Base salary</th><th scope="col" class="num">Claims</th><th scope="col" class="num">Adjustments</th><th scope="col" class="num">Net pay</th><th scope="col">Notes</th></tr></thead>
+              <tbody>
+                <tr><td><div style="font-weight: 500;">Arif Chowdhury</div><div class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0044</div></td><td class="num">12 / 31</td><td class="num">18,580.65</td><td class="num">0.00</td><td class="num">0.00</td><td class="num" style="font-weight: 600;">18,580.65</td><td><span class="hrm-badge tone-info">Joiner</span></td></tr>
+                <tr><td><div style="font-weight: 500;">Kamrul Islam</div><div class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0027</div></td><td class="num">31 / 31</td><td class="num">38,000.00</td><td class="num">9,150.00</td><td class="num">0.00</td><td class="num" style="font-weight: 600;">47,150.00</td><td><span class="hrm-badge tone-warn">+24% vs Sep</span></td></tr>
+                <tr><td><div style="font-weight: 500;">Mahmud Hasan</div><div class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0031</div></td><td class="num">31 / 31</td><td class="num">52,000.00</td><td class="num">0.00</td><td class="num">−3,000.00</td><td class="num" style="font-weight: 600;">49,000.00</td><td><span class="hrm-faint" style="font-size: 13px;">Deduction ADJ-0007</span></td></tr>
+                <tr><td><div style="font-weight: 500;">Nusrat Jahan</div><div class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0014</div></td><td class="num">31 / 31</td><td class="num">65,000.00</td><td class="num">1,850.00</td><td class="num">0.00</td><td class="num" style="font-weight: 600;">66,850.00</td><td></td></tr>
+                <tr><td><div style="font-weight: 500;">Rahim Uddin</div><div class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0009</div></td><td class="num">15 + 16</td><td class="num">43,096.78</td><td class="num">0.00</td><td class="num">0.00</td><td class="num" style="font-weight: 600;">43,096.78</td><td><span class="hrm-badge tone-info">Split salary</span></td></tr>
+                <tr><td><div style="font-weight: 500;">Sadia Karim</div><div class="hrm-mono hrm-faint" style="font-size: 12px;">EMP-0022</div></td><td class="num">31 / 31</td><td class="num">70,000.00</td><td class="num">2,400.00</td><td class="num">0.00</td><td class="num" style="font-weight: 600;">72,400.00</td><td><span class="hrm-badge tone-warn">Notice period</span></td></tr>
+                <tr class="total"><td>Run total · 44 employees</td><td class="num"></td><td class="num">2,871,436.43</td><td class="num">14,250.00</td><td class="num">−3,000.00</td><td class="num">2,882,686.43</td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="hrm-table-foot">
+            <span>Amounts in BDT (৳). Showing <span class="hrm-mono">6</span> of <span class="hrm-mono">44</span>.</span>
+            <button class="hrm-btn hrm-btn-text hrm-btn-sm" type="button"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Download register (CSV)</button>
+          </div>
+        </div>
+        <p class="hrm-faint" style="margin: 0; font-size: 13px;">Rahim Uddin: 40,000.00 × 15 / 31 = 19,354.84, plus 46,000.00 × 16 / 31 = 23,741.94. Each part is rounded half-up to 2 decimals.</p>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1250}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      theme: this.props.theme ?? 'ink', no: false,
+      totals: [
+        { value: '44', label: 'Employees' },
+        { value: '৳ 2,871,436.43', label: 'Base salary' },
+        { value: '৳ 14,250.00', label: 'Transport claims' },
+        { value: '−৳ 3,000.00', label: 'Adjustments' },
+        { value: '৳ 2,882,686.43', label: 'Net pay' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

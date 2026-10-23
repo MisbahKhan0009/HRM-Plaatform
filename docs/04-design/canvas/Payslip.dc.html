@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Payslip September 2026 · Nusrat Jahan</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<article class="hrm-root" data-theme="paper" style="width: 820px; height: 1160px; display: flex; flex-direction: column; background: var(--ground);">
+  <header class="hrm-brand-stage" style="padding: 48px 56px 36px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: flex-start; gap: 24px;">
+    <x-import component-from-global-scope="BigMatrix.Glow"></x-import>
+    <x-import component-from-global-scope="BigMatrix.DotGrid"></x-import>
+    <div class="hrm-stage-content" style="display: flex; flex-direction: column; gap: 20px;">
+      <img src="/_blob/77c10b5a7f35f70f76a8367300b2efe2" alt="Big-Matrix Solutions" style="width: 220px; height: auto; display: block;">
+      <div style="font-size: 12px; color: var(--text-2); line-height: 1.6;">Big-Matrix Solutions<br>[COMPANY ADDRESS], Dhaka</div>
+    </div>
+    <div class="hrm-stage-content" style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px; text-align: right;">
+      <span class="hrm-label">Payslip</span>
+      <h1 class="hrm-h1" style="font-size: 32px;">September 2026</h1>
+      <span class="hrm-mono hrm-faint" style="font-size: 12px;">1–30 Sep 2026 · PR-2026-09-01</span>
+    </div>
+  </header>
+
+  <section aria-label="Employee" style="padding: 28px 56px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; border-bottom: 1px solid var(--line);">
+    <dl class="hrm-dl" style="grid-template-columns: 120px minmax(0, 1fr); font-size: 13px;">
+      <dt>Employee</dt><dd style="font-weight: 600;">Nusrat Jahan</dd>
+      <dt>Code</dt><dd class="hrm-mono">EMP-0014</dd>
+      <dt>Department</dt><dd>Engineering</dd>
+      <dt>Position</dt><dd>Software engineer</dd>
+    </dl>
+    <dl class="hrm-dl" style="grid-template-columns: 120px minmax(0, 1fr); font-size: 13px;">
+      <dt>Days paid</dt><dd class="hrm-mono">30 of 30</dd>
+      <dt>Payment</dt><dd>Cheque <span class="hrm-mono">No. 004517</span></dd>
+      <dt>Paid on</dt><dd>30 Sep 2026</dd>
+      <dt>Currency</dt><dd>BDT (৳)</dd>
+    </dl>
+  </section>
+
+  <section aria-label="Earnings and deductions" style="padding: 28px 56px; display: flex; flex-direction: column; gap: 24px; flex-grow: 1;">
+    <table class="hrm-table" style="border: 1px solid var(--line); border-radius: var(--bm-r-lg); border-collapse: separate; border-spacing: 0; overflow: hidden;">
+      <thead><tr><th scope="col">Earnings</th><th scope="col">Basis</th><th scope="col" class="num">Amount</th></tr></thead>
+      <tbody>
+        <tr><td>Base salary</td><td class="hrm-muted">৳ 65,000.00 × 30 / 30 days</td><td class="num">65,000.00</td></tr>
+        <tr><td>Transport reimbursement</td><td class="hrm-muted">Claim <span class="hrm-mono">RC-000041</span>, approved 18 Sep</td><td class="num">1,850.00</td></tr>
+        <tr class="total"><td>Total earnings</td><td></td><td class="num">66,850.00</td></tr>
+      </tbody>
+    </table>
+
+    <table class="hrm-table" style="border: 1px solid var(--line); border-radius: var(--bm-r-lg); border-collapse: separate; border-spacing: 0; overflow: hidden;">
+      <thead><tr><th scope="col">Deductions</th><th scope="col">Basis</th><th scope="col" class="num">Amount</th></tr></thead>
+      <tbody>
+        <tr><td class="hrm-faint">No deductions this month</td><td></td><td class="num hrm-faint">0.00</td></tr>
+        <tr class="total"><td>Total deductions</td><td></td><td class="num">0.00</td></tr>
+      </tbody>
+    </table>
+
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; padding: 24px; border: 1px solid var(--line-strong); border-radius: var(--bm-r-lg); background: var(--ground-2);">
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <span class="hrm-label">Net pay</span>
+        <span style="font-size: 13px; color: var(--text-2);">Sixty-six thousand eight hundred fifty taka only</span>
+      </div>
+      <span class="hrm-kpi" style="font-size: 40px;">৳ 66,850.00</span>
+    </div>
+  </section>
+
+  <footer style="padding: 20px 56px 40px; display: flex; justify-content: space-between; align-items: center; gap: 16px; border-top: 1px solid var(--line);">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <x-import component-from-global-scope="BigMatrix.Tick" width="{{twelve}}"></x-import>
+      <span class="hrm-label">Generated from the locked payroll run</span>
+    </div>
+    <span class="hrm-mono hrm-faint" style="font-size: 12px;">Page 1 of 1</span>
+  </footer>
+</article>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":820,"height":1160}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { twelve: 12 };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "name": "hrm-platform",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "deps:check": "depcruise apps packages --config .dependency-cruiser.cjs",
+    "tokens": "pnpm --filter @hrm/ui tokens",
+    "db:up": "docker compose up -d db",
+    "e2e": "pnpm --filter @hrm/e2e e2e"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "dependency-cruiser": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:"
+  }
+}

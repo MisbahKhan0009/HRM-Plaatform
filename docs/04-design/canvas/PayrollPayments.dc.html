@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Payments · October 2026 payroll · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="payroll" active="payroll" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <nav aria-label="Breadcrumb" style="flex-grow: 1; display: flex; gap: 8px; align-items: center;"><a class="hrm-label" href="PayrollRuns.dc.html" style="text-decoration: none;">Payroll runs</a><span class="hrm-faint">/</span><span class="hrm-label" style="color: var(--text);">October 2026</span></nav>
+      <span class="hrm-avatar" aria-label="Imran Hossain">IH</span>
+    </header>
+
+    <main class="hrm-page" style="max-width: 1320px;">
+      <div class="hrm-page-head">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;"><span class="hrm-label"><span class="hrm-mono">PR-2026-10-01</span> · Regular run</span><span class="hrm-badge tone-locked"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true" style="width: 12px; height: 12px;"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>Locked</span><span class="hrm-badge tone-warn no-dot">Self-approved</span></div>
+          <h1 class="hrm-h1">October 2026 payroll</h1>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="hrm-btn hrm-btn-secondary" type="button">Publish payslips</button>
+        </div>
+      </div>
+
+      <div class="hrm-alert">
+        <svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--text-2);"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <span>This run is locked. Corrections go into an adjustment in a later run.</span>
+      </div>
+
+      <x-import component-from-global-scope="BigMatrix.StatBar" stats="{{recon}}" style="max-width: none;"></x-import>
+
+      <nav class="hrm-tabs" aria-label="Run sections">
+        <a class="hrm-tab" href="PayrollRun.dc.html">Items</a>
+        <a class="hrm-tab" href="#validation">Validation</a>
+        <a class="hrm-tab" href="#adjustments">Adjustments</a>
+        <a class="hrm-tab is-active" href="#payments" aria-current="page">Payments</a>
+        <a class="hrm-tab" href="#reconciliation">Reconciliation</a>
+        <a class="hrm-tab" href="#history">History</a>
+      </nav>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;">
+        <div class="hrm-table-wrap" style="flex: 999 1 560px; min-width: 0;">
+          <div class="hrm-table-scroll">
+            <table class="hrm-table">
+              <thead><tr><th scope="col">Employee</th><th scope="col" class="num">Net pay</th><th scope="col">Method</th><th scope="col">Reference</th><th scope="col">Paid on</th><th scope="col">Status</th></tr></thead>
+              <tbody>
+                <tr><td>Arif Chowdhury</td><td class="num">18,580.65</td><td class="hrm-faint">—</td><td class="hrm-faint">—</td><td class="hrm-faint">—</td><td><span class="hrm-badge tone-warn">Unpaid</span></td></tr>
+                <tr><td>Kamrul Islam</td><td class="num">47,150.00</td><td>Cheque</td><td class="hrm-mono">No. 004601</td><td>29 Oct 2026</td><td><span class="hrm-badge tone-bad">Failed</span></td></tr>
+                <tr><td>Nusrat Jahan</td><td class="num">66,850.00</td><td>Cheque</td><td class="hrm-mono">No. 004588</td><td>29 Oct 2026</td><td><span class="hrm-badge tone-ok">Paid</span></td></tr>
+                <tr style="background: var(--accent-tint);"><td style="font-weight: 600;">Rahim Uddin</td><td class="num">43,096.78</td><td class="hrm-faint">—</td><td class="hrm-faint">—</td><td class="hrm-faint">—</td><td><span class="hrm-badge tone-warn">Unpaid</span></td></tr>
+                <tr><td>Sadia Karim</td><td class="num">72,400.00</td><td class="hrm-faint">—</td><td class="hrm-faint">—</td><td class="hrm-faint">—</td><td><span class="hrm-badge tone-warn">Unpaid</span></td></tr>
+                <tr><td>Mahmud Hasan</td><td class="num">49,000.00</td><td>Cash</td><td>Signed receipt</td><td>29 Oct 2026</td><td><span class="hrm-badge tone-ok">Paid</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="hrm-table-foot"><span>Showing <span class="hrm-mono">6</span> of <span class="hrm-mono">44</span> · filter: needs action first</span><span>Kamrul's cheque was returned. Cancel it and record the new payment.</span></div>
+        </div>
+
+        <aside class="hrm-card" aria-labelledby="rec" style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 16px; border-color: var(--line-strong);">
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <span class="hrm-label">Record payment</span>
+            <h2 id="rec" class="hrm-h3">Rahim Uddin · <span class="hrm-mono">EMP-0009</span></h2>
+          </div>
+          <div class="hrm-field">
+            <span class="hrm-field-label">Amount</span>
+            <div class="hrm-mono" style="font-size: 20px; font-weight: 600;">৳ 43,096.78</div>
+            <span class="hrm-field-hint">Must equal net pay. Split payments aren't allowed.</span>
+          </div>
+          <div class="hrm-field">
+            <span class="hrm-field-label">Method</span>
+            <div class="hrm-segment" role="group" aria-label="Payment method"><button class="hrm-segment-item" type="button" aria-pressed="false">Cash</button><button class="hrm-segment-item is-on" type="button" aria-pressed="true">Cheque</button></div>
+          </div>
+          <div class="hrm-field"><label class="hrm-field-label" for="chq">Cheque number</label><input id="chq" class="hrm-input hrm-mono" value="004602"></div>
+          <div class="hrm-field"><label class="hrm-field-label" for="pd">Paid on</label><input id="pd" class="hrm-input" value="30 Oct 2026"></div>
+          <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}" style="width: 100%; justify-content: center;">Record payment</x-import>
+          <p class="hrm-faint" style="margin: 0; font-size: 12px;">Recording a payment doesn't move money. It records what was paid outside the system.</p>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1150}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      theme: this.props.theme ?? 'ink', no: false,
+      recon: [
+        { value: '৳ 2,882,686.43', label: 'Net pay due' },
+        { value: '৳ 2,701,459.00', label: 'Paid · 40' },
+        { value: '৳ 134,077.43', label: 'Unpaid · 3' },
+        { value: '৳ 47,150.00', label: 'Failed · 1' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

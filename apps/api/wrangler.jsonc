@@ -1,0 +1,66 @@
+// Cloudflare Worker: serves the React SPA (static assets) and the /api/v1 API from one origin (ADR-0002).
+// Runs on Workers Free (ADR-0009): 10 ms CPU per request, no paid bindings.
+// Environments: local (top level, `wrangler dev`), staging and production (docs/08-operations/ENVIRONMENTS.md).
+// Account-specific ids (Hyperdrive, R2) are placeholders until docs/08-operations/ACCOUNT-SETUP.md is done.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "hrm",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "assets": {
+    "directory": "../web/dist",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "observability": { "enabled": true },
+  // Test-only routes exist in local and test builds only (TESTING-STRATEGY §4).
+  "define": { "__TEST_ROUTES__": "true" },
+  "vars": {
+    "APP_ENV": "local",
+    "APP_VERSION": "0.0.0",
+    "APP_ORIGIN": "http://localhost:8787",
+    "MAILER": "console"
+  },
+  // `localConnectionString` is used by `wrangler dev` and tests; CI overrides it with
+  // CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE.
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "00000000000000000000000000000000",
+      "localConnectionString": "postgres://hrm:hrm@localhost:5432/hrm"
+    }
+  ],
+  "r2_buckets": [{ "binding": "FILES", "bucket_name": "hrm-files-local" }],
+  "env": {
+    "staging": {
+      "name": "hrm-staging",
+      "define": { "__TEST_ROUTES__": "false" },
+      "vars": {
+        "APP_ENV": "staging",
+        "APP_VERSION": "0.0.0",
+        "APP_ORIGIN": "https://hrm-staging.REPLACE-WITH-ACCOUNT-SUBDOMAIN.workers.dev",
+        "MAILER": "gmail"
+      },
+      "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "REPLACE-WITH-STAGING-HYPERDRIVE-ID" }],
+      "r2_buckets": [{ "binding": "FILES", "bucket_name": "hrm-staging-files" }],
+      // Daily dispatcher only; no retry cron in staging (JOBS-AND-OUTBOX §1).
+      "triggers": { "crons": ["5 18 * * *"] }
+    },
+    "production": {
+      "name": "hrm",
+      "define": { "__TEST_ROUTES__": "false" },
+      "vars": {
+        "APP_ENV": "production",
+        "APP_VERSION": "0.0.0",
+        "APP_ORIGIN": "https://hrm.REPLACE-WITH-ACCOUNT-SUBDOMAIN.workers.dev",
+        "MAILER": "gmail"
+      },
+      "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "REPLACE-WITH-PRODUCTION-HYPERDRIVE-ID" }],
+      "r2_buckets": [{ "binding": "FILES", "bucket_name": "hrm-prod-files" }],
+      // Outbox retry every 15 min 08:00–20:59 Dhaka Sun–Thu, and the daily dispatcher at 00:05 Dhaka.
+      "triggers": { "crons": ["*/15 2-14 * * SUN-THU", "5 18 * * *"] }
+    }
+  }
+}

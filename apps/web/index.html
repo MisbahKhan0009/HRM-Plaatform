@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en" data-theme="ink">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Big-Matrix HRM</title>
+    <link rel="icon" href="/favicon.png" />
+    <!-- Apply the saved theme before first paint (no flash). Ink is the default (D-040). The CSP allows this script by hash. -->
+    <script>
+      try { if (localStorage.getItem('hrm.theme') === 'paper') document.documentElement.dataset.theme = 'paper'; } catch {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

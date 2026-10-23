@@ -1,6 +1,6 @@
 # Monorepo structure
 
-Status: **Proposed** (Stage 4), awaiting owner approval. Scaffolding happens in Stage 7 (engineering foundation).
+Status: **Approved** by owner (2026-10-22). Scaffolding happens in Stage 7 (engineering foundation).
 
 Tooling: **pnpm workspaces + Turborepo**, TypeScript strict, **Biome** for lint and format (one fast tool, free). Package scope: `@hrm/*`. Node version pinned in `.nvmrc` and the `packageManager` field.
 
@@ -62,7 +62,7 @@ apps/api/
 │   ├── modules/             # One folder per domain module (see below)
 │   ├── jobs/                # outbox processor, leave accrual, year-end, expiry reminders
 │   └── lib/                 # db client, R2 helpers, pagination, idempotency, problem+json errors, logger
-└── test/                    # API integration tests (vitest-pool-workers + real Postgres)
+└── test/                    # API integration tests (vitest-plugin + real Postgres)
 ```
 
 Modules: `accounts`, `organization`, `employees`, `attendance`, `leave`, `payroll`, `reimbursements`, `documents`, `approvals`, `notifications`, `reports`, `audit`, `settings`.

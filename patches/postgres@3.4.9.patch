@@ -1,0 +1,24 @@
+diff --git a/cf/polyfills.js b/cf/polyfills.js
+index 53c5203dd5b057d741d14d708ba83b27751b527c..89550386d52254ac633a9d6bed71bf428269c188 100644
+--- a/cf/polyfills.js
++++ b/cf/polyfills.js
+@@ -155,7 +155,7 @@ function Socket() {
+             ? close()
+             : ((tcp.readyState = 'open'), tcp.emit('secureConnect'))
+         },
+-        (e) => tcp.emit('error', e)
++        (e) => error(e)
+       )
+       tcp.writer = tcp.raw.writable.getWriter()
+       tcp.reader = tcp.raw.readable.getReader()
+@@ -211,7 +211,9 @@ function Socket() {
+   }
+ 
+   function error(err) {
+-    tcp.emit('error', err)
++    // A read can reject after postgres-js has ended the connection and removed its listeners;
++    // emitting 'error' with no listener would throw an unhandled rejection in the Worker.
++    if (tcp.listenerCount('error') > 0) tcp.emit('error', err)
+     tcp.emit('close')
+   }
+ }

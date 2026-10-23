@@ -1,0 +1,25 @@
+{
+  "name": "@hrm/documents",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./export": "./src/export.ts",
+    "./payslip": "./src/payslip.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "fflate": "catalog:",
+    "@hrm/contracts": "workspace:*",
+    "pdf-lib": "catalog:"
+  },
+  "devDependencies": {
+    "@hrm/config": "workspace:*",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

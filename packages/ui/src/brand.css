@@ -1,0 +1,74 @@
+/*
+ * Brand signature elements, ported from the Big-Matrix design system (components/bundle.css).
+ * Use only on brand moments: sign-in, dashboard header, empty states, 404 (APP-UI-ADAPTATION §2).
+ */
+:root,
+[data-theme="ink"] {
+  --bm-glow-a: var(--glow-ink);
+  --bm-glow-b: var(--glow-2-ink);
+}
+[data-theme="paper"] {
+  --bm-glow-a: var(--glow-paper);
+  --bm-glow-b: var(--glow-2-paper);
+}
+
+.bm-stage {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.bm-stage-content {
+  position: relative;
+  z-index: 1;
+}
+
+.bm-dotgrid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(var(--grid-dot) var(--grid-dot-radius), transparent 1.5px);
+  background-size: var(--grid-pitch) var(--grid-pitch);
+}
+
+.bm-glow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.bm-glow::before,
+.bm-glow-2::after {
+  content: "";
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+.bm-glow::before {
+  left: 82%;
+  top: -4%;
+  width: 234%;
+  aspect-ratio: 2 / 1;
+  background: radial-gradient(closest-side, var(--bm-accent), transparent 64%);
+  opacity: var(--bm-glow-a);
+}
+.bm-glow-2::after {
+  left: 6%;
+  top: 115%;
+  width: 162%;
+  aspect-ratio: 9 / 5;
+  background: radial-gradient(closest-side, var(--bm-accent), transparent 70%);
+  opacity: var(--bm-glow-b);
+}
+
+.bm-em {
+  font-style: normal;
+  color: var(--bm-accent);
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .bm-em {
+    background-image: var(--bm-gradient-emphasis);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+}

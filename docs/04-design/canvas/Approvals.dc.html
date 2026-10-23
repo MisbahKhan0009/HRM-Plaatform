@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Approvals · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="manager" active="approvals" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <span class="hrm-label" style="flex-grow: 1;">Team · Approvals</span>
+      <span class="hrm-avatar" aria-label="Tanvir Ahmed">TA</span>
+    </header>
+
+    <main class="hrm-page" style="max-width: 1320px;">
+      <div class="hrm-page-head">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h1 class="hrm-h1">Approvals</h1>
+          <p class="hrm-muted" style="margin: 0;">4 requests waiting for you. Oldest first.</p>
+        </div>
+        <div class="hrm-segment" role="group" aria-label="Filter by type">
+          <button class="hrm-segment-item is-on" type="button" aria-pressed="true">All <span class="hrm-mono hrm-faint">4</span></button>
+          <button class="hrm-segment-item" type="button" aria-pressed="false">Leave <span class="hrm-mono hrm-faint">2</span></button>
+          <button class="hrm-segment-item" type="button" aria-pressed="false">Corrections <span class="hrm-mono hrm-faint">1</span></button>
+          <button class="hrm-segment-item" type="button" aria-pressed="false">Claims <span class="hrm-mono hrm-faint">1</span></button>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;">
+        <section aria-label="Pending requests" style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
+          <a href="#r1" class="hrm-card hrm-card-tight" style="display: flex; gap: 12px; text-decoration: none; color: var(--text); border-color: var(--accent); background: var(--accent-tint);" aria-current="true">
+            <span class="hrm-avatar" aria-hidden="true">NJ</span>
+            <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+              <div style="display: flex; justify-content: space-between; gap: 8px;"><strong style="font-weight: 600;">Nusrat Jahan</strong><span class="hrm-faint" style="font-size: 12px;">4 days ago</span></div>
+              <span class="hrm-muted" style="font-size: 13px;">Casual leave · 4–5 Nov · 2 days</span>
+              <div style="display: flex; gap: 6px;"><span class="hrm-badge tone-warn">Pending</span><span class="hrm-badge tone-bad no-dot">Overdue</span></div>
+            </div>
+          </a>
+          <a href="#r2" class="hrm-card hrm-card-tight" style="display: flex; gap: 12px; text-decoration: none; color: var(--text);">
+            <span class="hrm-avatar" aria-hidden="true">RU</span>
+            <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+              <div style="display: flex; justify-content: space-between; gap: 8px;"><strong style="font-weight: 600;">Rahim Uddin</strong><span class="hrm-faint" style="font-size: 12px;">2 days ago</span></div>
+              <span class="hrm-muted" style="font-size: 13px;">Attendance correction · 20 Oct · check-out 6:30 pm</span>
+              <div><span class="hrm-badge tone-warn">Pending</span></div>
+            </div>
+          </a>
+          <a href="#r3" class="hrm-card hrm-card-tight" style="display: flex; gap: 12px; text-decoration: none; color: var(--text);">
+            <span class="hrm-avatar" aria-hidden="true">SK</span>
+            <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+              <div style="display: flex; justify-content: space-between; gap: 8px;"><strong style="font-weight: 600;">Sadia Karim</strong><span class="hrm-faint" style="font-size: 12px;">Yesterday</span></div>
+              <span class="hrm-muted" style="font-size: 13px;">Transport claim · <span class="hrm-mono">৳ 2,400.00</span> · 3 receipts</span>
+              <div><span class="hrm-badge tone-warn">Submitted</span></div>
+            </div>
+          </a>
+          <a href="#r4" class="hrm-card hrm-card-tight" style="display: flex; gap: 12px; text-decoration: none; color: var(--text);">
+            <span class="hrm-avatar" aria-hidden="true">MH</span>
+            <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+              <div style="display: flex; justify-content: space-between; gap: 8px;"><strong style="font-weight: 600;">Mahmud Hasan</strong><span class="hrm-faint" style="font-size: 12px;">Today</span></div>
+              <span class="hrm-muted" style="font-size: 13px;">Sick leave · 26 Oct · half day (first half)</span>
+              <div><span class="hrm-badge tone-warn">Pending</span></div>
+            </div>
+          </a>
+        </section>
+
+        <section class="hrm-card" aria-labelledby="detail-title" style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 24px; padding: 28px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;">
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <span class="hrm-label">Leave request · <span class="hrm-mono">LV-000214</span></span>
+              <h2 id="detail-title" class="hrm-h2">Casual leave for Nusrat Jahan</h2>
+            </div>
+            <span class="hrm-badge tone-warn">Pending</span>
+          </div>
+
+          <dl class="hrm-dl">
+            <dt>Dates</dt><dd>Wed 4 Nov – Thu 5 Nov 2026</dd>
+            <dt>Working days</dt><dd class="hrm-mono">2</dd>
+            <dt>Casual balance</dt><dd><span class="hrm-mono">7</span> left · <span class="hrm-mono">5</span> after approval</dd>
+            <dt>Reason</dt><dd>Family event in Sylhet.</dd>
+            <dt>Submitted</dt><dd>18 Oct 2026, 11:04 am</dd>
+          </dl>
+
+          <div class="hrm-alert hrm-alert-warn" role="note">
+            <svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <span>Rahim Uddin is also on leave on 5 Nov. 2 of 6 people in your team would be away.</span>
+          </div>
+
+          <div class="hrm-field">
+            <label class="hrm-field-label" for="comment">Comment <span class="hrm-faint" style="font-weight: 400;">(required to reject)</span></label>
+            <textarea id="comment" class="hrm-input hrm-textarea" rows="3" placeholder="Visible to Nusrat"></textarea>
+          </div>
+
+          <div style="display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap;">
+            <button class="hrm-btn hrm-btn-destructive" type="button">Reject</button>
+            <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}">Approve leave</x-import>
+          </div>
+
+          <hr class="hrm-divider">
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <h3 class="hrm-label" style="margin: 0;">History</h3>
+            <ol class="hrm-timeline">
+              <li class="is-key"><div style="font-weight: 500;">Submitted by Nusrat Jahan</div><div class="hrm-faint" style="font-size: 13px;">18 Oct 2026, 11:04 am · 2 days reserved from Casual balance</div></li>
+              <li><div style="font-weight: 500;">Email sent to Tanvir Ahmed</div><div class="hrm-faint" style="font-size: 13px;">18 Oct 2026, 11:04 am</div></li>
+            </ol>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'ink', no: false };
+  }
+}
+</script>
+</body>
+</html>

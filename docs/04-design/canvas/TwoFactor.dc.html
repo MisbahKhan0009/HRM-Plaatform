@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Confirm it's you · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-brand-stage" data-theme="{{theme}}" style="min-height: 900px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 16px;">
+  <x-import component-from-global-scope="BigMatrix.Glow" second="{{yes}}"></x-import>
+  <x-import component-from-global-scope="BigMatrix.DotGrid"></x-import>
+  <div class="hrm-stage-content" style="width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; gap: 32px;">
+    <sc-if value="{{isPaper}}" hint-placeholder-val="{{false}}">
+      <img src="/_blob/77c10b5a7f35f70f76a8367300b2efe2" alt="Big-Matrix Solutions" style="width: 200px; height: auto; display: block;">
+    </sc-if>
+    <sc-if value="{{isInk}}" hint-placeholder-val="{{true}}">
+      <img src="/_blob/a863de2814fb92714aab1d020a7ab70e" alt="Big-Matrix Solutions" style="width: 200px; height: auto; display: block;">
+    </sc-if>
+
+    <section class="hrm-card" aria-labelledby="t" style="width: 100%; padding: 32px; display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <x-import component-from-global-scope="BigMatrix.Eyebrow">Extra check</x-import>
+        <h1 id="t" class="hrm-h2" style="margin-top: 8px;">Confirm it's you</h1>
+        <p class="hrm-muted" style="margin: 0;">Your role can see salary data, so it needs a second step. Open your authenticator app and enter the 6-digit code.</p>
+      </div>
+      <div class="hrm-field">
+        <label class="hrm-field-label" for="totp">Authenticator code</label>
+        <input id="totp" class="hrm-input hrm-mono" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" style="height: 52px; font-size: 24px; letter-spacing: 0.4em; text-align: center;">
+      </div>
+      <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}" style="width: 100%; justify-content: center;">Verify</x-import>
+      <button class="hrm-btn hrm-btn-secondary hrm-btn-block" type="button"><svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m21 2-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>Use a passkey instead</button>
+      <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 13px;">
+        <a href="#recovery">Use a recovery code</a>
+        <a href="Main.dc.html">Sign out</a>
+      </div>
+    </section>
+    <p class="hrm-faint" style="margin: 0; font-size: 13px; text-align: center;">Lost your phone? Use a recovery code, or ask the system admin to reset your sign-in methods.</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const theme = this.props.theme ?? 'ink';
+    return { theme, isPaper: theme === 'paper', isInk: theme !== 'paper', yes: true, no: false };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My documents · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="employee" active="documents" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <span class="hrm-label" style="flex-grow: 1;">Me · My documents</span>
+      <span class="hrm-avatar" aria-label="Nusrat Jahan">NJ</span>
+    </header>
+
+    <main class="hrm-page">
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <h1 class="hrm-h1">My documents</h1>
+        <p class="hrm-muted" style="margin: 0;">Documents HR has shared with you. Files are private and every download is checked against your access.</p>
+      </div>
+
+      <div class="hrm-table-wrap">
+        <div class="hrm-table-scroll">
+          <table class="hrm-table">
+            <thead><tr><th scope="col">Document</th><th scope="col">Category</th><th scope="col">Issued</th><th scope="col">Expires</th><th scope="col">Version</th><th scope="col"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Download</span></th></tr></thead>
+            <tbody>
+              <tr><td style="font-weight: 500;">Employment contract</td><td>Contract</td><td>3 Jul 2024</td><td class="hrm-faint">—</td><td>v2 · 3 Jul 2024</td><td style="text-align: right;"><button class="hrm-btn hrm-btn-text hrm-btn-sm" type="button"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Download</button></td></tr>
+              <tr><td style="font-weight: 500;">Offer letter</td><td>Contract</td><td>12 Dec 2023</td><td class="hrm-faint">—</td><td>v1 · 12 Dec 2023</td><td style="text-align: right;"><button class="hrm-btn hrm-btn-text hrm-btn-sm" type="button"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Download</button></td></tr>
+              <tr><td style="font-weight: 500;">AWS certification</td><td>Certificate</td><td>14 Nov 2023</td><td><span style="display: inline-flex; gap: 8px; align-items: center;">14 Nov 2026 <span class="hrm-badge tone-warn">Expiring</span></span></td><td>v1 · 20 Nov 2023</td><td style="text-align: right;"><button class="hrm-btn hrm-btn-text hrm-btn-sm" type="button"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Download</button></td></tr>
+              <tr><td style="font-weight: 500;">Code of conduct</td><td>Policy</td><td>1 Jan 2026</td><td class="hrm-faint">—</td><td>v3 · 1 Jan 2026</td><td style="text-align: right;"><button class="hrm-btn hrm-btn-text hrm-btn-sm" type="button"><svg class="hrm-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Download</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="hrm-alert">
+        <svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--text-2);"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <span>Identity documents, such as your national ID scan, are held by HR and aren't listed here. Payslips are under <a href="Payslip.dc.html">My payslips</a>.</span>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'ink' };
+  }
+}
+</script>
+</body>
+</html>

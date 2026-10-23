@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Audit log · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="hr" active="audit" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <span class="hrm-label" style="flex-grow: 1;">Insights · Audit log</span>
+      <span class="hrm-avatar" aria-label="Farzana Akter">FA</span>
+    </header>
+
+    <main class="hrm-page" style="max-width: 1320px;">
+      <div class="hrm-page-head">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h1 class="hrm-h1">Audit log</h1>
+          <p class="hrm-muted" style="margin: 0;">Every sensitive change, who made it and when. Entries can't be edited or deleted.</p>
+        </div>
+        <button class="hrm-btn hrm-btn-secondary" type="button">Export</button>
+      </div>
+
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;">
+        <div class="hrm-field" style="width: 220px;"><label class="hrm-field-label" for="dr">Dates</label><input id="dr" class="hrm-input" value="15 – 22 Oct 2026"></div>
+        <div class="hrm-field" style="width: 200px;"><label class="hrm-field-label" for="actor">Actor</label><input id="actor" class="hrm-input" placeholder="Anyone"></div>
+        <div class="hrm-field" style="width: 200px;"><label class="hrm-field-label" for="act">Action</label><select id="act" class="hrm-input hrm-select"><option>All actions</option></select></div>
+        <div class="hrm-field" style="width: 200px;"><label class="hrm-field-label" for="ent">Entity</label><select id="ent" class="hrm-input hrm-select"><option>All entities</option></select></div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;">
+        <div class="hrm-table-wrap" style="flex: 999 1 560px; min-width: 0;">
+          <div class="hrm-table-scroll">
+            <table class="hrm-table">
+              <thead><tr><th scope="col">Time</th><th scope="col">Actor</th><th scope="col">Action</th><th scope="col">Entity</th></tr></thead>
+              <tbody>
+                <tr><td class="hrm-mono" style="font-size: 13px;">22 Oct 15:18</td><td>Imran Hossain</td><td class="hrm-mono" style="font-size: 13px;">payroll_run.calculated</td><td class="hrm-mono" style="font-size: 13px;">PR-2026-10-01</td></tr>
+                <tr><td class="hrm-mono" style="font-size: 13px;">21 Oct 11:02</td><td>Farzana Akter</td><td class="hrm-mono" style="font-size: 13px;">document.downloaded</td><td>National ID · EMP-0014</td></tr>
+                <tr style="background: var(--accent-tint);"><td class="hrm-mono" style="font-size: 13px;">20 Oct 16:40</td><td>Imran Hossain</td><td class="hrm-mono" style="font-size: 13px;">salary_structure.created</td><td class="hrm-mono" style="font-size: 13px;">EMP-0009</td></tr>
+                <tr><td class="hrm-mono" style="font-size: 13px;">20 Oct 09:12</td><td>Shafiq Alam</td><td class="hrm-mono" style="font-size: 13px;">user.role_granted</td><td>Imran Hossain · payroll_officer</td></tr>
+                <tr><td class="hrm-mono" style="font-size: 13px;">18 Oct 11:04</td><td>Nusrat Jahan</td><td class="hrm-mono" style="font-size: 13px;">leave_request.submitted</td><td class="hrm-mono" style="font-size: 13px;">LV-000214</td></tr>
+                <tr><td class="hrm-mono" style="font-size: 13px;">16 Oct 10:30</td><td>Farzana Akter</td><td class="hrm-mono" style="font-size: 13px;">employee.status_changed</td><td class="hrm-mono" style="font-size: 13px;">EMP-0022</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="hrm-table-foot"><span><span class="hrm-mono">1–6</span> of <span class="hrm-mono">218</span></span><span>Times in Asia/Dhaka</span></div>
+        </div>
+
+        <aside class="hrm-card" aria-labelledby="ev" style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 16px; border-color: var(--line-strong);">
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <span class="hrm-label">Event · 20 Oct 2026, 4:40 pm</span>
+            <h2 id="ev" class="hrm-h3 hrm-mono" style="font-family: var(--font-mono); font-size: 15px;">salary_structure.created</h2>
+          </div>
+          <dl class="hrm-dl" style="grid-template-columns: 110px minmax(0, 1fr);">
+            <dt>Actor</dt><dd>Imran Hossain (payroll_officer)</dd>
+            <dt>Entity</dt><dd>Rahim Uddin · <span class="hrm-mono">EMP-0009</span></dd>
+            <dt>Request</dt><dd class="hrm-mono" style="font-size: 12px;">01JB9X2M4T8R</dd>
+          </dl>
+          <div class="hrm-table-wrap" style="background: var(--ground);">
+            <table class="hrm-table" style="font-size: 13px;">
+              <thead><tr><th scope="col">Field</th><th scope="col">Before</th><th scope="col">After</th></tr></thead>
+              <tbody>
+                <tr><td>gross_amount</td><td class="hrm-mono">40,000.00</td><td class="hrm-mono">46,000.00</td></tr>
+                <tr><td>effective_from</td><td class="hrm-mono">2025-01-01</td><td class="hrm-mono">2026-10-16</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="hrm-faint" style="margin: 0; font-size: 12px;">Salary values are shown only to people with payroll or full audit access.</p>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'ink' };
+  }
+}
+</script>
+</body>
+</html>

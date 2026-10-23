@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Attendance report · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="hr" active="reports" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <nav aria-label="Breadcrumb" style="flex-grow: 1; display: flex; gap: 8px; align-items: center;"><a class="hrm-label" href="#reports" style="text-decoration: none;">Reports</a><span class="hrm-faint">/</span><span class="hrm-label" style="color: var(--text);">Attendance</span></nav>
+      <span class="hrm-avatar" aria-label="Farzana Akter">FA</span>
+    </header>
+
+    <main class="hrm-page" style="max-width: 1320px;">
+      <div class="hrm-page-head">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h1 class="hrm-h1">Attendance report</h1>
+          <p class="hrm-muted" style="margin: 0;">Working days only. Leave and holidays are excluded from the rate.</p>
+        </div>
+        <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}">Export XLSX</x-import>
+      </div>
+
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;">
+        <div class="hrm-field" style="width: 240px;"><label class="hrm-field-label" for="range">Dates</label><input id="range" class="hrm-input" value="1 Oct – 21 Oct 2026"></div>
+        <div class="hrm-field" style="width: 200px;"><label class="hrm-field-label" for="dept">Department</label><select id="dept" class="hrm-input hrm-select"><option>All departments</option></select></div>
+        <button class="hrm-btn hrm-btn-text" type="button">Reset filters</button>
+      </div>
+
+      <x-import component-from-global-scope="BigMatrix.StatBar" stats="{{kpis}}" style="max-width: none;"></x-import>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;">
+        <section class="hrm-card" aria-labelledby="chart" style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 16px;">
+          <h2 id="chart" class="hrm-h3">Attendance rate by department</h2>
+          <figure style="margin: 0; display: flex; flex-direction: column; gap: 14px;" role="img" aria-label="Finance 97 percent, Engineering 95, Operations 91, Sales 89">
+            <sc-for list="{{bars}}" as="b" hint-placeholder-count="4">
+              <div style="display: grid; grid-template-columns: 96px minmax(0, 1fr) 48px; gap: 12px; align-items: center;">
+                <span style="font-size: 13px; color: var(--text-2);">{{b.name}}</span>
+                <span style="height: 12px; border-radius: 2px; background: var(--ground-2); position: relative; overflow: hidden;"><span style="{{b.style}}"></span></span>
+                <span class="hrm-mono" style="font-size: 13px; text-align: right;">{{b.label}}</span>
+              </div>
+            </sc-for>
+          </figure>
+          <p class="hrm-faint" style="margin: 0; font-size: 12px;">Rate = present days ÷ working days due.</p>
+        </section>
+
+        <div class="hrm-table-wrap" style="flex: 999 1 560px; min-width: 0;">
+          <div class="hrm-table-scroll">
+            <table class="hrm-table">
+              <thead><tr><th scope="col">Employee</th><th scope="col">Department</th><th scope="col" class="num">Due</th><th scope="col" class="num">Present</th><th scope="col" class="num">Short</th><th scope="col" class="num">Missing</th><th scope="col" class="num">Absent</th><th scope="col" class="num">Leave</th></tr></thead>
+              <tbody>
+                <tr><td>Kamrul Islam</td><td>Engineering</td><td class="num">15</td><td class="num">12</td><td class="num">2</td><td class="num">0</td><td class="num">1</td><td class="num">0</td></tr>
+                <tr><td>Mahmud Hasan</td><td>Engineering</td><td class="num">15</td><td class="num">13</td><td class="num">0</td><td class="num">1</td><td class="num">0</td><td class="num">1</td></tr>
+                <tr><td>Nusrat Jahan</td><td>Engineering</td><td class="num">15</td><td class="num">11</td><td class="num">2</td><td class="num">1</td><td class="num">0</td><td class="num">1</td></tr>
+                <tr><td>Rahim Uddin</td><td>Engineering</td><td class="num">15</td><td class="num">14</td><td class="num">1</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+                <tr><td>Shirin Akhter</td><td>Finance</td><td class="num">15</td><td class="num">15</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="hrm-table-foot"><span><span class="hrm-mono">1–5</span> of <span class="hrm-mono">44</span></span><span>Export builds the file in your browser from the rows you can see.</span></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const data = [['Finance', 97], ['Engineering', 95], ['Operations', 91], ['Sales', 89]];
+    return {
+      theme: this.props.theme ?? 'ink', no: false,
+      kpis: [
+        { value: '94.2%', label: 'Attendance rate' },
+        { value: '23', label: 'Short-hours days' },
+        { value: '7', label: 'Missing punches' },
+        { value: '4', label: 'Absences' }
+      ],
+      bars: data.map(([name, v]) => ({ name, label: v + '%', style: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + v + '%; background: var(--text-2); border-radius: 2px;' }))
+    };
+  }
+}
+</script>
+</body>
+</html>

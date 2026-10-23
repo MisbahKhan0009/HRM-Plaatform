@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings navigation</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<nav class="hrm-root" data-theme="{{theme}}" aria-label="Settings" style="width: 100%; display: flex; flex-direction: column; gap: 16px; background: var(--ground);">
+  <div style="display: flex; flex-direction: column; gap: 6px;">
+    <span class="hrm-label" style="padding: 0 12px;">Organization</span>
+    <div class="hrm-nav">
+      <a class="{{c.company}}" href="#company">Company</a>
+      <a class="{{c.departments}}" href="#departments">Departments</a>
+      <a class="{{c.positions}}" href="#positions">Positions</a>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 6px;">
+    <span class="hrm-label" style="padding: 0 12px;">Time &amp; leave</span>
+    <div class="hrm-nav">
+      <a class="{{c.schedules}}" href="SettingsSchedules.dc.html">Work schedules</a>
+      <a class="{{c.holidays}}" href="#holidays">Holidays</a>
+      <a class="{{c.leaveTypes}}" href="#leave-types">Leave types</a>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 6px;">
+    <span class="hrm-label" style="padding: 0 12px;">Payroll</span>
+    <div class="hrm-nav">
+      <a class="{{c.payroll}}" href="#payroll-settings">Payroll settings</a>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 6px;">
+    <span class="hrm-label" style="padding: 0 12px;">Access</span>
+    <div class="hrm-nav">
+      <a class="{{c.users}}" href="SettingsUsers.dc.html">Users</a>
+      <a class="{{c.roles}}" href="SettingsUsers.dc.html">Roles</a>
+      <a class="{{c.system}}" href="SystemHealth.dc.html">System health</a>
+    </div>
+  </div>
+</nav>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"active":{"editor":"enum","options":["company","departments","positions","schedules","holidays","leaveTypes","payroll","users","roles","system"],"default":"schedules"},"$preview":{"width":232,"height":700}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const active = this.props.active ?? 'schedules';
+    const c = {};
+    ['company','departments','positions','schedules','holidays','leaveTypes','payroll','users','roles','system'].forEach((k) => { c[k] = k === active ? 'hrm-nav-item is-active' : 'hrm-nav-item'; });
+    return { theme: this.props.theme ?? 'ink', c };
+  }
+}
+</script>
+</body>
+</html>

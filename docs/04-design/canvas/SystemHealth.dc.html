@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>System health · Big-Matrix HRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/bigmatrix/components/bundle.css">
+<link rel="stylesheet" href="hrm-app.css">
+<script src="ds/bigmatrix/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="hrm-root hrm-shell" data-theme="{{theme}}">
+  <div class="hrm-shell-side">
+    <dc-import name="Sidebar" theme="{{theme}}" role="admin" active="system" hint-size="248px,100%"></dc-import>
+  </div>
+  <div class="hrm-shell-main">
+    <header class="hrm-topbar">
+      <nav aria-label="Breadcrumb" style="flex-grow: 1; display: flex; gap: 8px; align-items: center;"><span class="hrm-label">Settings</span><span class="hrm-faint">/</span><span class="hrm-label" style="color: var(--text);">System health</span></nav>
+      <span class="hrm-avatar" aria-label="Shafiq Alam">SA</span>
+    </header>
+
+    <main class="hrm-page" style="max-width: 1320px;">
+      <div class="hrm-page-head">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h1 class="hrm-h1">System health</h1>
+          <p class="hrm-muted" style="margin: 0;">Background jobs, email delivery and free-tier usage. No business data is shown here.</p>
+        </div>
+        <x-import component-from-global-scope="BigMatrix.Button" arrow="{{no}}">Retry failed messages</x-import>
+      </div>
+
+      <div class="hrm-alert hrm-alert-bad">
+        <svg class="hrm-icon hrm-icon-20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+        <span><strong style="font-weight: 600;">Email sending failed since 9:00 am.</strong> The Gmail connection was rejected (<span class="hrm-mono">invalid_grant</span>). Reconnect the Gmail account, then retry. Runbook IR-04.</span>
+      </div>
+
+      <x-import component-from-global-scope="BigMatrix.StatBar" stats="{{outbox}}" style="max-width: none;"></x-import>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;">
+        <section aria-labelledby="jobs" style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
+          <h2 id="jobs" class="hrm-h3">Background jobs</h2>
+          <div class="hrm-table-wrap">
+            <div class="hrm-table-scroll">
+              <table class="hrm-table">
+                <thead><tr><th scope="col">Job</th><th scope="col">Last run</th><th scope="col" class="num">Duration</th><th scope="col">Status</th></tr></thead>
+                <tbody>
+                  <tr><td class="hrm-mono" style="font-size: 13px;">outbox.process</td><td>Today 3:45 pm</td><td class="num">0.4 s</td><td><span class="hrm-badge tone-bad">Failed</span></td></tr>
+                  <tr><td class="hrm-mono" style="font-size: 13px;">documents.expiry_reminders</td><td>Today 12:05 am</td><td class="num">0.2 s</td><td><span class="hrm-badge tone-warn">Retrying</span></td></tr>
+                  <tr><td class="hrm-mono" style="font-size: 13px;">attendance.close_day</td><td>Today 12:05 am</td><td class="num">0.6 s</td><td><span class="hrm-badge tone-ok">Succeeded</span></td></tr>
+                  <tr><td class="hrm-mono" style="font-size: 13px;">employee.apply_effective_events</td><td>Today 12:05 am</td><td class="num">0.1 s</td><td><span class="hrm-badge tone-ok">Succeeded</span></td></tr>
+                  <tr><td class="hrm-mono" style="font-size: 13px;">maintenance.prune</td><td>Today 12:05 am</td><td class="num">0.3 s</td><td><span class="hrm-badge tone-ok">Succeeded</span></td></tr>
+                  <tr><td class="hrm-mono" style="font-size: 13px;">leave.accrue</td><td>1 Oct 12:05 am</td><td class="num">0.5 s</td><td><span class="hrm-badge tone-ok">Succeeded</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="hrm-table-foot"><span>Nightly backup: today 3:00 am · encrypted · 4.1 MB</span><span class="hrm-badge tone-ok">Backup OK</span></div>
+          </div>
+        </section>
+
+        <section class="hrm-card" aria-labelledby="usage" style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 16px;">
+          <h2 id="usage" class="hrm-h3">Free-tier usage</h2>
+          <sc-for list="{{usage}}" as="u" hint-placeholder-count="5">
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; gap: 8px; font-size: 13px;"><span>{{u.name}}</span><span class="hrm-mono hrm-muted">{{u.value}}</span></div>
+              <div class="hrm-meter" role="img" aria-label="{{u.aria}}"><span style="{{u.style}}"></span></div>
+            </div>
+          </sc-for>
+          <p class="hrm-faint" style="margin: 0; font-size: 12px;">Alerts at 80%. Upgrade path: FREE-TIER-MONITORING.md.</p>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["ink","paper"],"default":"ink","section":"Theme"},"$preview":{"width":1440,"height":1050}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const rows = [
+      ['Neon storage', '61 MB of 512 MB', 12],
+      ['Neon compute (this month)', '38 of 100 CU-h', 38],
+      ['R2 file storage', '0.9 GB of 10 GB', 9],
+      ['Emails today', '41 of ~500', 8],
+      ['Worker requests today', '6,210 of 100,000', 6]
+    ];
+    return {
+      theme: this.props.theme ?? 'ink', no: false,
+      outbox: [
+        { value: '12', label: 'Emails pending' },
+        { value: '5', label: 'Failed, retrying' },
+        { value: '0', label: 'Dead letters' },
+        { value: '1,284', label: 'Sent this month' }
+      ],
+      usage: rows.map(([name, value, pct]) => ({ name, value, aria: name + ' ' + pct + ' percent used', style: 'width: ' + pct + '%; background: ' + (pct >= 80 ? 'var(--bad)' : 'var(--text-2)') + ';' }))
+    };
+  }
+}
+</script>
+</body>
+</html>

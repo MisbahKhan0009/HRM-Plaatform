@@ -1,0 +1,5 @@
+@import "tailwindcss";
+@import "@hrm/ui/theme.css";
+@import "@hrm/ui/brand.css";
+
+@source "../../../packages/ui/src";

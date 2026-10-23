@@ -18,14 +18,14 @@ Hard constraints: D-024 (everything on Cloudflare Workers), **D-032 (free tiers 
 | Forms / i18n | React Hook Form + Zod; `react-i18next` | OSS | 0005 |
 | Money / dates | `NUMERIC(14,2)` + `decimal.js`; `date-fns` + `@date-fns/tz` | OSS | 0006 |
 | File storage | **Cloudflare R2** private bucket | 10 GB, 1M writes, 10M reads / month | 0009 |
-| Background jobs | **Postgres outbox + Cron Trigger** (every minute) | Cron triggers free | 0002 |
+| Background jobs | **Postgres outbox** sent via `ctx.waitUntil` + retry Cron (15 min, work hours) + daily Cron | Cron triggers free | 0002 |
 | Email | **Gmail API** from a dedicated company Gmail account | ~500 emails/day | 0007 |
 | PDF / exports | Generated **client-side**: `pdf-lib` (payslips), `exceljs`/CSV (reports) | OSS | 0006 |
 | Observability | **Sentry Developer (free)** + Workers Logs | 5k errors/month, 1 seat | 0008 |
 | Backups | Nightly `pg_dump` (GitHub Actions) → encrypted (`age`) → R2 | Actions free minutes | 0003 |
 | Monorepo | pnpm workspaces + Turborepo | OSS | Stage 4 |
-| Testing | Vitest (+ `@cloudflare/vitest-pool-workers`), Testing Library, Playwright, axe-core | OSS | 0008 |
-| CI/CD | GitHub Actions → `wrangler deploy` | 2,000 min/month (private repo) | 0008 |
+| Testing | Vitest (+ `@cloudflare/vitest-plugin`), Testing Library, Playwright, axe-core | OSS | 0008 |
+| CI/CD | GitHub Actions → `wrangler deploy` | unlimited (public repo, D-043) | 0008 |
 
 ## Environments
 
@@ -38,3 +38,11 @@ Hard constraints: D-024 (everything on Cloudflare Workers), **D-032 (free tiers 
 
 ## Monthly cost: **$0**
 Free-tier limits and how we stay within them are tracked in ADR-0009.
+
+## Versions and supply-chain rules (Stage 7)
+
+- Versions are declared once in the `catalog` of `pnpm-workspace.yaml`; packages use `"catalog:"`. Exact versions are pinned in `pnpm-lock.yaml`.
+- `minimumReleaseAge: 10080`: pnpm never installs a release younger than 7 days, so a compromised release has time to be caught before it reaches us.
+- Only `esbuild` and `workerd` may run install scripts (`onlyBuiltDependencies`).
+- TypeScript is held on 6.0.x (the last JavaScript-based compiler). TypeScript 7 (native) is evaluated separately before adoption.
+- Vitest is held on 4.1.x because `@cloudflare/vitest-plugin` (the renamed `vitest-pool-workers`) supports it.

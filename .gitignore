@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.turbo/
+coverage/
+.wrangler/
+.dev.vars
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+playwright-report/
+test-results/
+
+# Agent worktrees (local only)
+.claude/worktrees/
+
+# Playwright output
+e2e/test-results/
+e2e/playwright-report/
