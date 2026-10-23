@@ -266,6 +266,14 @@ export const DEFAULT_ROLES: readonly RoleDefinition[] = [
   },
 ];
 
+/**
+ * Permissions a role without strong auth may hold: the default grants of the derived `manager` and `employee` roles.
+ * Anything else (payroll, compensation, audit, administration) needs a role that requires strong auth (D-049, C11).
+ */
+export const WEAK_ROLE_PERMISSIONS: ReadonlySet<string> = new Set<string>(
+  DEFAULT_ROLES.filter((r) => !r.requiresStrongAuth).flatMap((r) => r.permissions),
+);
+
 /** Roles that require a strong session (passkey, or email code + TOTP); D-006, D-033. */
 export const STRONG_AUTH_ROLES = DEFAULT_ROLES.filter((r) => r.requiresStrongAuth).map((r) => r.code);
 

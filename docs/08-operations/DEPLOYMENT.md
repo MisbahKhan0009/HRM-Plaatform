@@ -1,6 +1,6 @@
 # Deployment runbook
 
-Status: **Draft.** The steps follow the CI/CD design and have not been run against real infrastructure. The first operator to deploy corrects any step that differs and updates this status line.
+Status: **§3 and §5 run once, 2026-10-23,** for the first staging and production deploys; corrected where they differed. §2 (normal release through the workflows) has not been run yet.
 
 This is the sequence for shipping a change to staging and production, plus the first-ever deploy and rollback. Workflow internals: `CI-CD.md`. Environments and Wrangler layout: `ENVIRONMENTS.md`.
 
@@ -60,6 +60,8 @@ pnpm --filter @hrm/api exec wrangler secret put BETTER_AUTH_SECRET --env staging
 pnpm --filter @hrm/api exec wrangler deploy --env staging
 ```
 
+Until every Gmail secret is set (`GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET`, `GMAIL_REFRESH_TOKEN`, `GMAIL_SENDER`), every API request, `/api/v1/health` included, answers 500: with `MAILER=gmail` the Worker builds the mailer per request and refuses to start without them (`apps/api/src/lib/mailer.ts`). Set them all before the smoke checks.
+
 Production follows the same steps with `--env production` and **without** `db:seed:demo`. In production, run steps 1–2 from the owner's machine only once; every later migration runs from `deploy-production.yml`.
 
 ## 4. Database migrations: expand/contract
@@ -81,7 +83,7 @@ Before every production migration, `deploy-production.yml` checks that the lates
 ```bash
 BASE=https://hrm.<account-subdomain>.workers.dev        # or the staging URL
 
-curl -fsS "$BASE/api/v1/health" | jq .                       # 🟢 {"status":"ok","db":"ok", "version":"v1.4.0"}
+curl -fsS "$BASE/api/v1/health" | jq .                       # 🟢 {"status":"ok","service":"hrm-api","version":"v1.4.0","time":"…"} (does not query the database)
 curl -fsS -o /dev/null -w '%{http_code}\n' "$BASE/"           # 🟢 200 (SPA shell)
 curl -fsS -o /dev/null -w '%{http_code}\n' "$BASE/api/v1/auth/me"   # 🟢 401 (auth enforced)
 pnpm --filter @hrm/api exec wrangler deployments list --env production   # 🟢 new version is active

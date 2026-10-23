@@ -6,8 +6,16 @@ import {
   IMPORT_MAX_ROWS,
 } from '@hrm/contracts';
 import { type schema, uuidv7 } from '@hrm/db';
-import { type ImportValidation, parseCsv, validateImport } from '@hrm/domain';
-import { recordAudit } from '../../lib/audit';
+import {
+  EFFECTIVE_DATED_ACTIONS,
+  eventUpdates,
+  type ImportValidation,
+  importedEmployment,
+  parseCsv,
+  toBusinessDate,
+  validateImport,
+} from '@hrm/domain';
+import { type AuditEvent, recordAudit, recordAudits } from '../../lib/audit';
 import type { AuthContext } from '../../lib/auth-context';
 import { padded } from '../../lib/codes';
 import { sha256Hex } from '../../lib/crypto';
@@ -34,6 +42,7 @@ async function validate(
   deps: Deps,
   auth: AuthContext,
   input: { csv: string; mapping?: EmployeeImportPreviewInput['mapping'] },
+  today: string,
 ): Promise<ImportValidation> {
   const parsed = parseCsv(input.csv, IMPORT_MAX_ROWS + 1);
   if (!parsed.ok)
@@ -47,6 +56,7 @@ async function validate(
   return validateImport(parsed.rows, input.mapping, {
     ...lookups,
     requiredFields: settings['employees.required_fields'],
+    today,
   });
 }
 
@@ -57,7 +67,7 @@ export async function previewImport(
   input: EmployeeImportPreviewInput,
 ): Promise<EmployeeImportPreview> {
   policy.manage(auth);
-  const result = await validate(deps, auth, input);
+  const result = await validate(deps, auth, input, toBusinessDate(deps.clock.now()));
   const valid = result.rows.filter((r) => r.valid).length;
   return {
     previewToken: await sha256Hex(input.csv),
@@ -79,9 +89,12 @@ export async function previewImport(
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /**
- * Commit: re-validates the same CSV (the token proves it is the previewed file) and creates the valid rows as
- * `draft` employees in one transaction; rows with errors are reported, not saved (US-EMP-007). Imported codes keep
- * their value and the sequence moves above them; rows without a code get the next codes (BUSINESS-RULES §8).
+ * Commit: re-validates the same CSV (the token proves it is the previewed file) and creates the valid rows in one
+ * transaction; rows with errors are reported, not saved (US-EMP-007). Imported staff are already employed
+ * (BUSINESS-RULES §10): each row walks the DOMAIN-MODEL §5.2 transitions from `draft` to `active` or `probation`, and
+ * its `hired` (and `confirmed`) events are recorded as applied on their historical dates, with the same audit rows the
+ * lifecycle actions write. Imported codes keep their value and the sequence moves above them; rows without a code get
+ * the next codes (BUSINESS-RULES §8).
  */
 export async function commitImport(
   deps: Deps,
@@ -93,7 +106,9 @@ export async function commitImport(
     throw validationFailed([
       { path: '/previewToken', code: 'mismatch', message: 'The file differs from the previewed file.' },
     ]);
-  const result = await validate(deps, auth, input);
+  const now = deps.clock.now();
+  const today = toBusinessDate(now);
+  const result = await validate(deps, auth, input, today);
   const headerIssues = result.issues.filter((i) => i.row === 0);
   if (headerIssues.length)
     throw validationFailed(headerIssues.map(({ path, code, message }) => ({ path, code, message })));
@@ -121,10 +136,16 @@ export async function commitImport(
       row: r,
       id: uuidv7(),
       code: r.value.employeeCode ?? padded(prefix, next++, settings['employees.code_padding']),
+      // Validation guarantees a joining date on or before today for every valid row.
+      employment: importedEmployment({
+        joiningDate: r.value.joiningDate as string,
+        probationEndDate: r.value.probationEndDate,
+        today,
+      }),
     }));
     const idByCode = new Map(planned.map((p) => [p.code, p.id]));
     const values: (typeof schema.employees.$inferInsert)[] = planned.map(
-      ({ row: { value: v }, id, code }) => ({
+      ({ row: { value: v }, id, code, employment }) => ({
         id,
         companyId: auth.companyId,
         employeeCode: code,
@@ -143,14 +164,60 @@ export async function commitImport(
             ? v.manager.id
             : (idByCode.get(v.manager.rowCode) ?? null)
           : null,
-        joiningDate: v.joiningDate,
-        probationEndDate: v.probationEndDate,
+        // Status, joining date and probation end come from the lifecycle steps, applied in order from `draft`.
         status: 'draft',
+        joiningDate: null,
+        probationEndDate: null,
+        ...(Object.assign({}, ...employment.steps.map((s) => eventUpdates(s.changes))) as Partial<
+          typeof schema.employees.$inferInsert
+        >),
         createdBy: auth.userId,
         updatedBy: auth.userId,
       }),
     );
     await withDbErrors(() => repo.insertEmployees(tx, values), EMPLOYEE_CONSTRAINTS);
+
+    // Effective-dated steps (`hire`, `confirm`) become applied employment events, as the lifecycle actions record
+    // them; the passage through `preboarding` happens within the same statement and has no event of its own.
+    const events = planned.flatMap(({ id, employment }) =>
+      employment.steps
+        .filter((s) => EFFECTIVE_DATED_ACTIONS.has(s.action))
+        .map((s) => ({
+          id: uuidv7(),
+          companyId: auth.companyId,
+          employeeId: id,
+          type: s.type,
+          effectiveDate: s.effectiveDate,
+          status: 'applied' as const,
+          changes: s.changes,
+          reason: null,
+          appliedAt: now,
+          createdBy: auth.userId,
+        })),
+    );
+    await repo.insertEvents(tx, events);
+    const audits: AuditEvent[] = events.flatMap((e) => [
+      {
+        action: 'employment_event.created',
+        category: 'business',
+        entityType: 'employment_event',
+        entityId: e.id,
+        employeeId: e.employeeId,
+        metadata: { type: e.type, effectiveDate: e.effectiveDate, status: e.status },
+      },
+      {
+        action: 'employee.status_changed',
+        category: 'business',
+        entityType: 'employee',
+        entityId: e.employeeId,
+        employeeId: e.employeeId,
+        metadata: { ...e.changes.status, effectiveDate: e.effectiveDate },
+      },
+    ]);
+    await recordAudits(tx, auth.actor, audits);
+
+    const byStatus = { active: 0, probation: 0 } as Record<string, number>;
+    for (const p of planned) byStatus[p.employment.status] = (byStatus[p.employment.status] ?? 0) + 1;
     await recordAudit(tx, auth.actor, {
       action: 'employee.imported',
       category: 'business',
@@ -159,13 +226,19 @@ export async function commitImport(
       metadata: {
         createdCount: planned.length,
         skippedCount: result.rows.length - planned.length,
+        byStatus,
         employeeIds: planned.map((p) => p.id),
       },
     });
     return {
       createdCount: planned.length,
       skippedCount: result.rows.length - planned.length,
-      created: planned.map((p) => ({ row: p.row.row, id: p.id, employeeCode: p.code })),
+      created: planned.map((p) => ({
+        row: p.row.row,
+        id: p.id,
+        employeeCode: p.code,
+        status: p.employment.status,
+      })),
       errors,
     };
   });

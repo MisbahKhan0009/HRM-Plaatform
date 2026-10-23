@@ -140,7 +140,9 @@ export function PayrollRunPage({
         />
       ) : (
         <Alert tone="info">
-          Calculate the run to build items and totals from approved salary structures.
+          {run.runType === 'off_cycle'
+            ? 'Calculate the run to pay approved claims and adjustments that no run has paid yet.'
+            : 'Calculate the run to build items and totals from approved salary structures.'}
         </Alert>
       )}
       <Tabs value={search.tab} onValueChange={(v) => onSearch({ tab: v as RunTab, page: 1 })} tabs={tabs}>

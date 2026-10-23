@@ -2,7 +2,7 @@ import { daysInclusive, type IsoDate, maxDate, minDate } from '../dates';
 import { Decimal, roundMoney } from '../money';
 
 /** Payroll rules version stored with every snapshot (BUSINESS-RULES §6). */
-export const PAYROLL_RULE_VERSION = 'payroll-v1.0';
+export const PAYROLL_RULE_VERSION = 'payroll-v1.1';
 
 export interface Period {
   start: IsoDate;

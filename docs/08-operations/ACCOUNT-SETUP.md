@@ -1,6 +1,6 @@
 # Account setup runbook
 
-Status: **Draft.** No step has been run yet. The first person to run it corrects any step that differs from what they see and changes this status line. Dashboards change often; where a menu path differs, follow the provider's current wording.
+Status: **Run once, 2026-10-23.** §2 to §8 were run against the real dashboards and the steps corrected where they differed. Still open: the operations mailbox and a second owner on every account (§0), a dedicated Gmail sender (§5.1), and repository rules (§7.1, §7.2 branch protection). Dashboards change often; where a menu path differs, follow the provider's current wording.
 
 This runbook creates every external account and resource the HRM needs, all on free plans (D-032). It covers creation only. Configuration values go into `ENVIRONMENTS.md`, secret values into the stores listed in `SECRETS.md`, and the first deploy is in `DEPLOYMENT.md`.
 
@@ -29,7 +29,7 @@ This runbook creates every external account and resource the HRM needs, all on f
 | Tool | Check | Install |
 |---|---|---|
 | Node.js (version in `.nvmrc`) | `node -v` | https://nodejs.org or `nvm install` |
-| pnpm (version in `package.json` → `packageManager`) | `pnpm -v` | `corepack enable` |
+| pnpm (version in `package.json` → `packageManager`) | `pnpm -v` | `corepack enable`. Node.js 25 and later no longer bundle corepack: run `npm install -g corepack` first; on Windows, if `corepack enable` cannot write to the Node.js install folder, use `corepack enable --install-directory "$APPDATA/npm"` |
 | Wrangler (repo dependency) | `pnpm --filter @hrm/api exec wrangler --version` | installed by `pnpm install` |
 | `psql` client | `psql --version` | OS package `postgresql-client` |
 | `age` | `age --version` | https://github.com/FiloSottile/age |
@@ -40,7 +40,7 @@ This runbook creates every external account and resource the HRM needs, all on f
 
 1. Sign up at https://dash.cloudflare.com/sign-up with the operations mailbox. Enable 2FA under **My Profile → Authentication**.
 2. Add the backup owner: **Manage Account → Members → Invite**, role Super Administrator.
-3. Open **Workers & Pages**. Cloudflare asks you to pick a `workers.dev` subdomain. Choose it with care, for example `bigmatrix`: it becomes part of the app URL (`hrm.bigmatrix.workers.dev`), and passkeys are tied to that URL (ADR-0004).
+3. Open **Workers & Pages**. Cloudflare asks you to pick a `workers.dev` subdomain. Choose it with care, for example `bigmatrix`: it becomes part of the app URL (`hrm.bigmatrix.workers.dev`), and passkeys are tied to that URL (ADR-0004). The subdomain belongs to the whole account: if the account already has one (shown by `GET /accounts/<account-id>/workers/subdomain`), changing it also changes the URL of every other Worker in the account.
 4. Stay on the **Workers Free** plan. Do not upgrade.
 
 ### 2.2 Log in Wrangler 🟠
@@ -54,7 +54,7 @@ Write the **Account ID** into the table in §9.
 
 ### 2.3 R2 buckets 🖐 🟠
 
-1. Dashboard → **R2 Object Storage** → **Purchase R2 / Enable**. Cloudflare asks for a payment method (card or PayPal) before R2 can be used. **This is verification only.** The free allowance (10 GB storage, 1M Class A and 10M Class B operations a month) is not charged (D-034). Usage above the free allowance would be charged, so `FREE-TIER-MONITORING.md` checks it monthly.
+1. Dashboard → **Storage & databases → R2 Object Storage** → **Add R2 subscription to my account** (shows $0.00 due now). Cloudflare asks for a payment method (card or PayPal) before R2 can be used. **This is verification only.** The free allowance (10 GB storage, 1M Class A and 10M Class B operations a month) is not charged (D-034). Usage above the free allowance would be charged, so `FREE-TIER-MONITORING.md` checks it monthly.
 2. Create the buckets, location hint Asia-Pacific:
 
 ```bash
@@ -64,10 +64,22 @@ pnpm --filter @hrm/api exec wrangler r2 bucket create hrm-backups       --locati
 pnpm --filter @hrm/api exec wrangler r2 bucket list                     # 🟢 verify
 ```
 
-3. Confirm public access is **off** for all three buckets: dashboard → R2 → bucket → **Settings** → Public access: *Disabled*, no custom domain, `r2.dev` URL *Disabled* (FR-DOC-008).
-4. Lifecycle rules on `hrm-backups` (dashboard → bucket → Settings → Object lifecycle rules):
-   - Rule `daily-expire`: prefix `daily/`, delete objects 30 days after upload.
-   - Rule `monthly-expire`: prefix `monthly/`, delete objects 365 days after upload.
+3. Confirm public access is **off** for all three buckets (FR-DOC-008). New buckets start private; check from the terminal:
+
+```bash
+for b in hrm-staging-files hrm-prod-files hrm-backups; do
+  pnpm --filter @hrm/api exec wrangler r2 bucket dev-url get "$b"      # 🟢 "...r2.dev URL is disabled"
+  pnpm --filter @hrm/api exec wrangler r2 bucket domain list "$b"      # 🟢 no custom domains
+done
+```
+
+4. Lifecycle rules on `hrm-backups`:
+
+```bash
+pnpm --filter @hrm/api exec wrangler r2 bucket lifecycle add hrm-backups daily-expire daily/ --expire-days 30 --force
+pnpm --filter @hrm/api exec wrangler r2 bucket lifecycle add hrm-backups monthly-expire monthly/ --expire-days 365 --force
+pnpm --filter @hrm/api exec wrangler r2 bucket lifecycle list hrm-backups      # 🟢 verify
+```
 
 ### 2.4 R2 API token for backups 🖐
 
@@ -90,9 +102,9 @@ Save the token into GitHub secrets as `CLOUDFLARE_API_TOKEN` (§7.3).
 ## 3. Neon 🖐 🟠
 
 1. Sign up at https://console.neon.tech with the operations mailbox; enable 2FA. Plan: **Free**.
-2. Create project: name `hrm`, Postgres version: the default offered, region **AWS Asia Pacific (Singapore)**. Note the Postgres major version in §9; the CI and local Docker images must use the same major version.
-3. The default branch is `main` (production). Create branch `staging` from `main` (**Branches → New branch**). Neon Free allows 10 branches per project.
-4. Set **Compute → Scale to zero** on for both branches (the Free default: suspend after 5 minutes).
+2. Create project: name `hrm`, region **AWS Asia Pacific 1 (Singapore)**, Postgres version **16** (expand *Postgres database* to see the version list). Do not take the default offered (18): CI and local Docker use `postgres:16-alpine`, and the backup workflows use `pg_dump` 17, which cannot dump a newer server. Note the version in §9.
+3. Neon names the default branch `production`; it is the production branch that other documents call `main`. Create branch `staging` from it, with its own compute (**Branches → New branch**). Neon Free allows 10 branches per project.
+4. Check **Compute → Scale to zero** is on for both branches. On Free it is on by default (suspend after 5 minutes; the API shows `suspend_timeout_seconds: 0`, meaning the plan default).
 5. Add the backup owner to the project (**Settings → Collaborators** or the organisation members page).
 6. Create the application role on each branch. Run with the owner connection string (**Connect** button → role `neondb_owner`, *direct* connection, not pooled):
 
@@ -146,9 +158,9 @@ Sign in to https://console.cloud.google.com **as the dedicated Gmail account** (
 
 ## 6. Sentry 🖐
 
-1. Sign up at https://sentry.io with the operations mailbox; plan **Developer (free)**: 1 seat, 5k errors a month (ADR-0009). Enable 2FA. Data storage location: choose the region offered nearest Bangladesh.
+1. Sign up at https://sentry.io with the operations mailbox; plan **Developer (free)**: 1 seat, 5k errors a month (ADR-0009). Enable 2FA. Data storage location: choose the region offered nearest Bangladesh. A new organisation starts on a free trial and falls back to Developer when it ends; do not enter a card.
 2. Create project `hrm-api` (platform: Cloudflare Workers) and project `hrm-web` (platform: React). Copy each **DSN**.
-3. **Settings → Security & Privacy**: enable *Data Scrubber* and *Use Default Scrubbers*; set *Prevent Storing of IP Addresses* on (`OBSERVABILITY.md` §4).
+3. In each project, **Project Settings → Security & Privacy**: enable *Data Scrubber* and *Use Default Scrubbers*; set *Prevent Storing of IP Addresses* on (`OBSERVABILITY.md` §4). Setting them per project leaves other projects in a shared organisation unchanged.
 4. Create an **auth token** (Settings → Auth Tokens) with scope `project:releases` only, for uploading source maps from CI. Store it as GitHub secret `SENTRY_AUTH_TOKEN`.
 5. Alerts: email to the operations mailbox (`OBSERVABILITY.md` §6).
 
@@ -164,7 +176,7 @@ GitHub Free offers branch protection rules and deployment environments on **publ
 
 | If the repository is | Do this |
 |---|---|
-| Public | Protect `main`: require a PR, require status check `ci`, block force-push and deletion. Create environments `staging`, `production` (required reviewer: owner) and `restore-drill` (required reviewer: owner), and put deploy and backup secrets in them |
+| Public | Protect `main`: require a PR, require status check `ci`, block force-push and deletion. Create environments `staging` (no reviewer: it deploys on every push to `main`), `production` (required reviewer: owner), `restore-drill` (required reviewer: owner) and `backups` (no reviewer), and put deploy and backup secrets in them. `nightly-backup.yml` and `restore-drill.yml` run in the `backups` environment, so the backup secrets go there; a reviewer on `backups` would hold every nightly run for approval |
 | Private (GitHub Free) | No protection rules are available. Compensating controls: production deploys run only on a signed release tag plus a manual `workflow_dispatch` confirmation input (`CI-CD.md` §4); only the owner and one backup person have write access; review the Actions log after every production deploy |
 
 **Decided: public** (D-043). Apply the *Public* row. Because the code is public, never commit secrets, real employee data, `.dev.vars` or database dumps; secret scanning and push protection must be enabled (free for public repositories).
@@ -181,31 +193,31 @@ Run once per environment after the first deploy has created the Worker (`DEPLOYM
 
 ```bash
 cd apps/api
-for s in BETTER_AUTH_SECRET GMAIL_CLIENT_ID GMAIL_CLIENT_SECRET GMAIL_REFRESH_TOKEN SENTRY_DSN; do
+for s in BETTER_AUTH_SECRET GMAIL_CLIENT_ID GMAIL_CLIENT_SECRET GMAIL_REFRESH_TOKEN GMAIL_SENDER MAIL_ALLOWLIST SENTRY_DSN; do
   pnpm exec wrangler secret put "$s" --env staging
 done
 pnpm exec wrangler secret list --env staging        # 🟢 names only, values are never shown
 ```
 
-Repeat with `--env production`. Use a **different** `BETTER_AUTH_SECRET` per environment (generate with `openssl rand -base64 48`).
+`GMAIL_SENDER` is the sending address; with `MAILER=gmail` the Worker refuses to send without it (`apps/api/src/lib/mailer.ts`). `MAIL_ALLOWLIST` (staging only) is a comma-separated list of addresses that may receive email. Repeat with `--env production`, leaving out `MAIL_ALLOWLIST`. Use a **different** `BETTER_AUTH_SECRET` per environment (generate with `openssl rand -base64 48`).
 
 ## 9. Record of accounts
 
-Fill in when done. Store this table in the owner's password manager, **not** in the repository. Only the empty template lives here.
+The table holds names and IDs only, none of which are secret. Logins, passwords, tokens and 2FA recovery codes stay in the owner's password manager (`SECRETS.md` §4).
 
 | Account / resource | Login | Owner 1 | Owner 2 | 2FA on | ID / note |
 |---|---|---|---|---|---|
-| Operations mailbox | | | | ☐ | |
-| Cloudflare account | | | | ☐ | Account ID: |
-| Workers subdomain | — | | | — | `<subdomain>.workers.dev` |
-| R2 buckets | — | | | — | `hrm-staging-files`, `hrm-prod-files`, `hrm-backups` |
-| Neon project | | | | ☐ | Region, Postgres major version: |
-| Hyperdrive | — | | | — | staging ID, prod ID |
-| Gmail sender | | | | ☐ | |
-| Google Cloud project | (Gmail sender) | | | ☐ | project ID |
-| Sentry | | | | ☐ | org slug |
-| GitHub repository | | | | ☐ | public / private |
-| `age` backup key pair | — | | | — | where the private key is stored (§ `BACKUP-AND-RESTORE.md` §2) |
+| Operations mailbox | not created yet | | | ☐ | Accounts below use the owner's own Google account until it exists |
+| Cloudflare account | owner's Google account | Misbah | not named yet | ☐ | Account ID: `281309b986b5c6deebe5d81fbb069486` |
+| Workers subdomain | — | Misbah | | — | `mkhanmisbah007.workers.dev` (shared with the account's other Workers) |
+| R2 buckets | — | Misbah | | — | `hrm-staging-files`, `hrm-prod-files`, `hrm-backups` (APAC, private; lifecycle rules on `hrm-backups`); R2 token `hrm-backups`, CI token `hrm-ci-deploy` |
+| Neon project | owner's Google account | Misbah | not named yet | ☐ | `hrm` (`late-credit-28329566`), AWS Asia Pacific 1 (Singapore), Postgres 16; branches `production` (default) and `staging` |
+| Hyperdrive | — | Misbah | | — | `hrm-staging-db` `a2e4e43597d54cdbb49f8e3d4357fd65`, `hrm-prod-db` `994c8cc188cd4b61b39e343af1ffa711` |
+| Gmail sender | owner's Gmail account (interim) | Misbah | not named yet | ☐ | Replace with a dedicated sender account (§5.1) |
+| Google Cloud project | (Gmail sender) | Misbah | | ☐ | `bigmatrix-hrm`; OAuth app `Big-Matrix HRM` in production (unverified), client `hrm-mailer` |
+| Sentry | owner's Google account | Misbah | | ☐ | org `bms-io`; projects `hrm-api`, `hrm-web`; auth token `hrm-ci-releases` |
+| GitHub repository | `MisbahKhan0009` | Misbah | not named yet | ☐ | `MisbahKhan0009/HRM-Plaatform`, public; environments `staging`, `production`, `restore-drill`, `backups` |
+| `age` backup key pair | — | Misbah | | — | Public key in GitHub secret `BACKUP_AGE_RECIPIENT`; private key in the owner's password manager (`BACKUP-AND-RESTORE.md` §2) |
 
 ## 10. Verify it worked
 

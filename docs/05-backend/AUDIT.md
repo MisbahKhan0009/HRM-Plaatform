@@ -7,6 +7,7 @@ Status: **Accepted**, 2026-10-22. Normative. Implements FR-AUD-001 to FR-AUD-005
 - The audit log is the business record of who did what. Diagnostic logs (Workers Logs) are separate and short-lived.
 - Every audited action writes its row **in the same transaction** as the change, through `AuditService.record(tx, event)`. A change without its audit row cannot commit.
 - The table is append-only: the `hrm_app` role has `INSERT, SELECT` only, so no application endpoint can change or delete history (FR-AUD-003).
+- Reads are audited only when they open personal or pay data: `employee.contact_viewed`, `payslip.viewed`, `document.downloaded`, `report.exported`. Routine reads such as lists, dashboards and the job list are not audited, so the log stays a record of actions.
 - Read access is split by category and permission (section 5).
 
 ## 2. Event shape
@@ -68,7 +69,6 @@ Metadata conventions:
 | `report.exported` | business / payroll | Report name, filters, row count (FR-REP-005) |
 | `job.failed`, `outbox.message_dead` | technical | Background failures |
 | `job.run_requested` | technical | An admin re-ran a daily step (`POST /admin/jobs/{job}/run`); job, run key, date |
-| `job.listed` | technical | An admin opened the job list (`GET /admin/jobs`); number of steps |
 | `outbox.retry_requested` | technical | An admin made failed outbox messages due now (`POST /admin/outbox/retry`); number reset |
 
 A new audited action is added to this table and to the `AuditAction` union in `@hrm/contracts` in the same PR.

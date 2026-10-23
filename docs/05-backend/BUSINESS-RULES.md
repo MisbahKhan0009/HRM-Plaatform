@@ -182,9 +182,11 @@ The job runs once per year per company (`job_runs` unique `run_key` = year).
 
 ## 6. Payroll calculation (v1)
 
-Rule version string: `payroll-v1.0`, stored on `payroll_runs.calculation_rule_version` and in every snapshot. Any change to this section increments it.
+Rule version string: `payroll-v1.1`, stored on `payroll_runs.calculation_rule_version` and in every snapshot. Any change to this section increments it.
 
 ### 6.1 Eligible employees
+
+Sections 6.1 to 6.4 describe a regular run; an off-cycle run follows 6.10 instead.
 
 An employee is included in a regular run for period `[P.start, P.end]` when all hold:
 
@@ -224,9 +226,11 @@ Policy `segment_proration`: split the employed days by structure and pay each se
 | Source | Selection | Line |
 |---|---|---|
 | Reimbursement claims (D-020, FR-REIM-003) | `status = approved` and `decided_at` date `<= P.end` and not yet included | one `earning` line per claim, code `reimbursement`, label "Transport reimbursement (12 Nov)" |
-| Payroll adjustments | `status = approved` and `target_period_id = P` | `earning` (`addition`, `arrears`) or `deduction` (`deduction`) line, label from reason |
+| Payroll adjustments | `status = approved` and `target_period_id = P` and not yet applied | `earning` (`addition`, `arrears`) or `deduction` (`deduction`) line, label from reason |
 
 `gross_amount = sum(earnings)`, `deduction_amount = sum(deductions)`, `net_amount = gross_amount - deduction_amount`.
+
+A claim or adjustment that already has a line in another run of the company in `calculated`, `submitted` or `approved` is left to that run. This keeps a regular run and an off-cycle run of the same period from taking the same claim or adjustment; returning that run releases it.
 
 ### 6.5 Validation flags
 
@@ -250,7 +254,8 @@ Each item stores everything needed to reproduce it without reading mutable table
 
 ```json
 {
-  "ruleVersion": "payroll-v1.0",
+  "ruleVersion": "payroll-v1.1",
+  "runType": "regular",
   "period": { "year": 2026, "month": 11, "start": "2026-11-01", "end": "2026-11-30", "daysInPeriod": 30 },
   "employee": { "id": "...", "code": "EMP-0007", "name": "...", "department": "Engineering", "position": "QA Engineer",
                 "joiningDate": "2026-11-12", "separationDate": null },
@@ -262,6 +267,8 @@ Each item stores everything needed to reproduce it without reading mutable table
   "settings": { "rounding": "half_up_2" }
 }
 ```
+
+`runType` is `regular` or `off_cycle`. Snapshots written under `payroll-v1.0` have no `runType` and are regular.
 
 ### 6.7 Recalculation and idempotency
 
@@ -285,6 +292,30 @@ These are calculated by hand from the rules above. Payroll acceptance requires t
 | Leaver, 31-day month | Gross 50,000; last day 10 Dec | 50000 × 10/31 = 16129.032... | 16,129.03 |
 | Increment mid-month (D-041) | 40,000 to 14 Nov, 46,000 from 15 Nov | `segment_proration`: 40000 × 14/30 = 18,666.67 and 46000 × 16/30 = 24,533.33 | 43,200.00 |
 | Reimbursement + deduction | Full month 30,000; approved transport claims 650.00 and 1,200.00; approved deduction adjustment 500.00 | 30000 + 650 + 1200 - 500 | 31,350.00 |
+| Off-cycle (6.10) | Approved claim 650.00; approved addition 1,000.00 and deduction 250.50 for the period; no salary | 650 + 1000 - 250.50 | 1,399.50 |
+
+### 6.10 Off-cycle runs
+
+An `off_cycle` run is a supplementary run: it pays only approved reimbursement claims and approved payroll adjustments that no run has paid yet. It has no base salary, no proration and no attendance input. Source: owner decision (a standard supplementary run).
+
+**Inputs.** For an off-cycle run of period `P`:
+
+| Source | Selection | Line |
+|---|---|---|
+| Reimbursement claims | `status = approved` and not yet included (`payroll_item_id` is NULL); no `decided_at` cut-off | as 6.4 |
+| Payroll adjustments | `status = approved` and `target_period_id = P` and not yet applied | as 6.4 |
+
+The 6.4 rule on claims and adjustments held by another run in progress applies to off-cycle runs as well.
+
+**Employees.** Every employee of the company with at least one eligible claim or adjustment gets one item, whatever their status or employment dates. A separated employee whose claim was approved after their final regular run was calculated is paid this way. An employee with nothing eligible gets no item.
+
+**Item.** Lines are built as in 6.4, with no `base_salary` line. `net_amount = sum(claims) + sum(additions and arrears) - sum(deductions)`. `days_employed` is 0, `salary_structure_id` is NULL, and the snapshot has `runType = off_cycle` and an empty `salaryStructures` list.
+
+**Flags.** `no_salary_structure`, `joiner`, `leaver` and `net_change_over_threshold` do not apply. `negative_net` and `currency_mismatch` still block `submit`; `zero_net` and `large_reimbursement` apply as in 6.5.
+
+**Nothing to pay.** When no employee has an eligible claim or adjustment, `calculate` fails with `422 BUSINESS_RULE_VIOLATION` and the run keeps its status and items. A run with no items would only move an empty run through approval and lock.
+
+**Lifecycle.** Validate, submit, approve (including the self-approval rules), lock, payments, `mark-paid` and `publish-payslips` work as for a regular run. `lock` marks the claims `included` and the adjustments `applied` (6.8), so a later regular or off-cycle run never pays them again. An off-cycle run never closes the period, and it may be created and calculated for a closed period. Its payslip shows no salary lines and no days paid.
 
 ## 7. Reporting lines
 
@@ -349,7 +380,28 @@ Stored in `settings` (DATA-MODEL section 1). Changing a key needs `settings.<sco
 | `security.session_idle_hours` | technical | int | 8 | auth |
 | `security.privileged_idle_hours` | technical | int | 1 | auth |
 
-## Open questions (owner)
+## 10. Employee CSV import
+
+The import (`POST /employees/import/commit`, FR-EMP-008) is for staff who are already employed at go-live. Each valid row is created already hired, with its historical joining date, so HR does not run the lifecycle actions for every existing employee.
+
+| Row | Status after import | Employment events (applied) |
+|---|---|---|
+| No probation end date | `active` | `hired` on the joining date |
+| Probation end date after today | `probation` | `hired` on the joining date |
+| Probation end date today or earlier | `active` | `hired` on the joining date, `confirmed` on the probation end date |
+
+- The status is reached through the DOMAIN-MODEL §5.2 transitions from `draft`: `start_preboarding`, `hire` (into `probation` when the row has a probation end date) and, when probation has ended, `confirm`. The passage through `preboarding` has no event of its own.
+- Events and audit rows match what the `hire` and `confirm` actions record: one `employment_event.created` and one `employee.status_changed` per event, plus one `employee.imported` summary row. They are written in the creating transaction. The import sends no email and creates no user account.
+- The joining date is required on every row, whatever `employees.required_fields` says. A joining date after today (business date, section 1) is a row error (`date_in_future`): future starters are new hires and go through `POST /employees` and the lifecycle actions.
+- The import grants no leave. The daily `leave.eligibility_grants` step grants the entitlements of imported staff once they are eligible (5.1).
+
+## Owner questions (decided, D-049)
+
+All decided on 2026-10-23 (D-049). For each item the v1 behaviour written below is the decision, with these exceptions:
+- **6 and 23:** off-cycle runs pay approved claims and adjustments only, no salary (6.10). A separated employee's claims approved after their final regular run go into an off-cycle run.
+- **21:** the CSV import creates existing staff as `active`, or `probation` when the probation end date is after today, with their historical joining date (section 10).
+- **28:** a cheque that bounces after the run is `paid` is reissued as an approved `addition` adjustment in the next regular run or an off-cycle run; the original payment record stays as it is.
+
 
 1. Leave seed defaults in section 5 (entitlements, eligibility, carry-forward, maximum balance) need owner and adviser confirmation.
 2. Is `separation_date` the last day worked (paid, inclusive) as assumed in 6.2?

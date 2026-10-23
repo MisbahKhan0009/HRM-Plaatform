@@ -42,13 +42,13 @@ Account recovery for users who lost their passkey and authenticator is an HR/adm
 | POST | `/users/invitations` | `user.manage`, Strong; also `role.manage` when `roleCodes` is not empty | Create user in `invited`, link optional `employeeId`, explicit `roleCodes`, email invite (7-day link); `409 EMAIL_TAKEN` (case-insensitive), `409 EMPLOYEE_ALREADY_LINKED` | `InviteUserInput` → `UserDetail` |
 | POST | `/users/{id}/invitations/resend` | `user.manage` | New token, old one revoked; `invited` users only | `UserDetail` |
 | GET | `/users/{id}` | `user.manage` | | `UserDetail` |
-| POST | `/users/{id}/suspend` | `user.manage`, Fresh | `active` → `suspended`, revokes sessions; body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
-| POST | `/users/{id}/reactivate` | `user.manage`, Fresh | `suspended` → `active`; body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
-| POST | `/users/{id}/deactivate` | `user.manage`, Fresh | `invited`, `active` or `suspended` → `deactivated`, revokes sessions and open invitations; body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
-| POST | `/users/{id}/reset-auth` | `user.manage`, Fresh | Removes passkeys + TOTP, revokes sessions, emails a sign-in link; audited; `active` or `suspended` users only (`422` otherwise); body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
+| POST | `/users/{id}/suspend` | `user.manage`, Fresh; a `system_admin` target also needs `role.manage` (D-048) | `active` → `suspended`, revokes sessions; body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
+| POST | `/users/{id}/reactivate` | `user.manage`, Fresh; a `system_admin` target also needs `role.manage` (D-048) | `suspended` → `active`; body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
+| POST | `/users/{id}/deactivate` | `user.manage`, Fresh; a `system_admin` target also needs `role.manage` (D-048) | `invited`, `active` or `suspended` → `deactivated`, revokes sessions and open invitations; body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
+| POST | `/users/{id}/reset-auth` | `user.manage`, Fresh; a `system_admin` target also needs `role.manage` (D-048) | Removes passkeys + TOTP, revokes sessions, emails a sign-in link; audited; `active` or `suspended` users only (`422` otherwise); body `{ version, reason? }` | `UserActionInput` → `UserDetail` |
 | POST | `/users/{id}/roles` | `role.manage`, Fresh | Replace explicit roles `{ roleCodes: [], version }` (user version); derived roles rejected (`400`) | `ReplaceUserRolesInput` → `UserDetail` |
 | GET | `/roles` | `role.manage` or `settings.read` | Roles with permissions | `Role` |
-| PATCH | `/roles/{id}` | `role.manage`, Fresh | Change name/description/permissions (full set) with `version`; derived roles are editable but never assignable; removing `role.manage` from a role the caller holds is refused (`422`) | `UpdateRoleInput` → `Role` |
+| PATCH | `/roles/{id}` | `role.manage`, Fresh | Change name/description/permissions (full set) with `version`; derived roles are editable but never assignable; removing `role.manage` from a role the caller holds is refused (`422`); a role without strong auth may only hold `WEAK_ROLE_PERMISSIONS` (the default manager and employee grants), anything else is `422` `needs_strong_auth` (C11) | `UpdateRoleInput` → `Role` |
 | GET | `/permissions` | `role.manage` | Permission catalogue | `Permission` |
 
 Users cannot change their own roles, suspend, reactivate, deactivate or reset their own account (`SELF_APPROVAL_FORBIDDEN`). Other companies' users and roles return `404`. Role changes are audited as `role.granted` and `role.revoked` (per role), `role.permissions_changed` and `role.updated`.
@@ -94,7 +94,7 @@ Users cannot change their own roles, suspend, reactivate, deactivate or reset th
 | GET / POST | `/employees/{id}/contracts` | read: `employee.read.all` / own; write: `employee.manage` | | FR-DOC-009 | `EmploymentContract` |
 | PATCH | `/employees/{id}/contracts/{contractId}` | `employee.manage` | | | |
 | POST | `/employees/import/preview` | `employee.manage` | | JSON `{ csv, mapping? }`, at most 500 rows; returns mapping, row errors, duplicates and `previewToken` (SHA-256 of the CSV) (FR-EMP-008); nothing saved | `EmployeeImportPreviewInput` → `EmployeeImportPreview` |
-| POST | `/employees/import/commit` | `employee.manage` | key | Re-sends `{ csv, previewToken, mapping? }`; the server re-validates and creates the valid rows in `draft`; nothing is stored between preview and commit | `EmployeeImportCommitInput` → `EmployeeImportResult` |
+| POST | `/employees/import/commit` | `employee.manage` | key | Re-sends `{ csv, previewToken, mapping? }`; the server re-validates and creates the valid rows as existing staff in `active` or `probation`, with applied `hired` (and `confirmed`) events on their historical dates (BUSINESS-RULES §10); a joining date after today is a row error; `created[]` returns each employee's `status`; nothing is stored between preview and commit | `EmployeeImportCommitInput` → `EmployeeImportResult` |
 | GET | `/me/profile` | `employee.read.own` | | Shortcut to own `EmployeeSelf` | |
 | GET / POST | `/profile-change-requests` | list: `profile_change.review.all` or own; create: `profile_change.request.own` | | Create derives employee from session | `ProfileChangeRequest` |
 | GET | `/profile-change-requests/{id}` | `profile_change.review.all` or own | | Same scopes as the list; another employee's request returns 404 | `ProfileChangeRequest` |
@@ -173,7 +173,7 @@ Users cannot change their own roles, suspend, reactivate, deactivate or reset th
 | GET | `/payroll/runs/{id}` | `payroll.read.all` | | Run + totals + validation summary |
 | GET | `/payroll/runs/{id}/items` | `payroll.read.all` | | List; `?employeeId&flag` |
 | GET | `/payroll/runs/{id}/items/{itemId}` | `payroll.read.all` | | Item + line items + snapshot |
-| POST | `/payroll/runs/{id}/calculate` | `payroll.prepare`, Strong | key | `draft`/`calculated` → `calculated`; replaces items; `off_cycle` runs return `422` until their rules are defined |
+| POST | `/payroll/runs/{id}/calculate` | `payroll.prepare`, Strong | key | `draft`/`calculated` → `calculated`; replaces items; an `off_cycle` run pays only unpaid approved claims and adjustments (BUSINESS-RULES 6.10) and returns `422 BUSINESS_RULE_VIOLATION` when there is nothing to pay |
 | POST | `/payroll/runs/{id}/validate` | `payroll.prepare` | | Re-runs validation, returns flags; no state change |
 | POST | `/payroll/runs/{id}/submit` | `payroll.prepare`, Strong | key | `calculated` → `submitted`; blocked by blocking flags |
 | POST | `/payroll/runs/{id}/return` | `payroll.approve`, Strong | | `calculated`/`submitted` → `returned` → `draft` in one call; `{ reason, version }` |
@@ -253,6 +253,6 @@ All reports enforce the same scopes as their source lists (FR-REP-006). Response
 | GET | `/health` | public | `{ status: "ok" }` only; no dependency details |
 | GET | `/health/details` | `system.health.read` | DB latency, last `job_runs` per job, outbox counts by status and oldest pending age, email deliveries today (FR-SET-004) |
 | POST | `/admin/jobs/{job}/run` | `system.health.read` + `settings.technical.manage`, Strong | Re-run a daily step `{ runKey?, date? }` (date defaults to today, Asia/Dhaka; the step's calendar check is skipped); returns `outcome` `succeeded`, `skipped` (key already succeeded) or `failed`; `404` for an unknown step; audited `job.run_requested` (JOBS-AND-OUTBOX section 4) |
-| GET | `/admin/jobs` | `system.health.read` | Every daily step in dispatcher order with its last run for the caller's company (`lastRun` null when it never ran); audited `job.listed` |
+| GET | `/admin/jobs` | `system.health.read` | Every daily step in dispatcher order with its last run for the caller's company (`lastRun` null when it never ran); not audited |
 | POST | `/admin/outbox/retry` | `system.health.read` + `settings.technical.manage`, Strong | Sets `next_attempt_at` to now on the company's `failed` messages (`dead` ones stay dead) and sends up to 20 of them after commit; returns `{ reset, processing }`; audited `outbox.retry_requested` |
 | GET | `/openapi.json` | public in staging/local; disabled in production | |

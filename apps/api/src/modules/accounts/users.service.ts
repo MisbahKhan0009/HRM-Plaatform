@@ -13,6 +13,7 @@ import {
   type UserListQuery,
   type UserStatus,
   type UserSummary,
+  WEAK_ROLE_PERMISSIONS,
 } from '@hrm/contracts';
 import { type Tx, uuidv7 } from '@hrm/db';
 import { changes, recordAudit } from '../../lib/audit';
@@ -257,6 +258,10 @@ export async function changeUserStatus(
   await deps.db.transaction(async (tx) => {
     const user = await repo.lockUser(tx, auth.companyId, id);
     if (!user) throw notFound();
+    policy.actOnAccount(
+      auth,
+      (await repo.explicitRoles(tx, id)).map((r) => r.code),
+    );
     if (!t.from.includes(user.status)) throw invalidTransition(user.status, t.verb);
     const updated = await repo.updateUser(tx, id, input.version, {
       status: t.to,
@@ -292,6 +297,10 @@ export async function resetAuth(deps: Deps, auth: AuthContext, id: string, input
   const outboxIds = await deps.db.transaction(async (tx) => {
     const user = await repo.lockUser(tx, auth.companyId, id);
     if (!user) throw notFound();
+    policy.actOnAccount(
+      auth,
+      (await repo.explicitRoles(tx, id)).map((r) => r.code),
+    );
     if (user.status !== 'active' && user.status !== 'suspended')
       throw ruleViolation('Only active or suspended accounts have sign-in methods to reset.');
     const updated = await repo.updateUser(tx, id, input.version, {
@@ -408,6 +417,13 @@ export async function updateRole(deps: Deps, auth: AuthContext, id: string, inpu
       throw ruleViolation('You cannot remove role management from a role you hold.', [
         { path: '/permissions', code: 'self_lockout', message: 'Keep role.manage on your own role.' },
       ]);
+    // A role usable without a strong sign-in must not carry sensitive permissions (D-049, C11).
+    const tooStrong = before.requiresStrongAuth ? [] : add.filter((p) => !WEAK_ROLE_PERMISSIONS.has(p));
+    if (tooStrong.length)
+      throw ruleViolation(
+        'This role does not require a passkey or authenticator, so it cannot hold these permissions.',
+        tooStrong.map((p) => ({ path: '/permissions', code: 'needs_strong_auth', message: p })),
+      );
     const updated = await repo.updateRole(tx, id, version, {
       ...(fields.name !== undefined ? { name: fields.name } : {}),
       ...(fields.description !== undefined ? { description: fields.description } : {}),

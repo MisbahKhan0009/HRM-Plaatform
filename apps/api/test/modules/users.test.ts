@@ -415,6 +415,31 @@ describe('account state changes', () => {
     expect((await json(res)).code).toBe('REAUTH_REQUIRED');
   });
 
+  it('lets only a system admin suspend or reset a system admin; the system admin can act on HR (C13)', async () => {
+    const sysadmin = await f.signIn({ roles: ['system_admin'] });
+    const v = async (id: string) => (await getUser(id)).version;
+    for (const action of ['suspend', 'deactivate', 'reset-auth']) {
+      const res = await call('POST', `/api/v1/users/${sysadmin.userId}/${action}`, {
+        cookie: hr.cookie,
+        body: { version: await v(sysadmin.userId) },
+      });
+      expect(res.status).toBe(403);
+      expect((await json(res)).code).toBe('FORBIDDEN');
+    }
+    expect((await getUser(sysadmin.userId)).status).toBe('active');
+    const hr2 = await f.signIn({ roles: ['hr_admin'] });
+    const res = await call('POST', `/api/v1/users/${hr2.userId}/suspend`, {
+      cookie: admin.cookie,
+      body: { version: await v(hr2.userId) },
+    });
+    expect(res.status).toBe(200);
+    const back = await call('POST', `/api/v1/users/${sysadmin.userId}/suspend`, {
+      cookie: admin.cookie,
+      body: { version: await v(sysadmin.userId) },
+    });
+    expect(back.status).toBe(200);
+  });
+
   it('refuses to act on your own account (SELF_APPROVAL_FORBIDDEN)', async () => {
     const res = await call('POST', `/api/v1/users/${hr.userId}/suspend`, {
       cookie: hr.cookie,
@@ -642,6 +667,21 @@ describe('roles and permissions', () => {
     });
     expect(res.status).toBe(200);
     expect((await json<{ name: string }>(res)).name).toBe('Staff');
+  });
+
+  it('refuses sensitive permissions on a role without strong auth (422, C11)', async () => {
+    const mgr = (await roles(admin.cookie)).find((r) => r.code === 'manager') as RoleDto;
+    const res = await call('PATCH', `/api/v1/roles/${mgr.id}`, {
+      cookie: admin.cookie,
+      body: { permissions: [...mgr.permissions, 'compensation.read.all'], version: mgr.version },
+    });
+    expect(res.status).toBe(422);
+    const body = await json<{ errors: { code: string; message: string }[] }>(res);
+    expect(body.errors).toEqual([
+      expect.objectContaining({ code: 'needs_strong_auth', message: 'compensation.read.all' }),
+    ]);
+    const after = (await roles(admin.cookie)).find((r) => r.code === 'manager') as RoleDto;
+    expect(after.permissions).not.toContain('compensation.read.all');
   });
 
   it('refuses to remove role.manage from a role the caller holds (422)', async () => {

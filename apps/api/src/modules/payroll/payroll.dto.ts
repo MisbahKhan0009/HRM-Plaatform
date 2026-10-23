@@ -134,6 +134,7 @@ export const toPayslipSummary = (v: repo.PayslipView): PayslipSummary => ({
   employee: employee(v.payslip.employeeId, v.employeeCode, v.employeeName),
   period: { id: v.period.id, year: v.period.year, month: v.period.month },
   runNumber: v.runNumber,
+  runType: v.runType as PayslipSummary['runType'],
   netAmount: money(v.item.netAmount),
   publishedAt: v.payslip.publishedAt.toISOString(),
   firstViewedAt: isoOrNull(v.payslip.firstViewedAt),

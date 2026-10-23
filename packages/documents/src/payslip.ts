@@ -56,9 +56,14 @@ export const dhakaDate = (instant: string) =>
 
 export const payslipMonth = (year: number, month: number) => `${MONTHS[month - 1] ?? ''} ${year}`;
 
-/** `payslip-2026-10-EMP-0014.pdf` */
+/**
+ * `payslip-2026-10-EMP-0014.pdf`; an off-cycle payslip adds its run number (`...-EMP-0014-PR-2026-10-02.pdf`) so it
+ * never shares a name with the regular payslip of the same month.
+ */
 export const payslipFileName = (data: PayslipData) =>
-  `payslip-${data.period.year}-${String(data.period.month).padStart(2, '0')}-${data.employee.employeeCode}.pdf`;
+  `payslip-${data.period.year}-${String(data.period.month).padStart(2, '0')}-${data.employee.employeeCode}${
+    data.runType === 'off_cycle' ? `-${data.runNumber}` : ''
+  }.pdf`;
 
 const PAYMENT_STATUS: Record<PayslipData['paymentStatus'], string> = {
   unpaid: 'Unpaid',
@@ -211,7 +216,8 @@ export async function buildPayslipPdf(
   page.drawRectangle({ x: MARGIN, y, width: 24, height: 2, color: ACCENT });
   y -= 30;
 
-  text(ctx, 'PAYSLIP', MARGIN, y, { size: 9, bold: true, color: MUTED });
+  const offCycle = data.runType === 'off_cycle';
+  text(ctx, offCycle ? 'OFF-CYCLE PAYSLIP' : 'PAYSLIP', MARGIN, y, { size: 9, bold: true, color: MUTED });
   y -= 24;
   text(ctx, month, MARGIN, y, { size: 22, bold: true });
   y -= 18;
@@ -231,8 +237,9 @@ export async function buildPayslipPdf(
     ['Department', data.employee.department ?? '-'],
     ['Position', data.employee.position ?? '-'],
   ];
+  // An off-cycle item pays no days (BUSINESS-RULES 6.10), so it shows the run type instead.
   const right: [string, string][] = [
-    ['Days paid', `${data.daysEmployed} of ${data.period.daysInPeriod}`],
+    offCycle ? ['Run', 'Off-cycle'] : ['Days paid', `${data.daysEmployed} of ${data.period.daysInPeriod}`],
     ['Payment', paymentLabel(data)],
   ];
   if (data.payment) right.push(['Paid on', formatPdfDate(data.payment.paidOn)]);
@@ -271,7 +278,7 @@ export async function buildPayslipPdf(
     'Earnings',
     sorted('earning'),
     { label: 'Total earnings', amount: data.totals.gross.amount },
-    'No earnings this month',
+    offCycle ? 'No earnings in this run' : 'No earnings this month',
   );
   y = lineTable(
     ctx,
@@ -279,7 +286,7 @@ export async function buildPayslipPdf(
     'Deductions',
     sorted('deduction'),
     { label: 'Total deductions', amount: data.totals.deductions.amount },
-    'No deductions this month',
+    offCycle ? 'No deductions in this run' : 'No deductions this month',
   );
 
   // Net pay band.

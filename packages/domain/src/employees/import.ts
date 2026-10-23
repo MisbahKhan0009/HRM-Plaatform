@@ -78,6 +78,8 @@ export interface ImportLookups {
   /** Existing work emails, lower case. */
   workEmails: ReadonlySet<string>;
   requiredFields: readonly EmployeeRequirableField[];
+  /** Today's business date (Asia/Dhaka); joining dates after it are rejected. */
+  today: string;
 }
 
 export interface ImportedEmployee {
@@ -152,7 +154,8 @@ export function resolveMapping(
 }
 
 /**
- * Validates import rows (FR-EMP-008, FR-EMP-009): formats, required fields from `employees.required_fields`, lookups
+ * Validates import rows (FR-EMP-008, FR-EMP-009): formats, required fields from `employees.required_fields` plus the
+ * joining date, which may not be after `today` (imported staff are already employed, BUSINESS-RULES §10), lookups
  * of department, position and manager, duplicate work emails and codes (in the file and against existing employees),
  * and reporting cycles among the file's manager links (BUSINESS-RULES §7.1). A row whose manager is another file row
  * that cannot be imported is invalid too. Pure: every lookup is passed in.
@@ -169,6 +172,8 @@ export function validateImport(
   const required = new Set(lookups.requiredFields.map((f) => REQUIRED_COLUMN[f]));
   required.add('firstName');
   required.add('lastName');
+  // Imported staff are already employed (BUSINESS-RULES §10): the joining date is always needed.
+  required.add('joiningDate');
   for (const f of required) {
     if (!columns.has(f))
       issues.push({
@@ -244,6 +249,13 @@ export function validateImport(
       joiningDate: date('joiningDate'),
       probationEndDate: date('probationEndDate'),
     };
+    if (value.joiningDate && isIsoDate(value.joiningDate) && value.joiningDate > lookups.today)
+      fail(
+        row,
+        'joiningDate',
+        'date_in_future',
+        'The joining date is in the future. Add new hires one by one, not by import.',
+      );
     if (value.joiningDate && value.probationEndDate && value.probationEndDate <= value.joiningDate)
       fail(row, 'probationEndDate', 'date_before_start', 'Probation must end after the joining date.');
     for (const f of required) {

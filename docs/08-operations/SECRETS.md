@@ -44,7 +44,7 @@ GitHub Actions **variables** (Settings → Secrets and variables → Actions →
 | `STAGING_URL` | deploy-staging (smoke test) | `https://hrm-staging.<account-subdomain>.workers.dev`, same as staging `APP_ORIGIN` |
 | `PRODUCTION_URL` | deploy-production (smoke test) | `https://hrm.<account-subdomain>.workers.dev`, same as production `APP_ORIGIN` |
 
-If the repository has deployment environments (public repository, `ACCOUNT-SETUP.md` §7.2), production secrets go in the `production` environment and `BACKUP_AGE_IDENTITY` in `restore-drill`, so only approved runs can read them.
+If the repository has deployment environments (public repository, `ACCOUNT-SETUP.md` §7.2), production secrets go in the `production` environment, and the secrets of `nightly-backup.yml` and `restore-drill.yml` (`NEON_PROD_OWNER_URL`, the R2 backup keys, `R2_ENDPOINT`, `BACKUP_AGE_RECIPIENT`, `BACKUP_AGE_IDENTITY`) in the `backups` environment that both workflows run in.
 
 ## 4. Kept only offline (owner's password manager)
 

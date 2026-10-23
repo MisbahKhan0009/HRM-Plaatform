@@ -65,7 +65,11 @@ export function ItemsTab({
       <EmptyState
         icon={Users}
         title="No items yet"
-        description="Items appear once the run is calculated: one per employee employed during the period."
+        description={
+          run.runType === 'off_cycle'
+            ? 'Items appear once the run is calculated: one per employee with an approved claim or adjustment to pay.'
+            : 'Items appear once the run is calculated: one per employee employed during the period.'
+        }
       />
     );
   }
@@ -137,7 +141,7 @@ export function ItemsTab({
                     </button>
                   </TD>
                   <TD numeric>
-                    {i.daysEmployed} / {i.daysInPeriod}
+                    {run.runType === 'off_cycle' ? '—' : `${i.daysEmployed} / ${i.daysInPeriod}`}
                   </TD>
                   <TD numeric>
                     <Money amount={i.grossAmount.amount} />

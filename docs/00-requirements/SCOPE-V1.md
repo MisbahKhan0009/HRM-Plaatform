@@ -52,7 +52,10 @@ SRS §11.2 applies, with these changes:
 - Added: the app runs for one full month in staging within every free-tier limit in ADR-0009.
 - Added: every privileged user has a passkey or TOTP registered before go-live.
 
-## 5. Open questions (owner)
+## 5. Owner questions
+
+Decisions are recorded in D-042, D-048 and D-049 (`OPEN-QUESTIONS.md`). The holiday list, the named payroll sign-off person and the import spreadsheet remain owner inputs before go-live.
+
 
 - Document retention periods per category (X-003).
 - Leave allocation, carry-forward and expiry values per leave type.

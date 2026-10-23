@@ -231,7 +231,7 @@ All auth screens are brand moments: Ink ground with DotGrid + Glow (Paper if the
 - **Secondary**: Cancel.
 
 ### 8.3 Import employees `/employees/import`
-- **Data**: steps: upload CSV, map columns, preview with per-row validation (errors, duplicates), commit (FR-EMP-008).
+- **Data**: steps: upload CSV, map columns, preview with per-row validation (errors, duplicates), commit (FR-EMP-008). Rows are existing staff, created as `active` or `probation` with their joining date (BUSINESS-RULES §10).
 - **Primary per step**: Upload file; Continue; Import N employees.
 - **Secondary**: Download error report (CSV, built in browser); Back.
 
@@ -312,7 +312,10 @@ All settings pages share a layout: settings sub-navigation on the left (top sele
 
 Effective-dated settings (schedules, leave policies) never edit history: saving creates a new version with an effective-from date, shown in a version list.
 
-## Open questions (owner)
+## Owner questions (decided, D-049)
+
+All decided on 2026-10-23 (D-049): the default or v1 behaviour written in each item is the decision.
+
 
 
 - Payslip content beyond the snapshot fields (company address, employee bank details are not collected in v1 since payment is cash or cheque). Confirm the payslip header fields.

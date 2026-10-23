@@ -361,6 +361,26 @@ export function eligibleEmployees(tx: Tx, companyId: string, start: string, end:
     LIMIT 1000`);
 }
 
+/**
+ * Employees of an off-cycle run (BUSINESS-RULES 6.10): the given employees of the company, whatever their status or
+ * employment dates, so a separated employee's late claim is still paid.
+ */
+export function employeesByIds(tx: Tx, companyId: string, ids: readonly string[]) {
+  if (!ids.length) return Promise.resolve([] as EligibleEmployee[]);
+  return tx.execute<EligibleEmployee>(sql`
+    SELECT e.id, e.employee_code AS code, coalesce(e.preferred_name, e.first_name) || ' ' || e.last_name AS name,
+      d.name AS department, p.title AS position, e.joining_date::text AS joining_date,
+      e.separation_date::text AS separation_date
+    FROM employees e
+    LEFT JOIN departments d ON d.id = e.department_id
+    LEFT JOIN positions p ON p.id = e.position_id
+    WHERE e.company_id = ${companyId} AND e.id IN (${sql.join(
+      ids.map((id) => sql`${id}::uuid`),
+      sql`, `,
+    )})
+    ORDER BY e.employee_code`);
+}
+
 export function approvedStructuresFor(tx: Tx, companyId: string, start: string, end: string) {
   return tx.execute<{
     id: string;
@@ -378,9 +398,10 @@ export function approvedStructuresFor(tx: Tx, companyId: string, start: string, 
 
 /**
  * Approved claims decided on or before the period end and not yet included (BUSINESS-RULES 6.4, D-020). A claim that
- * already sits in another run being processed (calculated, submitted or approved) is left to that run.
+ * already sits in another run being processed (calculated, submitted or approved) is left to that run. An off-cycle
+ * run passes `end = null`: any approved claim not yet included is eligible (BUSINESS-RULES 6.10).
  */
-export function eligibleClaims(tx: Tx, companyId: string, runId: string, end: string) {
+export function eligibleClaims(tx: Tx, companyId: string, runId: string, end: string | null) {
   return tx.execute<{
     id: string;
     employee_id: string;
@@ -392,7 +413,7 @@ export function eligibleClaims(tx: Tx, companyId: string, runId: string, end: st
     SELECT c.id, c.employee_id, c.claim_number, c.expense_date::text, c.amount::text, c.currency
     FROM reimbursement_claims c
     WHERE c.company_id = ${companyId} AND c.status = 'approved' AND c.payroll_item_id IS NULL
-      AND (c.decided_at AT TIME ZONE ${BUSINESS_TZ})::date <= ${end}::date
+      AND (${end}::date IS NULL OR (c.decided_at AT TIME ZONE ${BUSINESS_TZ})::date <= ${end}::date)
       AND NOT EXISTS (
         SELECT 1 FROM payroll_line_items li
         JOIN payroll_items pi ON pi.id = li.payroll_item_id
@@ -401,7 +422,11 @@ export function eligibleClaims(tx: Tx, companyId: string, runId: string, end: st
           AND pr.id <> ${runId} AND pr.status IN ('calculated', 'submitted', 'approved'))`);
 }
 
-export function eligibleAdjustments(tx: Tx, companyId: string, periodId: string) {
+/**
+ * Approved adjustments targeting the period and not yet applied. Like claims, one that already sits in another run
+ * being processed (a regular and an off-cycle run of the same period) is left to that run.
+ */
+export function eligibleAdjustments(tx: Tx, companyId: string, runId: string, periodId: string) {
   return tx.execute<{
     id: string;
     employee_id: string;
@@ -410,10 +435,16 @@ export function eligibleAdjustments(tx: Tx, companyId: string, periodId: string)
     amount: string;
     reason: string;
   }>(sql`
-    SELECT id, employee_id, type, line_code, amount::text, reason FROM payroll_adjustments
-    WHERE company_id = ${companyId} AND target_period_id = ${periodId} AND status = 'approved'
-      AND applied_payroll_item_id IS NULL
-    ORDER BY created_at, id`);
+    SELECT a.id, a.employee_id, a.type, a.line_code, a.amount::text, a.reason FROM payroll_adjustments a
+    WHERE a.company_id = ${companyId} AND a.target_period_id = ${periodId} AND a.status = 'approved'
+      AND a.applied_payroll_item_id IS NULL
+      AND NOT EXISTS (
+        SELECT 1 FROM payroll_line_items li
+        JOIN payroll_items pi ON pi.id = li.payroll_item_id
+        JOIN payroll_runs pr ON pr.id = pi.payroll_run_id
+        WHERE li.source_type = 'payroll_adjustment' AND li.source_id = a.id
+          AND pr.id <> ${runId} AND pr.status IN ('calculated', 'submitted', 'approved'))
+    ORDER BY a.created_at, a.id`);
 }
 
 /** Net of each employee's item in their latest locked regular run before the period (BUSINESS-RULES 6.5, PAY-13d). */
@@ -752,6 +783,7 @@ const payslipColumns = {
   item: payrollItems,
   period: payrollPeriods,
   runNumber: payrollRuns.runNumber,
+  runType: payrollRuns.runType,
   ...employeeRef,
 };
 
@@ -770,6 +802,7 @@ export type PayslipView = {
   item: ItemRow;
   period: PeriodRow;
   runNumber: string;
+  runType: string;
   employeeCode: string;
   employeeName: string;
 };

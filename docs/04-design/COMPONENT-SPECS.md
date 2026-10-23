@@ -211,7 +211,10 @@ Height 56px, fill `ground`, bottom border 1px `line`, sticky. Contents and order
 | `Tick` | StatBar ticks; list dashes in help text | 12px to 20px |
 | `Logo` | Top bar, auth pages, payslip PDF (Paper lockup) | Never recoloured; cube mark below 120px width |
 
-## Open questions (owner)
+## Owner questions (decided, D-049)
+
+All decided on 2026-10-23 (D-049): the default or v1 behaviour written in each item is the decision.
+
 
 - Overdue threshold for approval items (proposed default: 3 working days).
 - Confirm adding `control-border` (section 1.1) to the brand adaptation.

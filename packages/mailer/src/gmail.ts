@@ -25,7 +25,8 @@ export class GmailApiMailer implements Mailer {
   private readonly fetch: typeof fetch;
 
   constructor(private readonly config: GmailConfig) {
-    this.fetch = config.fetch ?? fetch;
+    // Wrapped, not stored: calling the global fetch as `this.fetch(...)` is an "Illegal invocation" in Workers.
+    this.fetch = config.fetch ?? ((input, init) => fetch(input, init));
   }
 
   async send(email: OutgoingEmail) {

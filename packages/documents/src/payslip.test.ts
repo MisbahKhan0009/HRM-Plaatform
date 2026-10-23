@@ -25,6 +25,7 @@ const SNAPSHOT: PayslipData = {
     daysInPeriod: 30,
   },
   runNumber: 'PR-2026-09-01',
+  runType: 'regular',
   daysEmployed: 30,
   lines: [
     {
@@ -170,6 +171,30 @@ describe('buildPayslipPdf', () => {
     );
     expect(unpaid[unpaid.indexOf('Payment') + 1]).toBe('Unpaid');
     expect(unpaid).not.toContain('Paid on');
+  });
+
+  it('labels an off-cycle payslip and shows no salary days', async () => {
+    const offCycle: PayslipData = {
+      ...SNAPSHOT,
+      runNumber: 'PR-2026-09-02',
+      runType: 'off_cycle',
+      daysEmployed: 0,
+      employee: { ...SNAPSHOT.employee, separationDate: '2026-08-31' },
+      lines: SNAPSHOT.lines.filter((l) => l.code === 'reimbursement'),
+      totals: {
+        gross: { amount: '1850.00', currency: 'BDT' },
+        deductions: { amount: '0.00', currency: 'BDT' },
+        net: { amount: '1850.00', currency: 'BDT' },
+      },
+    };
+    const text = await extractText(await buildPayslipPdf(offCycle));
+    expect(text).toContain('OFF-CYCLE PAYSLIP');
+    expect(text[text.indexOf('Run') + 1]).toBe('Off-cycle');
+    expect(text).not.toContain('Days paid');
+    expect(text).not.toContain('Base salary');
+    expect(text).toContain('No deductions in this run');
+    expect(text[text.indexOf('Net pay') + 1]).toBe('BDT 1,850.00');
+    expect(payslipFileName(offCycle)).toBe('payslip-2026-09-EMP-0014-PR-2026-09-02.pdf');
   });
 
   it('replaces characters the standard font cannot draw instead of failing', async () => {

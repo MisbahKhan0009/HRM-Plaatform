@@ -1136,7 +1136,10 @@ Estimate for 50 employees, 5 years, Neon Free limit 0.5 GB (ADR-0009). Row sizes
 
 The total stays near 200 MB, under half of the free limit. Files are never stored in the database.
 
-## Open questions (owner)
+## Owner questions (decided, D-049)
+
+All decided on 2026-10-23 (D-049): the setting `employees.required_fields` and the optional `gender` field stay as described; document retention follows OPEN-QUESTIONS C5 (no automatic deletion).
+
 
 1. Which employee fields are required at creation (SRS §14.2)? The schema allows NULL for most; the service enforces the list in setting `employees.required_fields`.
 2. Is `gender` collected at all (FR-EMP-010, data minimisation)? Default: optional field, can be hidden by setting.

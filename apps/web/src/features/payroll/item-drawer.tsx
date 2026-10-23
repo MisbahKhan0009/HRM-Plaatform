@@ -26,6 +26,7 @@ function snapshotSummary(snapshot: Record<string, unknown>) {
     : [];
   return {
     ruleVersion: typeof snapshot.ruleVersion === 'string' ? snapshot.ruleVersion : null,
+    offCycle: snapshot.runType === 'off_cycle',
     structures: structures as { grossAmount: string; effectiveFrom: string; effectiveTo: string | null }[],
   };
 }
@@ -87,7 +88,9 @@ export function ItemDrawer({
           <>
             <KeyValueList
               items={[
-                { label: 'Days employed', value: `${d.daysEmployed} of ${d.daysInPeriod}` },
+                snap.offCycle
+                  ? { label: 'Run', value: 'Off-cycle' }
+                  : { label: 'Days employed', value: `${d.daysEmployed} of ${d.daysInPeriod}` },
                 { label: 'Gross', value: <Money amount={d.grossAmount.amount} /> },
                 { label: 'Deductions', value: <Money amount={d.deductionAmount.amount} /> },
                 { label: 'Net pay', value: <Money amount={d.netAmount.amount} className="font-semibold" /> },
@@ -162,6 +165,8 @@ export function ItemDrawer({
                           </li>
                         ))}
                       </ul>
+                    ) : snap.offCycle ? (
+                      'None: an off-cycle item pays only claims and adjustments'
                     ) : (
                       'No approved salary structure'
                     ),

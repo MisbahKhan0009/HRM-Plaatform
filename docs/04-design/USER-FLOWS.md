@@ -246,7 +246,10 @@ Actor: `hr_admin`; finance review by `payroll_officer`. SRS 7.5 describes checkl
 3. Finance: the employee is included in the payroll run for the final period, prorated to the last working day (D-022). Pending claims and adjustments appear in that run's validation warnings.
 4. On the effective date the status becomes `separated`. HR can later **Archive** (confirm dialog: "History stays available in reports and audit."). Archived employees are hidden from default lists; a filter shows them.
 
-## Open questions (owner)
+## Owner questions (decided, D-049)
+
+All decided on 2026-10-23 (D-049): the default or v1 behaviour written in each item is the decision.
+
 
 - Should employees be able to download their own `identity` documents (national ID scans), or only HR? The flow defaults the visibility checkbox to off for that category.
 - Validation warning threshold for month-on-month net pay change (proposed default: 20%). Payroll owner to confirm.
