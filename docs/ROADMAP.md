@@ -32,4 +32,7 @@ This is the master sequence for building the HRM platform. Each stage has an
 - [x] Owner decisions: defaults accepted (D-041…D-043); remaining go-live inputs listed in `docs/00-requirements/OPEN-QUESTIONS.md`
 - [x] Stage 6 — UX/UI design: 33 artboards on the Claude Design canvas covering all roles and flows (`docs/04-design/DESIGN-CANVAS.md`)
 - [x] Stage 7 — Engineering foundation: monorepo, API Worker, web SPA, DB migrations, token pipeline, CI, dependency rules; auth spike (`docs/05-backend/AUTH-SPIKE.md`)
-- [ ] Stage 8 — Development: Phase 1 Foundation (auth, RBAC, organization, employees, audit) (next)
+- [x] Stage 8 — Development: all five SRS phases built (API in `apps/api`, screens in `apps/web`); 429 API tests, 412 domain tests, OpenAPI document `apps/api/openapi.json`
+- [ ] Stage 9 — QA and hardening: E2E-01 to E2E-11 pass with axe checks (`e2e/`); open items are the SPA initial-JS budget (D-047) and the independent payroll verification
+- [ ] Stage 10 — Data migration and UAT: needs the owner's employee data and HR/Finance testers
+- [ ] Stage 11 — Deployment: workflows and runbooks ready (`docs/08-operations/DEPLOYMENT.md`); waits on the accounts in `docs/08-operations/ACCOUNT-SETUP.md` (next)
