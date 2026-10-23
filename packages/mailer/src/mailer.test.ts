@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { GmailApiMailer, resetGmailTokenCache } from './gmail';
 import { buildMime, encodeHeader } from './mime';
 import { renderEmail, TEMPLATE_NAMES } from './templates';
@@ -97,5 +97,22 @@ describe('GmailApiMailer', () => {
     const r = await new GmailApiMailer({ ...config, fetch: f, allowlist: ['ok@example.test'] }).send(email);
     expect(r.providerMessageId).toBe('dropped-not-on-allowlist');
     expect(calls).toHaveLength(0);
+  });
+
+  it('calls the global fetch unbound, as the Workers runtime requires', async () => {
+    resetGmailTokenCache();
+    const { f } = fakeFetch([200]);
+    // workerd throws "Illegal invocation" when fetch is called with any other `this`.
+    const strict = vi.fn(function (this: unknown, ...args: Parameters<typeof fetch>) {
+      if (this !== undefined && this !== globalThis) throw new TypeError('Illegal invocation');
+      return f(...args);
+    });
+    vi.stubGlobal('fetch', strict);
+    try {
+      expect(await new GmailApiMailer(config).send(email)).toEqual({ providerMessageId: 'gm-1' });
+      expect(strict).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 });
