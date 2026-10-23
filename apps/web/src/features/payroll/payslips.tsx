@@ -185,6 +185,9 @@ export function PayslipsPage({
                         {formatMonth(p.period.year, p.period.month)}
                       </Link>
                       <span className="ml-2 font-mono text-sm text-text-2">{p.runNumber}</span>
+                      {p.runType === 'off_cycle' ? (
+                        <span className="ml-2 text-sm text-text-2">Off-cycle</span>
+                      ) : null}
                     </TD>
                     {scope === 'all' ? (
                       <TD>
@@ -310,7 +313,9 @@ export function PayslipPage({ payslipId }: { payslipId: string }) {
             {data.company.address ? <p className="text-sm text-text-2">{data.company.address}</p> : null}
           </div>
           <div className="text-right">
-            <p className="font-mono text-[11px] uppercase tracking-[0.13em] text-text-3">Payslip</p>
+            <p className="font-mono text-[11px] uppercase tracking-[0.13em] text-text-3">
+              {data.runType === 'off_cycle' ? 'Off-cycle payslip' : 'Payslip'}
+            </p>
             <p className="font-display text-xl font-semibold">{month}</p>
             <p className="text-sm text-text-2">
               {formatDateRange(data.period.startDate, data.period.endDate)}
@@ -323,7 +328,9 @@ export function PayslipPage({ payslipId }: { payslipId: string }) {
             { label: 'Code', value: <span className="font-mono">{data.employee.employeeCode}</span> },
             { label: 'Department', value: data.employee.department ?? '—' },
             { label: 'Position', value: data.employee.position ?? '—' },
-            { label: 'Days paid', value: `${data.daysEmployed} of ${data.period.daysInPeriod}` },
+            data.runType === 'off_cycle'
+              ? { label: 'Run', value: 'Off-cycle' }
+              : { label: 'Days paid', value: `${data.daysEmployed} of ${data.period.daysInPeriod}` },
             {
               label: 'Payment',
               value: data.payment ? (

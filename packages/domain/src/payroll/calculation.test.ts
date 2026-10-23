@@ -7,6 +7,7 @@ import {
   buildSnapshot,
   type ClaimInput,
   calculateItem,
+  calculateOffCycleItem,
   type ItemInput,
   periodLabel,
   type StructureInput,
@@ -313,6 +314,129 @@ describe('calculateItem: properties', () => {
           claims: [claim('c', '10.00', `${year}-01-01`)],
         };
         expect(calc(input)).toEqual(calc(input));
+      }),
+    );
+  });
+});
+
+// BUSINESS-RULES 6.10: an off-cycle item pays only claims and adjustments.
+describe('calculateOffCycleItem', () => {
+  const period = monthPeriod(2026, 11);
+
+  it('pays a claim and an addition less a deduction, with no salary lines', () => {
+    const item = calculateOffCycleItem({
+      period,
+      claims: [claim('c1', '650.00', '2026-11-12')],
+      adjustments: [adj('a1', 'addition', '1000.00'), adj('d1', 'deduction', '250.50')],
+    });
+    expect(item).not.toBeNull();
+    expect(item?.lines.map((l) => [l.kind, l.code, l.amount, l.sortOrder])).toEqual([
+      ['earning', 'reimbursement', '650.00', 0],
+      ['earning', 'addition', '1000.00', 1],
+      ['deduction', 'deduction', '250.50', 2],
+    ]);
+    expect(item).toMatchObject({
+      gross: '1650.00',
+      deductions: '250.50',
+      net: '1399.50',
+      daysEmployed: 0,
+      daysInPeriod: 30,
+      structuresUsed: [],
+      missingSalaryStructure: false,
+    });
+  });
+
+  it('returns null when there is nothing to pay', () => {
+    expect(calculateOffCycleItem({ period, claims: [], adjustments: [] })).toBeNull();
+  });
+
+  it('a snapshot of an off-cycle item records the run type and no salary structure', () => {
+    const item = calculateOffCycleItem({ period, claims: [claim('c1', '10.00')], adjustments: [] });
+    if (!item) throw new Error('expected an item');
+    const snap = buildSnapshot({
+      period: { ...period, year: 2026, month: 11 },
+      employee: {
+        id: 'e',
+        code: 'EMP-1',
+        name: 'A B',
+        department: null,
+        position: null,
+        joiningDate: '2025-01-01',
+        separationDate: '2026-10-31',
+      },
+      item,
+      currency: 'BDT',
+      runType: 'off_cycle',
+    });
+    expect(snap).toMatchObject({ runType: 'off_cycle', salaryStructures: [], daysEmployed: 0 });
+    expect(snap.lines.some((l) => l.code === 'base_salary')).toBe(false);
+  });
+});
+
+describe('calculateOffCycleItem: properties', () => {
+  const amountArb = fc
+    .tuple(fc.integer({ min: 0, max: 99_999_999 }), fc.integer({ min: 0, max: 99 }))
+    .filter(([w, f]) => w + f > 0)
+    .map(([w, f]) => `${w}.${String(f).padStart(2, '0')}`);
+  const claimsArb = fc.array(fc.record({ amount: amountArb, day: fc.integer({ min: 1, max: 28 }) }), {
+    maxLength: 6,
+  });
+  const adjustmentsArb = fc.array(
+    fc.record({
+      amount: amountArb,
+      type: fc.constantFrom<'addition' | 'deduction'>('addition', 'deduction'),
+    }),
+    { maxLength: 6 },
+  );
+  const inputs = (
+    cs: { amount: string; day: number }[],
+    as: { amount: string; type: 'addition' | 'deduction' }[],
+  ) => ({
+    claims: cs.map((c, i) => claim(`c${i}`, c.amount, `2026-11-${String(c.day).padStart(2, '0')}`)),
+    adjustments: as.map((a, i) => adj(`a${i}`, a.type, a.amount)),
+  });
+
+  it('net = claims + additions - deductions, computed from the inputs, and every input becomes one line', () => {
+    fc.assert(
+      fc.property(monthArb, claimsArb, adjustmentsArb, ({ year, month }, cs, as) => {
+        const { claims, adjustments } = inputs(cs, as);
+        const item = calculateOffCycleItem({ period: monthPeriod(year, month), claims, adjustments });
+        if (!claims.length && !adjustments.length) {
+          expect(item).toBeNull();
+          return;
+        }
+        if (!item) throw new Error('expected an item');
+        const expected = new Decimal(sumMoney(cs.map((c) => c.amount)))
+          .plus(sumMoney(as.filter((a) => a.type === 'addition').map((a) => a.amount)))
+          .minus(sumMoney(as.filter((a) => a.type === 'deduction').map((a) => a.amount)));
+        expect(item.net).toBe(toMoneyString(expected));
+        expect(new Decimal(item.gross).minus(item.deductions).equals(item.net)).toBe(true);
+        expect(item.lines).toHaveLength(claims.length + adjustments.length);
+        expect(new Set(item.lines.map((l) => l.sourceId))).toEqual(
+          new Set([...claims, ...adjustments].map((x) => x.id)),
+        );
+        for (const l of item.lines) {
+          expect(typeof l.amount).toBe('string');
+          expect(l.amount).toMatch(/^\d+\.\d{2}$/);
+          expect(l.code).not.toBe('base_salary');
+        }
+        expect(item.daysEmployed).toBe(0);
+      }),
+    );
+  });
+
+  it('pays the same claim and adjustment lines as a regular item over the same inputs', () => {
+    fc.assert(
+      fc.property(claimsArb, adjustmentsArb, (cs, as) => {
+        fc.pre(cs.length + as.length > 0);
+        const { claims, adjustments } = inputs(cs, as);
+        const off = calculateOffCycleItem({ period: monthPeriod(2026, 11), claims, adjustments });
+        const regular = calc({ year: 2026, month: 11, claims, adjustments });
+        const strip = (ls: { kind: string; code: string; amount: string; sourceId: string }[]) =>
+          ls
+            .filter((l) => l.code !== 'base_salary')
+            .map(({ kind, code, amount, sourceId }) => ({ kind, code, amount, sourceId }));
+        expect(strip(off?.lines ?? [])).toEqual(strip(regular.lines));
       }),
     );
   });

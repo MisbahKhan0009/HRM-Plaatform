@@ -86,9 +86,7 @@ describe('POST /payroll/runs', () => {
     expect((await json(second)).code).toBe('PAYROLL_RUN_EXISTS');
     const off = await ok<Run>(post(s.po, '/payroll/runs', { periodId: p.id, runType: 'off_cycle' }), 201);
     expect(off.runNumber).toBe('PR-2027-04-02');
-    // off-cycle calculation rules are an open owner question
-    const calc = await post(s.po, `/payroll/runs/${off.id}/calculate`, { version: off.version });
-    expect(calc.status).toBe(422);
+    // off-cycle calculation: payroll-offcycle.test.ts
   });
 
   it('returns 403 without payroll.prepare, MFA_REQUIRED on a weak session and 404 for another company period', async () => {
@@ -349,7 +347,7 @@ describe('items and validation', () => {
     const detail = await ok<{ snapshot: { ruleVersion: string; daysEmployed: number } }>(
       get(s.po, `/payroll/runs/${run.id}/items/${flagged.data[0]?.id}`),
     );
-    expect(detail.snapshot).toMatchObject({ ruleVersion: 'payroll-v1.0', daysEmployed: 21 });
+    expect(detail.snapshot).toMatchObject({ ruleVersion: 'payroll-v1.1', daysEmployed: 21 });
     const otherRun = await runTo(s, 2026, 7, 'calculated');
     expect((await get(s.po, `/payroll/runs/${otherRun.id}/items/${flagged.data[0]?.id}`)).status).toBe(404);
     const v = await ok<{ summary: { blockingCode: string | null; warningItems: number } }>(

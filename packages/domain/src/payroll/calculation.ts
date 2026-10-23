@@ -82,6 +82,82 @@ export function shortDate(date: IsoDate): string {
   return `${Number.parseInt(d ?? '1', 10)} ${month}`;
 }
 
+/** One earning line per claim (by expense date, then claim number), then one line per adjustment in input order. */
+function claimAndAdjustmentLines(
+  claimsIn: readonly ClaimInput[],
+  adjustments: readonly AdjustmentInput[],
+  firstSortOrder: number,
+): CalculatedLine[] {
+  const lines: CalculatedLine[] = [];
+  const claims = [...claimsIn].sort((a, b) =>
+    a.expenseDate === b.expenseDate
+      ? a.claimNumber < b.claimNumber
+        ? -1
+        : 1
+      : a.expenseDate < b.expenseDate
+        ? -1
+        : 1,
+  );
+  for (const c of claims) {
+    lines.push({
+      kind: 'earning',
+      code: 'reimbursement',
+      label: `Transport reimbursement (${shortDate(c.expenseDate)})`,
+      amount: toMoneyString(c.amount),
+      sortOrder: firstSortOrder + lines.length,
+      sourceType: 'reimbursement_claim',
+      sourceId: c.id,
+      calculation: { claimNumber: c.claimNumber, expenseDate: c.expenseDate, currency: c.currency },
+    });
+  }
+  for (const a of adjustments) {
+    lines.push({
+      kind: a.type === 'deduction' ? 'deduction' : 'earning',
+      code: a.lineCode,
+      label: a.reason,
+      amount: toMoneyString(a.amount),
+      sortOrder: firstSortOrder + lines.length,
+      sourceType: 'payroll_adjustment',
+      sourceId: a.id,
+      calculation: { adjustmentType: a.type },
+    });
+  }
+  return lines;
+}
+
+/** Totals are sums of rounded lines (ADR-0006). */
+function lineTotals(lines: readonly CalculatedLine[]) {
+  const gross = sumMoney(lines.filter((l) => l.kind === 'earning').map((l) => l.amount));
+  const deductions = sumMoney(lines.filter((l) => l.kind === 'deduction').map((l) => l.amount));
+  return {
+    gross: toMoneyString(gross),
+    deductions: toMoneyString(deductions),
+    net: toMoneyString(new Decimal(gross).minus(deductions)),
+  };
+}
+
+/**
+ * One employee's item in an off-cycle run (BUSINESS-RULES 6.10): only the eligible claims and adjustments, with no
+ * base salary, proration or structure. Returns null when the employee has nothing to pay, so they get no item.
+ * `daysEmployed` is 0: an off-cycle item pays no days.
+ */
+export function calculateOffCycleItem(input: {
+  period: Period;
+  claims: readonly ClaimInput[];
+  adjustments: readonly AdjustmentInput[];
+}): CalculatedItem | null {
+  if (!input.claims.length && !input.adjustments.length) return null;
+  const lines = claimAndAdjustmentLines(input.claims, input.adjustments, 0);
+  return {
+    lines,
+    ...lineTotals(lines),
+    daysEmployed: 0,
+    daysInPeriod: daysInclusive(input.period.start, input.period.end),
+    structuresUsed: [],
+    missingSalaryStructure: false,
+  };
+}
+
 /**
  * One employee's item for a period (BUSINESS-RULES 6.2–6.4): prorated base salary lines (one per structure segment,
  * D-041), one earning line per approved claim, one line per approved adjustment. Each line is rounded half-up to
@@ -126,50 +202,14 @@ export function calculateItem(input: ItemInput): ItemResult {
       },
     });
   }
-  const claims = [...input.claims].sort((a, b) =>
-    a.expenseDate === b.expenseDate
-      ? a.claimNumber < b.claimNumber
-        ? -1
-        : 1
-      : a.expenseDate < b.expenseDate
-        ? -1
-        : 1,
-  );
-  for (const c of claims) {
-    lines.push({
-      kind: 'earning',
-      code: 'reimbursement',
-      label: `Transport reimbursement (${shortDate(c.expenseDate)})`,
-      amount: toMoneyString(c.amount),
-      sortOrder: lines.length,
-      sourceType: 'reimbursement_claim',
-      sourceId: c.id,
-      calculation: { claimNumber: c.claimNumber, expenseDate: c.expenseDate, currency: c.currency },
-    });
-  }
-  for (const a of input.adjustments) {
-    lines.push({
-      kind: a.type === 'deduction' ? 'deduction' : 'earning',
-      code: a.lineCode,
-      label: a.reason,
-      amount: toMoneyString(a.amount),
-      sortOrder: lines.length,
-      sourceType: 'payroll_adjustment',
-      sourceId: a.id,
-      calculation: { adjustmentType: a.type },
-    });
-  }
-
-  const gross = sumMoney(lines.filter((l) => l.kind === 'earning').map((l) => l.amount));
-  const deductions = sumMoney(lines.filter((l) => l.kind === 'deduction').map((l) => l.amount));
+  lines.push(...claimAndAdjustmentLines(input.claims, input.adjustments, lines.length));
+  const totals = lineTotals(lines);
   const used = new Set(base.map((b) => b.salaryStructureId));
   return {
     ok: true,
     item: {
       lines,
-      gross: toMoneyString(gross),
-      deductions: toMoneyString(deductions),
-      net: toMoneyString(new Decimal(gross).minus(deductions)),
+      ...totals,
       daysEmployed,
       daysInPeriod,
       structuresUsed: input.structures
@@ -196,10 +236,13 @@ export function buildSnapshot(input: {
   employee: SnapshotEmployee;
   item: CalculatedItem;
   currency: string;
+  /** Omitted for a regular run; snapshots written before off-cycle runs existed have no `runType`. */
+  runType?: 'regular' | 'off_cycle';
 }) {
   const { item } = input;
   return {
     ruleVersion: PAYROLL_RULE_VERSION,
+    runType: input.runType ?? 'regular',
     period: {
       year: input.period.year,
       month: input.period.month,

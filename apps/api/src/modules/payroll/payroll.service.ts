@@ -19,6 +19,7 @@ import {
   buildSnapshot,
   type CalculatedItem,
   calculateItem,
+  calculateOffCycleItem,
   checkSelfApproval,
   isRunLocked,
   monthPeriod,
@@ -210,8 +211,10 @@ function flagsFromSnapshot(
   },
   snapshot: PayrollSnapshot,
   ctx: FlagContext,
+  runType: string,
 ): PayrollFlag[] {
   return validationFlags({
+    runType: runType === 'off_cycle' ? 'off_cycle' : 'regular',
     period: { start: snapshot.period.start, end: snapshot.period.end },
     joiningDate: snapshot.employee.joiningDate,
     separationDate: snapshot.employee.separationDate,
@@ -235,7 +238,7 @@ function flagsFromSnapshot(
 }
 
 /**
- * `calculate` (BUSINESS-RULES 6.1–6.7): deletes and recreates the run's items and lines in one transaction, from the
+ * `calculate` (BUSINESS-RULES 6.1–6.7, off-cycle 6.10): deletes and recreates the run's items and lines in one transaction, from the
  * approved structures, eligible claims and approved adjustments. The run row lock makes concurrent calls serialize;
  * the loser sees a new version and gets 409 (PAY-08).
  */
@@ -245,18 +248,29 @@ export async function calculateRun(deps: Deps, auth: AuthContext, id: string, in
   const settings = await getSettings(deps.db, auth.companyId, ['payroll.midperiod_salary_change_policy']);
   await deps.db.transaction(async (tx) => {
     const { run, period } = await lockRunFor(tx, auth, id, 'calculate', input.version);
-    if (run.runType !== 'regular')
-      throw ruleViolation(
-        'Off-cycle calculation rules are not defined for v1 (BUSINESS-RULES open questions).',
-      );
+    const offCycle = run.runType === 'off_cycle';
     const p = { start: period.startDate, end: period.endDate };
-    const [employees, structures, claims, adjustments, ctx] = await Promise.all([
-      repo.eligibleEmployees(tx, auth.companyId, p.start, p.end),
-      repo.approvedStructuresFor(tx, auth.companyId, p.start, p.end),
-      repo.eligibleClaims(tx, auth.companyId, run.id, p.end),
-      repo.eligibleAdjustments(tx, auth.companyId, period.id),
+    const [claims, adjustments, ctx] = await Promise.all([
+      repo.eligibleClaims(tx, auth.companyId, run.id, offCycle ? null : p.end),
+      repo.eligibleAdjustments(tx, auth.companyId, run.id, period.id),
       flagContext(tx, auth.companyId, p.start),
     ]);
+    // An off-cycle run pays only claims and adjustments, to whoever has one (BUSINESS-RULES 6.10).
+    const [employees, structures] = offCycle
+      ? [
+          await repo.employeesByIds(tx, auth.companyId, [
+            ...new Set([...claims, ...adjustments].map((r) => r.employee_id)),
+          ]),
+          [],
+        ]
+      : await Promise.all([
+          repo.eligibleEmployees(tx, auth.companyId, p.start, p.end),
+          repo.approvedStructuresFor(tx, auth.companyId, p.start, p.end),
+        ]);
+    if (offCycle && employees.length === 0)
+      throw ruleViolation(
+        'Nothing to pay: no approved claim or adjustment for this period is waiting for a run.',
+      );
     const group = <T extends { employee_id: string }>(rows: readonly T[]) => {
       const m = new Map<string, T[]>();
       for (const r of rows) m.set(r.employee_id, [...(m.get(r.employee_id) ?? []), r]);
@@ -269,42 +283,7 @@ export async function calculateRun(deps: Deps, auth: AuthContext, id: string, in
     const unconfirmed: FieldError[] = [];
     const items: (typeof schema.payrollItems.$inferInsert)[] = [];
     const lines: (typeof schema.payrollLineItems.$inferInsert)[] = [];
-    for (const e of employees) {
-      const result = calculateItem({
-        period: p,
-        employment: { joiningDate: e.joining_date, separationDate: e.separation_date },
-        structures: (byStructure.get(e.id) ?? []).map((s) => ({
-          id: s.id,
-          grossAmount: s.gross_amount,
-          effectiveFrom: s.effective_from,
-          effectiveTo: s.effective_to,
-          currency: s.currency,
-        })),
-        claims: (byClaim.get(e.id) ?? []).map((c) => ({
-          id: c.id,
-          claimNumber: c.claim_number,
-          expenseDate: c.expense_date,
-          amount: c.amount,
-          currency: c.currency,
-        })),
-        adjustments: (byAdjustment.get(e.id) ?? []).map((a) => ({
-          id: a.id,
-          type: a.type,
-          lineCode: a.line_code,
-          amount: a.amount,
-          reason: a.reason,
-        })),
-        midPeriodPolicy: settings['payroll.midperiod_salary_change_policy'],
-      });
-      if (!result.ok) {
-        unconfirmed.push({
-          path: `/employees/${e.id}`,
-          code: result.reason,
-          message: `${e.code}: salary changes in the period.`,
-        });
-        continue;
-      }
-      const item: CalculatedItem = result.item;
+    function addItem(e: repo.EligibleEmployee, item: CalculatedItem) {
       const itemId = uuidv7();
       const snapshot = buildSnapshot({
         period: { ...p, year: period.year, month: period.month },
@@ -319,6 +298,7 @@ export async function calculateRun(deps: Deps, auth: AuthContext, id: string, in
         },
         item,
         currency: ctx.runCurrency,
+        runType: run.runType === 'off_cycle' ? 'off_cycle' : 'regular',
       });
       const flags = flagsFromSnapshot(
         {
@@ -330,6 +310,7 @@ export async function calculateRun(deps: Deps, auth: AuthContext, id: string, in
         },
         snapshot,
         ctx,
+        run.runType,
       );
       items.push({
         id: itemId,
@@ -362,6 +343,54 @@ export async function calculateRun(deps: Deps, auth: AuthContext, id: string, in
           calculation: l.calculation,
         });
       }
+    }
+    for (const e of employees) {
+      const claimInputs = (byClaim.get(e.id) ?? []).map((c) => ({
+        id: c.id,
+        claimNumber: c.claim_number,
+        expenseDate: c.expense_date,
+        amount: c.amount,
+        currency: c.currency,
+      }));
+      const adjustmentInputs = (byAdjustment.get(e.id) ?? []).map((a) => ({
+        id: a.id,
+        type: a.type,
+        lineCode: a.line_code,
+        amount: a.amount,
+        reason: a.reason,
+      }));
+      if (offCycle) {
+        const offItem = calculateOffCycleItem({
+          period: p,
+          claims: claimInputs,
+          adjustments: adjustmentInputs,
+        });
+        if (offItem) addItem(e, offItem);
+        continue;
+      }
+      const result = calculateItem({
+        period: p,
+        employment: { joiningDate: e.joining_date, separationDate: e.separation_date },
+        structures: (byStructure.get(e.id) ?? []).map((s) => ({
+          id: s.id,
+          grossAmount: s.gross_amount,
+          effectiveFrom: s.effective_from,
+          effectiveTo: s.effective_to,
+          currency: s.currency,
+        })),
+        claims: claimInputs,
+        adjustments: adjustmentInputs,
+        midPeriodPolicy: settings['payroll.midperiod_salary_change_policy'],
+      });
+      if (!result.ok) {
+        unconfirmed.push({
+          path: `/employees/${e.id}`,
+          code: result.reason,
+          message: `${e.code}: salary changes in the period.`,
+        });
+        continue;
+      }
+      addItem(e, result.item);
     }
     if (unconfirmed.length)
       throw new AppError(
@@ -406,14 +435,14 @@ export async function calculateRun(deps: Deps, auth: AuthContext, id: string, in
 export async function validateRun(deps: Deps, auth: AuthContext, id: string): Promise<PayrollValidation> {
   policy.prepare(auth);
   await deps.db.transaction(async (tx) => {
-    const { period } = await lockRunFor(tx, auth, id, 'validate');
+    const { run, period } = await lockRunFor(tx, auth, id, 'validate');
     const ctx = await flagContext(tx, auth.companyId, period.startDate);
     const items = await repo.allItems(tx, id);
     await repo.setItemFlags(
       tx,
       items.map(({ item }) => ({
         id: item.id,
-        flags: flagsFromSnapshot(item, item.snapshot as PayrollSnapshot, ctx),
+        flags: flagsFromSnapshot(item, item.snapshot as PayrollSnapshot, ctx, run.runType),
       })),
     );
   });
