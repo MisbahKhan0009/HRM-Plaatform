@@ -7,9 +7,11 @@ const lookups: ImportLookups = {
   employeeCodes: new Map([['EMP-0001', 'emp-1']]),
   workEmails: new Set(['taken@example.com']),
   requiredFields: ['firstName', 'lastName'],
+  today: '2026-03-01',
 };
 
 const header = ['Employee Code', 'First Name', 'Last Name', 'Email', 'Department', 'Position', 'Manager'];
+const J = '2024-01-01';
 
 describe('resolveMapping', () => {
   it('maps common header spellings', () => {
@@ -33,9 +35,9 @@ describe('validateImport (FR-EMP-008, FR-EMP-009)', () => {
   it('accepts valid rows and resolves lookups and in-file managers', () => {
     const result = validateImport(
       [
-        header,
-        ['N-1', 'Rahima', 'Akter', 'rahima@example.com', 'eng', 'Engineer', 'EMP-0001'],
-        ['N-2', 'Karim', 'Hossain', '', '', '', 'N-1'],
+        [...header, 'Joining Date'],
+        ['N-1', 'Rahima', 'Akter', 'rahima@example.com', 'eng', 'Engineer', 'EMP-0001', J],
+        ['N-2', 'Karim', 'Hossain', '', '', '', 'N-1', J],
       ],
       undefined,
       lookups,
@@ -53,11 +55,11 @@ describe('validateImport (FR-EMP-008, FR-EMP-009)', () => {
   it('flags duplicates in the file and against existing employees', () => {
     const result = validateImport(
       [
-        header,
-        ['EMP-0001', 'A', 'One', 'a@example.com', '', '', ''],
-        ['N-5', 'B', 'Two', 'same@example.com', '', '', ''],
-        ['N-6', 'C', 'Three', 'SAME@example.com', '', '', ''],
-        ['N-7', 'D', 'Four', 'taken@example.com', '', '', ''],
+        [...header, 'Joining Date'],
+        ['EMP-0001', 'A', 'One', 'a@example.com', '', '', '', J],
+        ['N-5', 'B', 'Two', 'same@example.com', '', '', '', J],
+        ['N-6', 'C', 'Three', 'SAME@example.com', '', '', '', J],
+        ['N-7', 'D', 'Four', 'taken@example.com', '', '', '', J],
       ],
       undefined,
       lookups,
@@ -98,11 +100,11 @@ describe('validateImport (FR-EMP-008, FR-EMP-009)', () => {
   it('rejects reporting cycles and rows whose manager row fails', () => {
     const result = validateImport(
       [
-        header,
-        ['A', 'A', 'A', '', '', '', 'B'],
-        ['B', 'B', 'B', '', '', '', 'A'],
-        ['C', 'C', 'C', '', '', '', 'A'],
-        ['D', 'D', 'D', '', '', '', 'D'],
+        [...header, 'Joining Date'],
+        ['A', 'A', 'A', '', '', '', 'B', J],
+        ['B', 'B', 'B', '', '', '', 'A', J],
+        ['C', 'C', 'C', '', '', '', 'A', J],
+        ['D', 'D', 'D', '', '', '', 'D', J],
       ],
       undefined,
       lookups,
@@ -116,10 +118,31 @@ describe('validateImport (FR-EMP-008, FR-EMP-009)', () => {
     ]);
   });
 
-  it('requires a column for every required field', () => {
+  it('requires a column for every required field, and always a joining date', () => {
     const result = validateImport([['First Name'], ['A']], undefined, lookups);
     expect(result.issues).toEqual([
       { row: 0, path: '/mapping', code: 'missing_column', message: 'A lastName column is required.' },
+      { row: 0, path: '/mapping', code: 'missing_column', message: 'A joiningDate column is required.' },
     ]);
+  });
+
+  it('accepts joining dates up to today and rejects later ones per row (BUSINESS-RULES §10)', () => {
+    const result = validateImport(
+      [
+        ['First Name', 'Last Name', 'Joining Date', 'Probation End Date'],
+        ['Old', 'Hand', '2019-07-01', ''],
+        ['Today', 'Start', '2026-03-01', '2026-09-01'],
+        ['Next', 'Month', '2026-04-01', ''],
+        ['No', 'Date', '', ''],
+      ],
+      undefined,
+      lookups,
+    );
+    expect(result.rows.map((r) => r.valid)).toEqual([true, true, false, false]);
+    expect(result.issues.map((i) => `${i.row}${i.path}:${i.code}`)).toEqual([
+      '3/joiningDate:date_in_future',
+      '4/joiningDate:required',
+    ]);
+    expect(result.rows[1]?.value.probationEndDate).toBe('2026-09-01');
   });
 });

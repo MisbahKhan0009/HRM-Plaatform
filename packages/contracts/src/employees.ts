@@ -452,7 +452,15 @@ export type EmployeeImportPreview = z.infer<typeof EmployeeImportPreviewSchema>;
 export const EmployeeImportResultSchema = z.object({
   createdCount: z.number().int(),
   skippedCount: z.number().int(),
-  created: z.array(z.object({ row: z.number().int(), id: z.uuid(), employeeCode: z.string() })),
+  /** Each created employee with its status after import: `active`, or `probation` while probation runs. */
+  created: z.array(
+    z.object({
+      row: z.number().int(),
+      id: z.uuid(),
+      employeeCode: z.string(),
+      status: EmployeeStatusSchema,
+    }),
+  ),
   errors: z.array(ImportRowErrorSchema),
 });
 export type EmployeeImportResult = z.infer<typeof EmployeeImportResultSchema>;

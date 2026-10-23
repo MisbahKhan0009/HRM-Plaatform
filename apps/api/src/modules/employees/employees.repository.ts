@@ -275,6 +275,12 @@ export async function updateContact(
 
 const creator = alias(users, 'creator');
 
+/** Inserts many events in one statement (CSV import). */
+export async function insertEvents(tx: Tx, values: (typeof employmentEvents.$inferInsert)[]) {
+  if (!values.length) return;
+  await tx.insert(employmentEvents).values(values);
+}
+
 export async function insertEvent(tx: Tx, values: typeof employmentEvents.$inferInsert) {
   const [row] = await tx.insert(employmentEvents).values(values).returning();
   if (!row) throw new Error('insert returned nothing');

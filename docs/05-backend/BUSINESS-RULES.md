@@ -349,6 +349,21 @@ Stored in `settings` (DATA-MODEL section 1). Changing a key needs `settings.<sco
 | `security.session_idle_hours` | technical | int | 8 | auth |
 | `security.privileged_idle_hours` | technical | int | 1 | auth |
 
+## 10. Employee CSV import
+
+The import (`POST /employees/import/commit`, FR-EMP-008) is for staff who are already employed at go-live. Each valid row is created already hired, with its historical joining date, so HR does not run the lifecycle actions for every existing employee.
+
+| Row | Status after import | Employment events (applied) |
+|---|---|---|
+| No probation end date | `active` | `hired` on the joining date |
+| Probation end date after today | `probation` | `hired` on the joining date |
+| Probation end date today or earlier | `active` | `hired` on the joining date, `confirmed` on the probation end date |
+
+- The status is reached through the DOMAIN-MODEL §5.2 transitions from `draft`: `start_preboarding`, `hire` (into `probation` when the row has a probation end date) and, when probation has ended, `confirm`. The passage through `preboarding` has no event of its own.
+- Events and audit rows match what the `hire` and `confirm` actions record: one `employment_event.created` and one `employee.status_changed` per event, plus one `employee.imported` summary row. They are written in the creating transaction. The import sends no email and creates no user account.
+- The joining date is required on every row, whatever `employees.required_fields` says. A joining date after today (business date, section 1) is a row error (`date_in_future`): future starters are new hires and go through `POST /employees` and the lifecycle actions.
+- The import grants no leave. The daily `leave.eligibility_grants` step grants the entitlements of imported staff once they are eligible (5.1).
+
 ## Open questions (owner)
 
 1. Leave seed defaults in section 5 (entitlements, eligibility, carry-forward, maximum balance) need owner and adviser confirmation.

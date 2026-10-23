@@ -231,7 +231,7 @@ All auth screens are brand moments: Ink ground with DotGrid + Glow (Paper if the
 - **Secondary**: Cancel.
 
 ### 8.3 Import employees `/employees/import`
-- **Data**: steps: upload CSV, map columns, preview with per-row validation (errors, duplicates), commit (FR-EMP-008).
+- **Data**: steps: upload CSV, map columns, preview with per-row validation (errors, duplicates), commit (FR-EMP-008). Rows are existing staff, created as `active` or `probation` with their joining date (BUSINESS-RULES §10).
 - **Primary per step**: Upload file; Continue; Import N employees.
 - **Secondary**: Download error report (CSV, built in browser); Back.
 
