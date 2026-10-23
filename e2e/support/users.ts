@@ -40,6 +40,15 @@ export const E2E_USERS = [
     employeeCode: 'EMP-0005',
     managerKey: null,
   },
+  {
+    // No factor seeded and no other journey signs in as this user: E2E-02 enrols from scratch.
+    key: 'auditor',
+    email: 'auditor@example.test',
+    name: 'Arif Auditor',
+    roles: ['auditor'],
+    employeeCode: 'EMP-0006',
+    managerKey: null,
+  },
 ] as const;
 
 export type E2EUserKey = (typeof E2E_USERS)[number]['key'];
